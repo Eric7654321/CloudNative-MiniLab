@@ -25,8 +25,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
             return true;
         }
-        if(url.contains("test")){
-            log.info("測試操作, 放行");
+        if(url.contains("test") || url.contains("actuator") || url.contains("assets")){
+            log.info("檢查操作, 放行");
 
             return true;
         }
