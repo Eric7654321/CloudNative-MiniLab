@@ -6,4 +6,4 @@
 ## 目前已Implement的API
 | Method | Request    | 描述                                                                                              | provide    | return |
 | ------ | --- | ------------------------------------------------------------------------------------------------- | ---------- | ------ |
-| Post   | /login    | 查詢登入者是否存在，並且藉由相對應的role決定要跳轉到哪個page，head裡面包含一jwt，用於登入後的驗證 | {  "username": "your_user_name",  "password": "your_password"} | jwt   |
+| Post   | /login    | 查詢登入者是否存在，並且提供role給前端決定要跳轉到哪個page，用於登入後的驗證 | {  "username": "your_user_name",  "password": "your_password"} | EmpVO   |
