@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  datasource:
+    url: ${minilab.datasource.driver-class-name}
+    username: ${minilab.datasource.username}
+    password: ${minilab.datasource.password}
+
+
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.minilab.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com:
+      minilab:
+        mapper: debug
+        service: info
+        controller: info
+
+minilab:
+  jwt:
+    admin-secret-key: MiniLab
+    admin-ttl: 7200000000
+    admin-token-name: token
