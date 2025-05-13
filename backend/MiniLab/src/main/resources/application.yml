@@ -12,15 +12,15 @@ spring:
     password: ${minilab.datasource.password}
 
 
+#mybatis
 mybatis:
-  #mapper配置文件
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.minilab.entity
   configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
 
 logging:
   level:
+    org.mybatis: DEBUG
     com:
       minilab:
         mapper: debug
