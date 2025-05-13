@@ -10,6 +10,14 @@ spring:
     url: ${minilab.datasource.driver-class-name}
     username: ${minilab.datasource.username}
     password: ${minilab.datasource.password}
+  application:
+    name: minilab-backend
+  boot:
+    admin:
+      client:
+        url: http://localhost:8080
+        instance:
+          prefer-ip: true
 
 
 #mybatis
@@ -32,3 +40,19 @@ minilab:
     admin-secret-key: MiniLab
     admin-ttl: 7200000000
     admin-token-name: token
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  tracing:
+    sampling:
+      probability: 1.0  # 100% 追蹤（正式環境建議 <1.0）
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  endpoint:
+    health:
+      show-details: always
