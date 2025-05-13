@@ -1,4 +1,4 @@
-package com.minilab.pojo.entity;
+package com.minilab.pojo.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,6 @@ public class EmpVO {
     Integer id;
     String username;
     String name;
-    String password;
     Integer usable;
     String group;
     LocalDateTime updateTime;

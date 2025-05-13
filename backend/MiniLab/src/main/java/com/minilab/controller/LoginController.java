@@ -1,7 +1,7 @@
 package com.minilab.controller;
 
 
-import com.minilab.pojo.entity.EmpVO;
+import com.minilab.pojo.vo.EmpVO;
 import lombok.extern.slf4j.Slf4j;
 import com.minilab.pojo.entity.Emp;
 import com.minilab.pojo.entity.Result;
@@ -37,7 +37,7 @@ public class LoginController {
             claims.put("username", e.getUsername());
 
             String jwt = JwtUtils.generateJwt(claims);
-            BeanUtils.copyProperties(emp, empVO);
+            BeanUtils.copyProperties(e, empVO);
             empVO.setJwt(jwt);
 
             return Result.success(empVO);
