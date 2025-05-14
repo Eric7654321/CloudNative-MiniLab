@@ -1,5 +1,5 @@
 {
-  "name": "moz-todo-vue",
+  "name": "frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
-    "lodash.uniqueid": "^4.0.1",
     "vue": "^3.2.13"
   },
   "devDependencies": {

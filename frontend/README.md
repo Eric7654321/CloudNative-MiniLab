@@ -1,4 +1,4 @@
-# moz-todo-vue
+# frontend
 
 ## Project setup
 ```
