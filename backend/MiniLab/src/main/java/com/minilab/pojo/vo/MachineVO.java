@@ -1,22 +1,16 @@
 package com.minilab.pojo.vo;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class EmpVO {
+public class MachineVO {
     Integer id;
-    String username;
     String name;
+    String machineName;
     Integer usable;
     String group;
     LocalDateTime updateTime;
-    Integer role;
     String tags;
-    String jwt;
 }
