@@ -9,15 +9,11 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Task {
+public class Message {
     Integer id;
-    Integer emp;
-    String empName;
-    Integer machine;
-    String machineName;
-    LocalDateTime startTime;
-    LocalDateTime endTime;
+    Integer taskId;
     String description;
-    Integer isFinish;
+    String group;
+    Integer status;
     LocalDateTime updateTime;
 }
