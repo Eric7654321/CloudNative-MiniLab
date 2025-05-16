@@ -1,11 +1,11 @@
 package com.minilab.mapper;
 
 import com.minilab.pojo.entity.Emp;
+import com.minilab.pojo.entity.EmpTag;
 import com.minilab.pojo.vo.EmpVO;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
 
@@ -19,4 +19,12 @@ public interface EmpMapper {
 
     @Select("select tags from minilab.emp_tag where emp_id = #{id}")
     String setTagsByUserId(Integer id);
+
+    @Insert("insert into minilab.emp (username, name, password, usable, `group`, update_time, role) VALUES (#{username}, #{name}, #{password}, #{usable}, #{group}, #{updateTime}, #{role})")
+    void insert(Emp emp);
+
+    void updateEmp(Emp emp);
+
+    @Delete("delete from minilab.emp where id = #{id}")
+    void deleteEmpById(Emp emp);
 }
