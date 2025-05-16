@@ -9,15 +9,9 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Task {
+public class MachineTag {
     Integer id;
-    Integer emp;
-    String empName;
-    Integer machine;
-    String machineName;
-    LocalDateTime startTime;
-    LocalDateTime endTime;
-    String description;
-    Integer isFinish;
+    Integer empId;
+    String tags;
     LocalDateTime updateTime;
 }
