@@ -2,6 +2,7 @@ package com.minilab.service;
 
 import com.minilab.pojo.entity.Emp;
 import com.minilab.pojo.entity.EmpTag;
+import com.minilab.pojo.entity.Result;
 import com.minilab.pojo.vo.EmpVO;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface EmpService {
 
     void insert(Emp emp);
 
-    void updateTag(EmpTag tag);
+    Result updateTag(EmpTag tag);
 
     void updateEmp(Emp emp);
 

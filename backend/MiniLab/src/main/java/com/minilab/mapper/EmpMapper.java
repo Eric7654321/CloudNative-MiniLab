@@ -17,6 +17,9 @@ public interface EmpMapper {
     @Select("select * from minilab.emp where `group` = #{groupId}")
     List<EmpVO> getEmpByGroupId(String groupId);
 
+    @Select("select * from minilab.emp where id = #{id}")
+    EmpVO getEmpById(Integer id);
+
     @Select("select tags from minilab.emp_tag where emp_id = #{id}")
     String setTagsByUserId(Integer id);
 
