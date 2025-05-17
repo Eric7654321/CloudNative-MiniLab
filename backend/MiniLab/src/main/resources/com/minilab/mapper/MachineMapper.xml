@@ -27,5 +27,11 @@
         </set>
         where id = #{id}
     </update>
+    <select id="getMachinesByIds" resultType="com.minilab.pojo.entity.Machine">
+        select * from minilab.machine where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 
 </mapper>

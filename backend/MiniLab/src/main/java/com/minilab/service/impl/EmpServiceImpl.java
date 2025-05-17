@@ -2,8 +2,11 @@ package com.minilab.service.impl;
 
 import com.minilab.mapper.EmpMapper;
 import com.minilab.mapper.TagMapper;
+import com.minilab.mapper.TaskMapper;
 import com.minilab.pojo.entity.Emp;
 import com.minilab.pojo.entity.EmpTag;
+import com.minilab.pojo.entity.Result;
+import com.minilab.pojo.entity.Task;
 import com.minilab.pojo.vo.EmpVO;
 import com.minilab.service.EmpService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,8 @@ public class EmpServiceImpl implements EmpService {
     EmpMapper empMapper;
     @Autowired
     TagMapper tagMapper;
+    @Autowired
+    private TaskMapper taskMapper;
 
     @Override
     public Emp login(Emp emp) {
@@ -46,9 +51,18 @@ public class EmpServiceImpl implements EmpService {
     }
 
     @Override
-    public void updateTag(EmpTag tag) {
-        tag.setUpdateTime(LocalDateTime.now());
-        tagMapper.updateEmpTagById(tag);
+    public Result updateTag(EmpTag tag) {
+        List<Task> taskById = taskMapper.getTaskById(tag.getEmpId());
+        if(taskById.isEmpty()) {
+            log.info("tag操作未受其他依賴資料影響");
+            tag.setUpdateTime(LocalDateTime.now());
+            tagMapper.updateEmpTagById(tag);
+        } else {
+            log.info("該使用者已有任務排程，無法修改，task: {}", taskById);
+            return Result.error("該使用者已有任務排程，無法修改，task: " + taskById.toString());
+        }
+        return Result.success();
+
     }
 
     @Override

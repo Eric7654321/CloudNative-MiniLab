@@ -36,7 +36,10 @@ public class MachineController {
     @PutMapping("/tag/update")
     public Result updateEmpTag(@RequestBody MachineTag tag) {
         log.info("修改Tag操作，Tag={}", tag);
-        machineService.updateTag(tag);
+        Result result = machineService.updateTag(tag);
+        if(result.getCode() == 0){
+            return Result.error(result.getMsg());
+        }
 
         return Result.success();
     }
@@ -56,4 +59,5 @@ public class MachineController {
 
         return Result.success();
     }
+
 }

@@ -1,5 +1,6 @@
 package com.minilab.service;
 
+import com.minilab.pojo.entity.Result;
 import com.minilab.pojo.entity.Task;
 
 import java.time.LocalDate;
@@ -15,4 +16,8 @@ public interface TaskService {
     List<Task> getTaskByIdAndTimeWeeks(Integer id, LocalDate now);
 
     List<Task> getTaskByIdAndTime(Integer id, LocalDate now);
+
+    Result tasksValidateAndCheck(List<Task> task);
+
+    Result tasksCheck(List<Task> tasks);
 }
