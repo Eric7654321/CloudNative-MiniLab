@@ -41,10 +41,10 @@ public class TaskController {
         List<Task> tasks = taskService.getTaskByIdAndTime(id, LocalDate.now());
         return Result.success(tasks);
     }
-
+    
     @PostMapping("/msg/send")
     public Result reveiveMsg(@RequestBody Message message) {
-        log.info("訊息接收，msg: {}", message);
+        log.info("任務回報，msg: {}", message);
         messageService.saveMessage(message);
         return Result.success();
     }

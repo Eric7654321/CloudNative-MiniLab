@@ -9,6 +9,8 @@ import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/schedule")
@@ -27,6 +29,17 @@ public class ScheduleController {
     public Result updateTask(@RequestBody Task task) {
         log.info("修改任務: {}", task);
         taskService.updateTask(task);
+        return Result.success();
+    }
+
+    @PostMapping("/auto/ack")
+    public Result TasksCheckAndAdd(@RequestBody List<Task> tasks) {
+        log.info("進行任務可行性評估與排程，task: {}", tasks);
+        Result result = taskService.tasksValidateAndCheck(tasks);
+        if(result.getCode() != 1){
+            log.info("任務評估與排程失敗，錯誤原因: {}", result.getMsg());
+            return Result.error(result.getMsg());
+        }
         return Result.success();
     }
 }
