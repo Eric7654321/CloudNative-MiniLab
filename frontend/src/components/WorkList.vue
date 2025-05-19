@@ -16,17 +16,44 @@
 </template>
 
 <script lang="ts">
-export default {
-  data() {
+import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import axios from 'axios'
+
+export default defineComponent({
+  name: 'TodayTaskList',
+  props: {
+    employeeId: {
+      type: Number,
+      required: true
+    }
+  },
+  setup(props) {
+    const tasks = ref<any[]>([])
+    let timer: number
+
+    const fetchTodayTasks = async () => {
+      try {
+        const response = await axios.get(`/task/check/today/${props.employeeId}`)
+        tasks.value = response.data.data // 因為你的 Result.success() 包了 data
+      } catch (error) {
+        console.error('取得任務失敗', error)
+      }
+    }
+
+    onMounted(() => {
+      fetchTodayTasks()
+      timer = window.setInterval(fetchTodayTasks, 60000) // 每分鐘刷新一次
+    })
+
+    onUnmounted(() => {
+      clearInterval(timer)
+    })
+
     return {
-      tasks: [
-        { id: 1, label: '完成報告', done: false },
-        { id: 2, label: '開會', done: true },
-        { id: 3, label: '寫前端 UI', done: false }
-      ]
-    };
+      tasks
+    }
   }
-};
+})
 </script>
 
 <style scoped>
@@ -35,6 +62,8 @@ export default {
   padding-top: 60px; /* Header 的高度 */
   height: 100vh;
   justify-content: flex-start; /* 添加這行來確保向左對齊 */
+  margin-right: auto;
+    margin-left: 0; /* 確保沒有左邊距 */
 }
 
 .task-list {
