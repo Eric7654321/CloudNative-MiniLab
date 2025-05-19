@@ -1,3 +1,8 @@
+# Connect to backend
+```sh
+BACKEND_URL="${your_backend_url}"
+```
+
 # frontend
 
 This template should help get you started developing with Vue 3 in Vite.
