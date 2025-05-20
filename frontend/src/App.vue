@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import HeaderBar from './components/HeaderBar.vue';
-import WorkList from './components/WorkList.vue';
+import WorkList from './views/WorkList.vue';
 </script>
 
 <template>
   <div >
     <HeaderBar />
-    <WorkList />
+    <WorkList :employeeId="1" />
   </div>
 </template>
 
