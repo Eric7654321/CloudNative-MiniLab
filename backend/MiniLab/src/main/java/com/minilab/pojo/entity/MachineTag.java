@@ -9,11 +9,9 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Machine {
+public class MachineTag {
     Integer id;
-    String name;
-    String machineName;
-    Integer usable;
-    String group;
+    Integer empId;
+    String tags;
     LocalDateTime updateTime;
 }
