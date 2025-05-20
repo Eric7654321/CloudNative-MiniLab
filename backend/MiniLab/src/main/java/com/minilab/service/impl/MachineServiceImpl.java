@@ -13,6 +13,7 @@ import com.minilab.service.MachineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,9 +40,12 @@ public class MachineServiceImpl implements MachineService {
     }
 
     @Override
+    @Transactional
     public void insert(Machine machine) {
         machine.setUpdateTime(LocalDateTime.now());
         machineMapper.insert(machine);
+        machine = machineMapper.getMachineByName(machine.getName());
+        log.info("為id={}的機器{}新增tag", machine.getId(), machine.getName());
         //需要同步新增tag
         tagMapper.initialMachineTag(machine.getId());
     }
