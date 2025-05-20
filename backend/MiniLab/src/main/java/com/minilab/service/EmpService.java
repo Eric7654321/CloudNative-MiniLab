@@ -19,4 +19,6 @@ public interface EmpService {
     void updateEmp(Emp emp);
 
     void deleteEmp(Emp emp);
+
+    Emp seleteEmpByUsername(String username);
 }
