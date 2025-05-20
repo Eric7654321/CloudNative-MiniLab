@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router'
 import { ref } from 'vue';
 import axios, { type AxiosResponse } from 'axios'
 
-import AlertText from './components/AlertText.vue';
+import AlertText from '../components/AlertText.vue';
 
 let submiting = false;
+
+const router = useRouter();
 
 const account: Ref<string> = ref("");
 const password: Ref<string> = ref("");
@@ -46,11 +49,16 @@ const submit = async () => {
   let result: AxiosResponse<any, any>;
   try {
     result = await axios.post('/api/login', {
-      account: account.value,
+      username: account.value,
       password: password.value,
     }, {
       timeout: 1000
     });
+
+    if (result !== null) {
+      router.push('/employee')
+    }
+
 
   } catch (error) {
     alert("Network error");
