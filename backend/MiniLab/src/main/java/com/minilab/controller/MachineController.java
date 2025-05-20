@@ -1,17 +1,13 @@
 package com.minilab.controller;
 
-import com.minilab.pojo.entity.Machine;
-import com.minilab.pojo.entity.Result;
+import com.minilab.pojo.entity.*;
 import com.minilab.pojo.vo.EmpVO;
 import com.minilab.pojo.vo.MachineVO;
 import com.minilab.service.EmpService;
 import com.minilab.service.MachineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,4 +25,39 @@ public class MachineController {
         List<MachineVO> machines = machineService.getMachineByGroupId(groupId);
         return Result.success(machines);
     }
+
+    @PostMapping("/insert")
+    public Result insertEmp(@RequestBody Machine machine) {
+        log.info("新增機器操作，Emp={}", machine);
+        machineService.insert(machine);
+        return Result.success();
+    }
+
+    @PutMapping("/tag/update")
+    public Result updateEmpTag(@RequestBody MachineTag tag) {
+        log.info("修改Tag操作，Tag={}", tag);
+        Result result = machineService.updateTag(tag);
+        if(result.getCode() == 0){
+            return Result.error(result.getMsg());
+        }
+
+        return Result.success();
+    }
+
+    @PutMapping("/update")
+    public Result updateEmp(@RequestBody Machine machine) {
+        log.info("修改機器資訊: {}", machine);
+        machineService.updateMachine(machine);
+
+        return Result.success();
+    }
+
+    @DeleteMapping("/delete")
+    public Result deleteEmp(@RequestBody Machine machine) {
+        log.info("刪除機器資訊: {}", machine);
+        machineService.deleteMachine(machine);
+
+        return Result.success();
+    }
+
 }
