@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useCookies } from 'vue3-cookies';
 import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
@@ -21,7 +22,11 @@ const router = createRouter({
       path: '/',
       name: 'root',
       redirect: to => {
-        return {path: '/login'}
+        const { cookies } = useCookies();
+        if(cookies.get('token') === null) {
+          return {path: 'login'}
+        }
+        return {path: '/employee'}
       }
     }
   ],

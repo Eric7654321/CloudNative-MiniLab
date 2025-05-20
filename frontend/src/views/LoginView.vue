@@ -59,7 +59,7 @@ const submit = async () => {
     console.log(result.data)
 
     if (result.data.code === 1) {
-      cookies.set('token', '', '7d');
+      cookies.set('token', result.data.data.jwt, '7d');
       router.push('/employee')
     } else if (result.data.code === 0) {
       PasswdWarn.value?.set_message("Username or password error");

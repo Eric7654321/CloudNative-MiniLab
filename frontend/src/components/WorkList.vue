@@ -17,6 +17,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import { useCookies } from 'vue3-cookies';
+import { useRouter } from 'vue-router';
 import axios from 'axios'
 
 export default defineComponent({
@@ -30,6 +32,11 @@ export default defineComponent({
   setup(props) {
     const tasks = ref<any[]>([])
     let timer: number
+
+    const { cookies } = useCookies();
+    if (cookies.get('token') === null) {
+      useRouter().push('/')
+    }
 
     const fetchTodayTasks = async () => {
       try {
@@ -59,11 +66,14 @@ export default defineComponent({
 <style scoped>
 .container {
   display: flex;
-  padding-top: 60px; /* Header 的高度 */
+  padding-top: 60px;
+  /* Header 的高度 */
   height: 100vh;
-  justify-content: flex-start; /* 添加這行來確保向左對齊 */
+  justify-content: flex-start;
+  /* 添加這行來確保向左對齊 */
   margin-right: auto;
-    margin-left: 0; /* 確保沒有左邊距 */
+  margin-left: 0;
+  /* 確保沒有左邊距 */
 }
 
 .task-list {
@@ -71,7 +81,8 @@ export default defineComponent({
   background-color: white;
   padding: 20px;
   border-right: 1px solid #e5e7eb;
-  margin-left: 0; /* 確保沒有左邊距 */
+  margin-left: 0;
+  /* 確保沒有左邊距 */
 }
 
 .task-list h2 {
