@@ -23,7 +23,8 @@ export default (mode: string) => {
       proxy: {
         '/api/login': {
           target: `http://${process.env.BACKEND_URL}`,
-          changeOrigin: true
+          changeOrigin: true,
+          rewrite: (path: string) => path.replace(/^\/api\/login/, '/login')
         }
       },
       //port: parseInt(process.env.VITE_PORT),
