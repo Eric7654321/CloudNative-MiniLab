@@ -17,6 +17,13 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../components/WorkList.vue'),
     },
+    {
+      path: '/',
+      name: 'root',
+      redirect: to => {
+        return {path: '/login'}
+      }
+    }
   ],
 })
 
