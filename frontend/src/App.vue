@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import HeaderBar from './components/HeaderBar.vue';
-import WorkList from './views/WorkList.vue';
+import WorkList from './components/WorkList.vue';
+import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
   <div >
     <HeaderBar />
-    <WorkList :employeeId="1" />
+    <RouterView />
+    <!-- <WorkList /> -->
   </div>
 </template>
 
