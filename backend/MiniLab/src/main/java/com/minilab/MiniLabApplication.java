@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @EnableAdminServer
-//@MapperScan("com.minilab.mapper")
 public class MiniLabApplication {
 
     public static void main(String[] args) {
@@ -15,3 +14,5 @@ public class MiniLabApplication {
     }
 
 }
+
+// [Controller] - [Service] - [Mapper]
