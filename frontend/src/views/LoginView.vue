@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { ref } from 'vue';
 import axios, { type AxiosResponse } from 'axios'
-
+import { useCookies } from 'vue3-cookies';
 import AlertText from '../components/AlertText.vue';
 
 let submiting = false;
 
 const router = useRouter();
+const { cookies } = useCookies();
 
 const account: Ref<string> = ref("");
 const password: Ref<string> = ref("");
@@ -55,8 +56,14 @@ const submit = async () => {
       timeout: 1000
     });
 
-    if (result !== null) {
+    console.log(result.data)
+
+    if (result.data.code === 1) {
+      cookies.set('token', '', '7d');
       router.push('/employee')
+    } else if (result.data.code === 0) {
+      PasswdWarn.value?.set_message("Username or password error");
+      PasswdWarn.value?.set_display(true);
     }
 
 
@@ -122,10 +129,6 @@ input#password:focus,
 input#account:focus {
   border-bottom: 2px solid #aaa;
   outline: none;
-  /* background-size: 100% 2px; */
-  /* 展開底線 */
-  /* border-bottom-color: transparent; */
-  /* 隱藏原來的 border */
 }
 
 input[type="submit"] {
