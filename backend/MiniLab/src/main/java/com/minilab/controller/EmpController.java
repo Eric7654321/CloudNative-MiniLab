@@ -33,7 +33,9 @@ public class EmpController {
     public Result insertEmp(@RequestBody Emp emp) {
         log.info("新增Emp操作，Emp={}", emp);
         empService.insert(emp);
-        return Result.success();
+
+        emp = empService.seleteEmpByUsername(emp.getUsername());
+        return Result.success(emp);
     }
 
     @PutMapping("/tag/update")
