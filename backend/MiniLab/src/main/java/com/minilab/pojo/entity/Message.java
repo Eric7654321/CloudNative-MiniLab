@@ -1,4 +1,4 @@
-package com.minilab.pojo.vo;
+package com.minilab.pojo.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,14 +7,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class MachineVO {
+@AllArgsConstructor
+public class Message {
     Integer id;
-    String name;
-    String machineName;
-    Integer usable;
+    Integer taskId;
+    String description;
     String group;
+    Integer status;
     LocalDateTime updateTime;
-    String tags;
 }
