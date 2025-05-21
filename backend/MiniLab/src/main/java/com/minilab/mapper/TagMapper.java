@@ -2,10 +2,7 @@ package com.minilab.mapper;
 
 import com.minilab.pojo.entity.EmpTag;
 import com.minilab.pojo.entity.MachineTag;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 @Mapper
@@ -27,4 +24,7 @@ public interface TagMapper {
 
     @Delete("delete from minilab.machine_tag where machine_id = #{id}")
     void deleteTagByMachineId(Integer id);
+
+    @Select("select minilab.emp_tag.tags from minilab.emp_tag where emp_id = #{id}")
+    String selectEmpTagsByEmpId(Integer id);
 }
