@@ -1,18 +1,23 @@
 <template>
   <header class="header-bar">
-    <button @click="goMessage">訊息</button>
-    <button @click="goReport">回報</button>
-    <button @click="goCalender">行事曆</button>
-    <button @click="goLogout">登出</button>
+    <div>
+      <div>{{ userdata.Role }} {{ userdata.name }}</div>
+      <button @click="goMessage">訊息</button>
+      <button @click="goReport">回報</button>
+      <button @click="goCalender">行事曆</button>
+      <button @click="goLogout">登出</button>
+    </div>
   </header>
 </template>
 
 <script setup lang="ts">
 import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
+import { useUserData } from '@/stores/UserData';
 
 const { cookies } = useCookies();
 const router = useRouter();
+const userdata = useUserData();
 
 const goMessage = () => {
   console.log("前往訊息")
@@ -29,6 +34,7 @@ const goCalender = () => {
 
 const goLogout = () => {
   cookies.remove('token');
+  userdata.reset()
   router.push('/')
 }
 </script>

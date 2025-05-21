@@ -5,15 +5,15 @@ import { ref } from 'vue';
 import axios, { type AxiosResponse } from 'axios'
 import { useCookies } from 'vue3-cookies';
 import AlertText from '../components/AlertText.vue';
-import { useUserData } from '@/stores/UserData';
 
 let submiting = false;
 
 const router = useRouter();
 const { cookies } = useCookies();
 
-const account: Ref<string> = ref("");
-const password: Ref<string> = ref("");
+const old_password: Ref<string> = ref("");
+const new_passowrd: Ref<string> = ref("");
+const new_passowrd_check: Ref<string> = ref("");
 
 const account_id: string = "account";
 const password_id: string = "password";
@@ -61,11 +61,9 @@ const submit = async () => {
 
     if (result.data.code === 1) {
       cookies.set('token', result.data.data.jwt, '7d');
-      useUserData().loadDataFromCookie();
-
-      router.push({ path: '/employee', query: { employeeId: (result.data.data.id as number) } })
+      router.push('/employee')
     } else if (result.data.code === 0) {
-      PasswdWarn.value?.set_message(result.data.msg);
+      PasswdWarn.value?.set_message("Username or password error");
       PasswdWarn.value?.set_display(true);
     }
 
@@ -87,12 +85,20 @@ const submit = async () => {
     <div style="">
       <div class="input">
         <!-- <label for="account">Account</label> -->
-        <input v-model.trim="account" @keyup.enter="submit" :id="account_id" type="email" placeholder="Account" />
+        <input v-model.trim="old_password" @keyup.enter="submit" :id="account_id" type="password"
+          placeholder="Password" />
         <AlertText ref="LoginWarn" />
       </div>
       <div class="input">
         <!-- <label for="password">Password</label> -->
-        <input v-model.trim="password" @keyup.enter="submit" :id="password_id" type="password" placeholder="Password" />
+        <input v-model.trim="new_passowrd" @keyup.enter="submit" :id="password_id" type="password"
+          placeholder="New Password" />
+        <AlertText ref="PasswdWarn" />
+      </div>
+      <div class="input">
+        <!-- <label for="password">Password</label> -->
+        <input v-model.trim="new_passowrd_check" @keyup.enter="submit" :id="password_id" type="password"
+          placeholder="Check Password" />
         <AlertText ref="PasswdWarn" />
       </div>
       <div class="input">
