@@ -1,0 +1,11 @@
+FROM openjdk:21 AS build
+
+COPY . /build
+RUN cd /build \
+    && sh ./mvnw package -DskipTests
+
+FROM openjdk:21
+COPY --from=build /build/target/MiniLab-1.0.1-SNAPSHOT.jar /App/MiniLab-1.0.1-SNAPSHOT.jar
+WORKDIR /App
+
+CMD [ "java", "-jar", "MiniLab-1.0.1-SNAPSHOT.jar" ]
