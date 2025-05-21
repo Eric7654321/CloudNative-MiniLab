@@ -43,9 +43,12 @@ public class EmpServiceImpl implements EmpService {
     }
 
     @Override
+    @Transactional
     public void insert(Emp emp) {
         emp.setUpdateTime(LocalDateTime.now());
         empMapper.insert(emp);
+        emp = empMapper.getEmpByUsername(emp.getUsername());
+        log.info("為id={}的使用者{}新增tag", emp.getId(), emp.getUsername());
         //需要同步新增tag
         tagMapper.initialEmpTag(emp.getId());
     }
@@ -77,5 +80,11 @@ public class EmpServiceImpl implements EmpService {
         empMapper.deleteEmpById(emp);
         //同步移除對應tag
         tagMapper.deleteTagByEmpId(emp.getId());
+    }
+
+    @Override
+    public Emp seleteEmpByUsername(String username) {
+        Emp emp = empMapper.getEmpByUsername(username);
+        return emp;
     }
 }

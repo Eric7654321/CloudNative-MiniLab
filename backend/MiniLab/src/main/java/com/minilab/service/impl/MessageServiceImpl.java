@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,6 +22,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void saveMessage(Message message) {
+        message.setUpdateTime(LocalDateTime.now());
         //根據回報狀態更新任務狀態
         Integer taskId = message.getTaskId();
         if(message.getStatus() == 0){
