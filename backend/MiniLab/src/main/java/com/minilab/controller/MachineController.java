@@ -27,14 +27,14 @@ public class MachineController {
     }
 
     @PostMapping("/insert")
-    public Result insertEmp(@RequestBody Machine machine) {
+    public Result insertMachine(@RequestBody Machine machine) {
         log.info("新增機器操作，Emp={}", machine);
         machineService.insert(machine);
         return Result.success();
     }
 
     @PutMapping("/tag/update")
-    public Result updateEmpTag(@RequestBody MachineTag tag) {
+    public Result updateMachineTag(@RequestBody MachineTag tag) {
         log.info("修改Tag操作，Tag={}", tag);
         Result result = machineService.updateTag(tag);
         if(result.getCode() == 0){
@@ -45,7 +45,7 @@ public class MachineController {
     }
 
     @PutMapping("/update")
-    public Result updateEmp(@RequestBody Machine machine) {
+    public Result updateMachine(@RequestBody Machine machine) {
         log.info("修改機器資訊: {}", machine);
         machineService.updateMachine(machine);
 
@@ -53,7 +53,7 @@ public class MachineController {
     }
 
     @DeleteMapping("/delete")
-    public Result deleteEmp(@RequestBody Machine machine) {
+    public Result deleteMachine(@RequestBody Machine machine) {
         log.info("刪除機器資訊: {}", machine);
         machineService.deleteMachine(machine);
 
