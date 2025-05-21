@@ -35,10 +35,15 @@ public class LoginController {
             claims.put("id",e.getId());
             claims.put("name",e.getName());
             claims.put("username", e.getUsername());
-            claims.put("role", e.getUsername());
+            claims.put("usable", e.getUsable());
+            claims.put("group", e.getGroup());
+            claims.put("role", e.getRole());
+            String s = empService.selectEmpTagsByUsername(e.getUsername());
+            claims.put("tags", s);
 
             String jwt = JwtUtils.generateJwt(claims);
             BeanUtils.copyProperties(e, empVO);
+            empVO.setTags(s);
             empVO.setJwt(jwt);
 
             return Result.success(empVO);
