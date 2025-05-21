@@ -35,6 +35,7 @@ public class LoginController {
             claims.put("id",e.getId());
             claims.put("name",e.getName());
             claims.put("username", e.getUsername());
+            claims.put("role", e.getUsername());
 
             String jwt = JwtUtils.generateJwt(claims);
             BeanUtils.copyProperties(e, empVO);

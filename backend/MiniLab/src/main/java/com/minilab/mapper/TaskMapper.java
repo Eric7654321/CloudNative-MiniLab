@@ -27,4 +27,7 @@ public interface TaskMapper {
     @Insert("insert into minilab.task (emp, emp_name, machine, machine_name, start_time, end_time,tag, description, `group`, is_finish, update_time, updater_id) " +
             "VALUES (#{emp}, #{empName}, #{machine}, #{machineName}, #{startTime}, #{endTime},#{tag}, #{description}, #{group}, #{isFinish}, #{updateTime}, #{updaterId})")
     void insertTask(Task task);
+
+    @Select("select * from minilab.task where emp_name = #{empName}")
+    Task selectTaskByEmpName(String empName);
 }
