@@ -20,4 +20,6 @@ public interface TaskService {
     Result tasksValidateAndCheck(List<Task> task);
 
     Result tasksCheck(List<Task> tasks);
+
+    Task getTaskByEmpName(String empName);
 }

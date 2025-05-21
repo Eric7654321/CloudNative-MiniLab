@@ -29,7 +29,8 @@ public class ScheduleController {
     public Result updateTask(@RequestBody Task task) {
         log.info("修改任務: {}", task);
         taskService.updateTask(task);
-        return Result.success();
+        Integer id = taskService.getTaskByEmpName(task.getEmpName()).getId();
+        return Result.success(id);
     }
 
     @PostMapping("/auto/ack")
