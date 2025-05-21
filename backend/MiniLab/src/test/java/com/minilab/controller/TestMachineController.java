@@ -38,7 +38,7 @@ public class TestMachineController {
         machine.setGroup("114514");
         machine.setUsable(1);
 
-        Result insertResult = machineController.insertEmp(machine);
+        Result insertResult = machineController.insertMachine(machine);
         Assertions.assertEquals(1, insertResult.getCode());
 
         log.info("查詢剛剛新增的機器來取得 ID");
@@ -49,10 +49,10 @@ public class TestMachineController {
 
         Machine toDelete = new Machine();
         BeanUtils.copyProperties(machines.get(machines.size() - 1), toDelete);  // 取最後一個當作新增的
-        Result deleteResult = machineController.deleteEmp(toDelete);
+        Result deleteResult = machineController.deleteMachine(toDelete);
         Assertions.assertEquals(1, deleteResult.getCode());
 
-        machineController.deleteEmp(machine);
+        machineController.deleteMachine(machine);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class TestMachineController {
         BeanUtils.copyProperties(machines.get(0), machine);
         machine.setMachineName("管理員專用泡腳機");
 
-        Result updateResult = machineController.updateEmp(machine);
+        Result updateResult = machineController.updateMachine(machine);
         Assertions.assertEquals(1, updateResult.getCode());
     }
 }
