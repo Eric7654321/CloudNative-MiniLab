@@ -54,6 +54,14 @@ public class EmpServiceImpl implements EmpService {
     }
 
     @Override
+    public String selectEmpTagsByUsername(String username) {
+        Emp emp = empMapper.getEmpByUsername(username);
+        String s = tagMapper.selectEmpTagsByEmpId(emp.getId());
+        log.info("查詢user: {}, tags: {}", username, s);
+        return s;
+    }
+
+    @Override
     public Result updateTag(EmpTag tag) {
         List<Task> taskById = taskMapper.getTaskById(tag.getEmpId());
         if(taskById.isEmpty()) {
