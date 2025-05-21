@@ -20,17 +20,19 @@ import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
 import axios from 'axios'
+import { useUserData } from '@/stores/UserData';
 
 export default defineComponent({
   name: 'TodayTaskList',
-  props: {
-    employeeId: {
-      type: Number,
-      required: true
-    }
-  },
-  setup(props) {
+  //props: {
+  //  employeeId: {
+  //    type: Number,
+  //    required: true
+  //  }
+  //},
+  setup(/*props*/) {
     const tasks = ref<any[]>([])
+    const userdata = useUserData();
     let timer: number
 
     const { cookies } = useCookies();
@@ -40,7 +42,9 @@ export default defineComponent({
 
     const fetchTodayTasks = async () => {
       try {
-        const response = await axios.get(`/task/check/today/${props.employeeId}`)
+        const response = await axios.get(`/api/task/check/today/${userdata.id}`)
+        console.log(response)
+        console.log(axios.defaults.headers.common['Authorization'])
         tasks.value = response.data.data // 因為你的 Result.success() 包了 data
       } catch (error) {
         console.error('取得任務失敗', error)
