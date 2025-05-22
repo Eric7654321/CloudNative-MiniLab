@@ -97,6 +97,7 @@ const submit = async () => {
           @blur="isUsernameFocused = false"
           required
         />
+        <AlertText ref="LoginWarn" />
       </div>
 
       <div class="input-group" :class="{ 'has-content': password || isPasswordFocused }">
@@ -109,6 +110,7 @@ const submit = async () => {
           @blur="isPasswordFocused = false"
           required
         />
+        <AlertText ref="PasswdWarn" />
       </div>
 
       <button type="submit" class="login-button">登入 (Login)</button>
