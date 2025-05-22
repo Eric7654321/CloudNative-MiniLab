@@ -5,6 +5,7 @@ import { ref } from 'vue';
 import axios, { type AxiosResponse } from 'axios'
 import { useCookies } from 'vue3-cookies';
 import AlertText from '../components/AlertText.vue';
+import { useUserData } from '@/stores/UserData';
 
 let submiting = false;
 
@@ -16,6 +17,9 @@ const password: Ref<string> = ref("");
 
 const account_id: string = "account";
 const password_id: string = "password";
+
+const isUsernameFocused = ref(false);
+const isPasswordFocused = ref(false);
 
 const LoginWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null);
 const PasswdWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null);
@@ -60,9 +64,11 @@ const submit = async () => {
 
     if (result.data.code === 1) {
       cookies.set('token', result.data.data.jwt, '7d');
-      router.push('/employee')
+      useUserData().loadDataFromCookie();
+
+      router.push({ path: '/loginRedirect' })
     } else if (result.data.code === 0) {
-      PasswdWarn.value?.set_message("Username or password error");
+      PasswdWarn.value?.set_message(result.data.msg);
       PasswdWarn.value?.set_display(true);
     }
 
@@ -76,91 +82,139 @@ const submit = async () => {
 }
 
 </script>
+
 <template>
-  <header>
-    <h1>Login to the System</h1>
-  </header>
-  <div class="login">
-    <div style="">
-      <div class="input">
-        <!-- <label for="account">Account</label> -->
-        <input v-model.trim="account" @keyup.enter="submit" :id="account_id" type="email" placeholder="Account" />
-        <AlertText ref="LoginWarn" />
+  <div class="login-container">
+    <h2>登入系統 (Login to the System)</h2>
+    <form @submit.prevent="submit" class="login-form">
+      <div class="input-group" :class="{ 'has-content': account || isUsernameFocused }">
+        <label for="username">使用者名稱 (Username)</label>
+        <input
+          type="text"
+          id="username"
+          v-model="account"
+          @focus="isUsernameFocused = true"
+          @blur="isUsernameFocused = false"
+          required
+        />
       </div>
-      <div class="input">
-        <!-- <label for="password">Password</label> -->
-        <input v-model.trim="password" @keyup.enter="submit" :id="password_id" type="password" placeholder="Password" />
-        <AlertText ref="PasswdWarn" />
+
+      <div class="input-group" :class="{ 'has-content': password || isPasswordFocused }">
+        <label for="password">密碼 (Password)</label>
+        <input
+          type="password"
+          id="password"
+          v-model="password"
+          @focus="isPasswordFocused = true"
+          @blur="isPasswordFocused = false"
+          required
+        />
       </div>
-      <div class="input">
-        <input type="submit" value="Login" @click="submit" />
-      </div>
-    </div>
+
+      <button type="submit" class="login-button">登入 (Login)</button>
+    </form>
   </div>
 </template>
 
+
 <style scoped>
-input {
-  width: 15em;
-  height: 3em;
-  font-size: 1em;
+.login-container {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
 }
 
-#password,
-#account {
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.input-group input {
   width: 100%;
-  padding: 10px 5px;
+  padding: 12px 10px; /* 增加上下 padding 給 label 空間 */
+  border: 1px solid #ccc;
+  border-radius: 4px;
   font-size: 16px;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid #aaa;
+  background-color: #fff;
+  box-sizing: border-box; /* 確保 padding 和 border 不會增加元素的總寬高 */
+  outline: none; /* 移除 focus 時的預設 outline */
+}
+
+.input-group input:focus {
+  border-color: #007bff; /* Focus 時的邊框顏色 */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Focus 時的光暈效果 */
+}
+
+.input-group label {
+  position: absolute;
+  left: 10px;
+  top: 50%; /* 初始垂直居中 */
+  transform: translateY(-50%);
+  color: #999;
+  background-color: transparent; /* 初始透明背景 */
+  padding: 0 5px;
+  transition: all 0.2s ease-out; /* 動畫效果 */
+  pointer-events: none; /* 讓點擊可以穿透 label 到 input */
+  font-size: 16px;
+}
+
+/* 當 input focus 或有內容時，label 的樣式 */
+.input-group.has-content label,
+.input-group input:focus + label {
+  top: 0;
+  transform: translateY(-50%) scale(0.85); /* 向上移動並縮小 */
+  left: 8px;
+  color: #007bff; /* Active 時的 label 顏色 */
+  background-color: #f9f9f9; /* 與容器背景色相同，製造"切割"效果 */
+  font-weight: bold;
+}
+
+/* 針對 autofill 的背景色處理 */
+.input-group input:-webkit-autofill,
+.input-group input:-webkit-autofill:hover,
+.input-group input:-webkit-autofill:focus,
+.input-group input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important; /* 強制背景為白色 */
+  transition: background-color 5000s ease-in-out 0s; /* 延遲瀏覽器自動填充樣式的應用 */
+}
+/* 如果 autofill 後 label 沒有浮動，可以加這條 (通常 has-content 會處理) */
+.input-group input:-webkit-autofill + label {
+  top: 0;
+  transform: translateY(-50%) scale(0.85);
+  left: 8px;
+  color: #007bff;
+  background-color: #f9f9f9;
+  font-weight: bold;
+}
+
+
+.login-button {
+  padding: 12px 15px;
+  background-color: #007bff;
   color: white;
-
-  /* animation ; */
-  background-image: linear-gradient(to right, #42a5f5 50%, #42a5f5 50%);
-  background-position: left bottom;
-  background-size: 0% 2px;
-  background-repeat: no-repeat;
-  /* transition: border-bottom 0.4s ease; */
-  outline: none;
-}
-
-input#password:focus,
-input#account:focus {
-  border-bottom: 2px solid #aaa;
-  outline: none;
-}
-
-input[type="submit"] {
-  background-color: transparent;
-  color: #0185FF;
-  border: 2px solid #0185FF;
-  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  transition: background-color 0.3s ease;
 }
 
-input[type="submit"]:hover {
-  background-color: #00a3ff;
-  border-color: #00a3ff;
-  color: #181818;
-}
-
-.input {
-  margin: 10px;
-}
-
-h1 {
-  text-align: center;
-  color: white;
-}
-
-.login {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
+.login-button:hover {
+  background-color: #0056b3;
 }
 </style>
