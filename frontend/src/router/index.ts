@@ -13,6 +13,27 @@ const router = createRouter({
       meta: { requireAuth: false },
     },
     {
+      path: '/loginRedirect',
+      name: 'loginRedirect',
+      redirect: to => {
+        if (useUserData().role === 0)
+          return { path: '/employee' };
+        else
+          return { path: '/manager' };
+      },
+      meta: { requireAuth: true },
+    },
+    {
+      path: '/manager',
+      name: 'manager',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/Manager.vue'),
+      //props: route => ({ employeeId: Number(route.query.employeeId) }),
+      meta: { requireAuth: true, manager: true },
+    },
+    {
       path: '/employee',
       name: 'employee',
       // route level code-splitting
@@ -27,9 +48,9 @@ const router = createRouter({
       name: 'root',
       redirect: to => {
         if (useUserData().isAuth === false) {
-          return { path: 'login' }
+          return { path: '/login' }
         }
-        return { path: '/employee' }
+        return { path: '/loginRedirect' }
       }
     }
   ],
@@ -47,6 +68,12 @@ router.beforeEach((to, from) => {
     }
   }
   if (to.path === '/login' && useUserData().isAuth) {
+    return {
+      path: '/loginRedirect'
+    }
+  }
+
+  if (to.meta.manager === true && useUserData().role === 0) {
     return {
       path: '/employee'
     }
