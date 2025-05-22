@@ -9,9 +9,7 @@ import com.minilab.service.EmpService;
 import com.minilab.utils.JwtUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,5 +48,14 @@ public class LoginController {
         }
 
         return e != null ?Result.success():Result.error("帳號或密碼錯誤!");
+    }
+    @GetMapping("/auth/verify")
+    public Result verifyToken(@RequestHeader("token") String token) {
+        try {
+            JwtUtils.parseJWT(token);
+            return Result.success("Token 有效");
+        } catch (Exception e) {
+            return Result.error("Token 無效");
+        }
     }
 }
