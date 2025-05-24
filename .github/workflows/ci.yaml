@@ -22,36 +22,23 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Generate necessary config file
-        env:
-          DB_HOST : ${{ secrets.DB_HOST }}
-          DB_PORT : ${{ secrets.DB_PORT }}
-          DB_USER : ${{ secrets.DB_USER }}
-          DB_PASS : ${{ secrets.DB_PASS }}
-        working-directory: ./backend/MiniLab
-        run: |
-          mkdir target
-          cd target
-          touch application-dev.yml
-          cat <<'EOF' > application-dev.yml
-          minilab:
-            datasource:
-              driver-class-name: jdbc:mysql://minilab.mysql.database.azure.com:3306
-              host: ${{ secrets.DB_HOST }}
-              port: ${{ secrets.DB_PORT }}
-              username: ${{ secrets.DB_USER }}
-              password: ${{ secrets.DB_PASS }}
-          EOF
+      # - name: Generate necessary config file
+      #   working-directory: ./backend/MiniLab
+      #   run: |
+      #     mkdir target
+      #     cd target
+      #     touch application-dev.yml
+      #     cat <<'EOF' > application-dev.yml
+      #     minilab:
+      #       datasource:
+      #         driver-class-name: jdbc:mysql://minilab.mysql.database.azure.com:3306
+      #         host: ${{ secrets.DB_HOST }}
+      #         port: ${{ secrets.DB_PORT }}
+      #         username: ${{ secrets.DB_USER }}
+      #         password: ${{ secrets.DB_PASS }}
+      #     EOF
 
-          cat application-dev.yml
-        # echo ${{secrets.DB_HOST}} | sed 's/./& /g'
-        # echo ${{secrets.DB_PORT}} | sed 's/./& /g'
-        # echo ${{secrets.DB_USER}} | sed 's/./& /g'
-        # echo ${{secrets.DB_PASS}} | sed 's/./& /g'
-
-        # echo "minilab:" > application-dev.yml
-        # echo " datasource:" > application-dev.yml
-        # echo "  driver-class-name:"
+      #     cat application-dev.yml
 
       - name: Execute Unit test
         working-directory: ./backend/MiniLab
@@ -61,7 +48,7 @@ jobs:
           DB_USER : ${{ secrets.DB_USER }}
           DB_PASS : ${{ secrets.DB_PASS }}
         run: |
-          mvn clean install
+          mvn clean test
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
   
