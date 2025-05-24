@@ -57,7 +57,7 @@ interface Employee {
 // It might have an ID if editing, or not if adding.
 // Other fields like group, jwt, usable are expected to be present or defaulted.
 interface EmployeeFormSavePayload extends Omit<Employee, 'updateTime'> {
-  id?: number // id is optional if it's a new employee
+  id: number // id is optional if it's a new employee
 }
 
 interface TagEventPayload {
