@@ -23,9 +23,9 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void saveMessage(Message message) {
         message.setUpdateTime(LocalDateTime.now());
-        //根據回報狀態更新任務狀態
+        // 根據回報狀態更新任務狀態
         Integer taskId = message.getTaskId();
-        if(message.getStatus() == 0){
+        if (message.getStatus() == 0) {
             taskMapper.solveTask(taskId);
         }
         messageMapper.saveMessage(message);

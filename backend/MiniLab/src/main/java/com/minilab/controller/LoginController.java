@@ -1,6 +1,5 @@
 package com.minilab.controller;
 
-
 import com.minilab.pojo.vo.EmpVO;
 import lombok.extern.slf4j.Slf4j;
 import com.minilab.pojo.entity.Emp;
@@ -22,16 +21,16 @@ public class LoginController {
     private EmpService empService;
 
     @PostMapping("/login")
-    public Result login(@RequestBody Emp emp){
-        log.info("員工登入:{}",emp);
+    public Result login(@RequestBody Emp emp) {
+        log.info("員工登入:{}", emp);
         Emp e = empService.login(emp);
         EmpVO empVO = new EmpVO();
 
-        //登入檢查
-        if(e != null){
+        // 登入檢查
+        if (e != null) {
             Map<String, Object> claims = new HashMap<>();
-            claims.put("id",e.getId());
-            claims.put("name",e.getName());
+            claims.put("id", e.getId());
+            claims.put("name", e.getName());
             claims.put("username", e.getUsername());
             claims.put("usable", e.getUsable());
             claims.put("group", e.getGroup());
@@ -47,8 +46,9 @@ public class LoginController {
             return Result.success(empVO);
         }
 
-        return e != null ?Result.success():Result.error("帳號或密碼錯誤!");
+        return e != null ? Result.success() : Result.error("帳號或密碼錯誤!");
     }
+
     @GetMapping("/auth/verify")
     public Result verifyToken(@RequestHeader("token") String token) {
         try {
