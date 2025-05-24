@@ -65,7 +65,9 @@ jobs:
 
       - name: Frontend formatting
         working-directory: ./frontend
-        run: npm run format
+        run: |
+          npm i
+          npm run format
 
       - name: Format Commit
         run: |
