@@ -23,8 +23,10 @@ jobs:
           cache: maven
 
       - name: Generate necessary config file
-        working-directory: ./backend/MiniLab/target
+        working-directory: ./backend/MiniLab
         run: |
+          mkdir target
+          cd target
           touch application-dev.yml
           cat <<'EOF' > application-dev.yml
           minilab:
