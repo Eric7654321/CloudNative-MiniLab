@@ -1,0 +1,16 @@
+services:
+  backend:
+    build:
+      context: ./backend/MiniLab/
+      dockerfile: ./Dockerfile.dev
+
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: ./Dockerfile.dev
+    environment:
+      BACKEND_URL: backend:8080
+    ports:
+      - "5173:5173"
+    # volumes:
+    #   - ./frontend/:/frontend
