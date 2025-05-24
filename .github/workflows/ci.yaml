@@ -58,6 +58,15 @@ jobs:
         working-directory: ./backend/MiniLab
         run: mvn formatter:format
 
+      - name: Setup Node 20
+        uses: actions/setup-node@v1
+        with:
+          node-version: 20.15.1
+
+      - name: Frontend formatting
+        working-directory: ./frontend
+        run: npm run format
+
       - name: Format Commit
         run: |
           if ! git diff --quiet; then
