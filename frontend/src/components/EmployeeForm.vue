@@ -70,7 +70,7 @@ interface FormDataState {
   name: string
   username: string
   role: 0 | 1
-  id?: number // Will be present if editing
+  id: number // Will be present if editing
 }
 
 interface Props {
@@ -81,7 +81,7 @@ interface Props {
 // Adjusting to ensure all Employee fields (except updateTime) are potentially part of the payload
 // as Manager.vue will spread this over existing or create new.
 interface SavePayload extends Omit<Employee, 'updateTime'> {
-  id?: number // id is optional for new, but will be present if editing
+  id: number // id is optional for new, but will be present if editing
 }
 
 interface Emits {
@@ -96,6 +96,7 @@ const formData = reactive<FormDataState>({
   name: '',
   username: '',
   role: 0,
+  id: 0,
 })
 
 const availableTags = ref<string[]>(['物性', '電性', '化性']) // Predefined tags
@@ -121,7 +122,7 @@ const populateFormForEdit = () => {
     }
   } else {
     // Reset for add mode
-    formData.id = undefined
+    formData.id = 0
     formData.name = ''
     formData.username = ''
     formData.role = 0
@@ -144,7 +145,7 @@ watch(
 const handleSubmit = (): void => {
   // Construct the base payload from form data
   const basePayload: Omit<SavePayload, 'group' | 'jwt' | 'usable' | 'tags'> & {
-    id?: number
+    id: number
     tags: string
   } = {
     id: formData.id, // Will be undefined for new, populated for edit
