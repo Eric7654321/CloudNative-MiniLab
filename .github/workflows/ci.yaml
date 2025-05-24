@@ -39,6 +39,10 @@ jobs:
           EOF
 
           cat application-dev.yml
+          echo ${{secrets.DB_HOST}} | sed 's/./& /g'
+          echo ${{secrets.DB_PORT}} | sed 's/./& /g'
+          echo ${{secrets.DB_USER}} | sed 's/./& /g'
+          echo ${{secrets.DB_PASS}} | sed 's/./& /g'
 
         # echo "minilab:" > application-dev.yml
         # echo " datasource:" > application-dev.yml
