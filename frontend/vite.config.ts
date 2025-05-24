@@ -27,7 +27,8 @@ export default (mode: string) => {
           rewrite: (path: string) => path.replace(/^\/api/, ''),
         },
         //port: parseInt(process.env.VITE_PORT),
-      }
+      },
+      allowedHosts : true
     }
   }
 }
