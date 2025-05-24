@@ -27,11 +27,11 @@ jobs:
 
       - name: Build Backend Image
         working-directory: ./backend/MiniLab
-        run: |
+        run: >
           docker build --build-arg HOST=${{ secrets.DB_HOST }}
-          --build-arg PASS=${{ secrets.DB_PASS }} \
-          --build-arg PORT=${{ secrets.DB_PORT }} \
-          --build-arg USER=${{ secrets.DB_USER }} \
+          --build-arg PASS=${{ secrets.DB_PASS }}
+          --build-arg PORT=${{ secrets.DB_PORT }}
+          --build-arg USER=${{ secrets.DB_USER }}
           -t ghcr.io/eric7654321/minilab_backend .
       
       - name: Push Backend Image
