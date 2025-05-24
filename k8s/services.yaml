@@ -21,7 +21,7 @@ metadata:
 spec:
   ports:
     - name: frontend
-      port: 80
+      port: 8888
       targetPort: 5173
       protocol: TCP
   selector:
