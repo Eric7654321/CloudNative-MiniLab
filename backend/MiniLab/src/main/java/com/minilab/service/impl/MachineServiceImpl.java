@@ -13,6 +13,7 @@ import com.minilab.service.MachineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,17 +33,20 @@ public class MachineServiceImpl implements MachineService {
     public List<MachineVO> getMachineByGroupId(String groupId) {
         List<MachineVO> machines = machineMapper.getMachineByGroupId(groupId);
         log.info("已查詢到machines: {}, groupId={}, 接著查詢tags", machines, groupId);
-        for(MachineVO machine : machines) {
+        for (MachineVO machine : machines) {
             machine.setTags(machineMapper.setTagsByUserId(machine.getId()));
         }
         return machines;
     }
 
     @Override
+    @Transactional
     public void insert(Machine machine) {
         machine.setUpdateTime(LocalDateTime.now());
         machineMapper.insert(machine);
-        //需要同步新增tag
+        machine = machineMapper.getMachineByName(machine.getName());
+        log.info("為id={}的機器{}新增tag", machine.getId(), machine.getName());
+        // 需要同步新增tag
         tagMapper.initialMachineTag(machine.getId());
     }
 
@@ -52,7 +56,7 @@ public class MachineServiceImpl implements MachineService {
         tagMapper.updateMachineTagById(tag);
 
         List<Task> taskById = taskMapper.getTaskById(tag.getId());
-        if(taskById.isEmpty()) {
+        if (taskById.isEmpty()) {
             log.info("tag操作未受其他依賴資料影響");
             tag.setUpdateTime(LocalDateTime.now());
             tagMapper.updateMachineTagById(tag);
@@ -72,7 +76,7 @@ public class MachineServiceImpl implements MachineService {
     @Override
     public void deleteMachine(Machine machine) {
         machineMapper.deleteMachineById(machine);
-        //同步移除對應tag
+        // 同步移除對應tag
         tagMapper.deleteTagByMachineId(machine.getId());
     }
 }

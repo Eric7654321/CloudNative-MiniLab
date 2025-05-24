@@ -17,23 +17,34 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import { useCookies } from 'vue3-cookies'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
+import { useUserData } from '@/stores/UserData'
 
 export default defineComponent({
   name: 'TodayTaskList',
-  props: {
-    employeeId: {
-      type: Number,
-      required: true
-    }
-  },
-  setup(props) {
+  //props: {
+  //  employeeId: {
+  //    type: Number,
+  //    required: true
+  //  }
+  //},
+  setup(/*props*/) {
     const tasks = ref<any[]>([])
+    const userdata = useUserData()
     let timer: number
+
+    const { cookies } = useCookies()
+    if (cookies.get('token') === null) {
+      useRouter().push('/')
+    }
 
     const fetchTodayTasks = async () => {
       try {
-        const response = await axios.get(`/task/check/today/${props.employeeId}`)
+        const response = await axios.get(`/api/task/check/today/${userdata.id}`)
+        console.log(response)
+        console.log(axios.defaults.headers.common['Authorization'])
         tasks.value = response.data.data // 因為你的 Result.success() 包了 data
       } catch (error) {
         console.error('取得任務失敗', error)
@@ -50,20 +61,23 @@ export default defineComponent({
     })
 
     return {
-      tasks
+      tasks,
     }
-  }
+  },
 })
 </script>
 
 <style scoped>
 .container {
   display: flex;
-  padding-top: 60px; /* Header 的高度 */
+  padding-top: 60px;
+  /* Header 的高度 */
   height: 100vh;
-  justify-content: flex-start; /* 添加這行來確保向左對齊 */
+  justify-content: flex-start;
+  /* 添加這行來確保向左對齊 */
   margin-right: auto;
-    margin-left: 0; /* 確保沒有左邊距 */
+  margin-left: 0;
+  /* 確保沒有左邊距 */
 }
 
 .task-list {
@@ -71,7 +85,8 @@ export default defineComponent({
   background-color: white;
   padding: 20px;
   border-right: 1px solid #e5e7eb;
-  margin-left: 0; /* 確保沒有左邊距 */
+  margin-left: 0;
+  /* 確保沒有左邊距 */
 }
 
 .task-list h2 {
@@ -94,7 +109,6 @@ export default defineComponent({
   text-decoration: line-through;
   color: black;
 }
-
 
 .content {
   flex: 1;
