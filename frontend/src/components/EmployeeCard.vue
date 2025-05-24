@@ -35,7 +35,7 @@
       <span>ID: {{ employee.id }}</span>
       <span>Username: {{ employee.username }}</span>
     </div>
-     <div class="employee-attribute subtle-info">
+    <div class="employee-attribute subtle-info">
       <span>更新時間: {{ new Date(employee.updateTime).toLocaleString() }}</span>
     </div>
     <div class="employee-actions">
@@ -46,85 +46,85 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
 
 interface Employee {
-  group: string;
-  id: number;
-  jwt: string;
-  name: string;
-  role: 0 | 1;
-  tags: string; // JSON string of tags
-  updateTime: string;
-  usable: 1 | 0;
-  username: string;
+  group: string
+  id: number
+  jwt: string
+  name: string
+  role: 0 | 1
+  tags: string // JSON string of tags
+  updateTime: string
+  usable: 1 | 0
+  username: string
 }
 
 interface Props {
-  employee: Employee;
+  employee: Employee
 }
 
 interface Emits {
-  (e: 'add-tag', payload: { employeeId: number; tag: string }): void;
-  (e: 'remove-tag', payload: { employeeId: number; tag: string }): void;
-  (e: 'delete-employee', employeeId: number): void;
-  (e: 'edit-employee', employeeId: number): void;
+  (e: 'add-tag', payload: { employeeId: number; tag: string }): void
+  (e: 'remove-tag', payload: { employeeId: number; tag: string }): void
+  (e: 'delete-employee', employeeId: number): void
+  (e: 'edit-employee', employeeId: number): void
 }
 
-const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
 
-const newTag = ref<string>('');
+const newTag = ref<string>('')
 
 const RoleToString = (role: 0 | 1): string => {
-  if (role === 0) return '員工';
-  if (role === 1) return '管理員';
-  return '未知';
-};
+  if (role === 0) return '員工'
+  if (role === 1) return '管理員'
+  return '未知'
+}
 
-const displayRole = computed<string>(() => RoleToString(props.employee.role));
+const displayRole = computed<string>(() => RoleToString(props.employee.role))
 
 const parsedTags = computed<string[]>(() => {
   try {
     if (props.employee.tags && typeof props.employee.tags === 'string') {
-      const tagsArray = JSON.parse(props.employee.tags);
-      return Array.isArray(tagsArray) ? tagsArray.filter(tag => typeof tag === 'string') : [];
+      const tagsArray = JSON.parse(props.employee.tags)
+      return Array.isArray(tagsArray) ? tagsArray.filter((tag) => typeof tag === 'string') : []
     }
-    return [];
+    return []
   } catch (e) {
     console.error(
       `Error parsing tags for employee ${props.employee.id}:`,
       e,
-      "Tags string:",
-      props.employee.tags
-    );
-    return [];
+      'Tags string:',
+      props.employee.tags,
+    )
+    return []
   }
-});
+})
 
 const requestAddTag = (): void => {
-  const tagToAdd = newTag.value.trim();
+  const tagToAdd = newTag.value.trim()
   if (tagToAdd) {
     if (parsedTags.value.includes(tagToAdd)) {
-      newTag.value = '';
-      return;
+      newTag.value = ''
+      return
     }
-    emit('add-tag', { employeeId: props.employee.id, tag: tagToAdd });
-    newTag.value = '';
+    emit('add-tag', { employeeId: props.employee.id, tag: tagToAdd })
+    newTag.value = ''
   }
-};
+}
 
 const requestRemoveTag = (tagToRemove: string): void => {
-  emit('remove-tag', { employeeId: props.employee.id, tag: tagToRemove });
-};
+  emit('remove-tag', { employeeId: props.employee.id, tag: tagToRemove })
+}
 
 const requestDeleteEmployee = (): void => {
-  emit('delete-employee', props.employee.id);
-};
+  emit('delete-employee', props.employee.id)
+}
 
 const requestEditEmployee = (): void => {
-  emit('edit-employee', props.employee.id);
-};
+  emit('edit-employee', props.employee.id)
+}
 </script>
 
 <style scoped>
@@ -153,13 +153,28 @@ const requestEditEmployee = (): void => {
   font-weight: bold;
 }
 
-.name-label { color: #333; }
-.name-value { color: cornflowerblue; font-weight: bold; font-size: 1.1em; }
+.name-label {
+  color: #333;
+}
+.name-value {
+  color: cornflowerblue;
+  font-weight: bold;
+  font-size: 1.1em;
+}
 
-.role-label { color: #333; }
-.role-value { color: mediumseagreen; font-style: italic; }
+.role-label {
+  color: #333;
+}
+.role-value {
+  color: mediumseagreen;
+  font-style: italic;
+}
 
-.tags-label { color: coral; white-space: nowrap; margin-top: 3px; }
+.tags-label {
+  color: coral;
+  white-space: nowrap;
+  margin-top: 3px;
+}
 .tags-container {
   display: flex;
   flex-wrap: wrap;
@@ -177,7 +192,7 @@ const requestEditEmployee = (): void => {
   transition: background-color 0.2s ease;
 }
 .tag-item:hover {
-    background-color: #616b75;
+  background-color: #616b75;
 }
 
 .no-tags {
@@ -250,7 +265,7 @@ const requestEditEmployee = (): void => {
   margin-top: 5px;
 }
 .subtle-info span {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .employee-actions {

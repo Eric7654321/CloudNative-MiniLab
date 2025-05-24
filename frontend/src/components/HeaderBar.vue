@@ -11,29 +11,29 @@
 </template>
 
 <script setup lang="ts">
-import { useCookies } from 'vue3-cookies';
-import { useRouter } from 'vue-router';
-import { useUserData } from '@/stores/UserData';
+import { useCookies } from 'vue3-cookies'
+import { useRouter } from 'vue-router'
+import { useUserData } from '@/stores/UserData'
 
-const { cookies } = useCookies();
-const router = useRouter();
-const userdata = useUserData();
+const { cookies } = useCookies()
+const router = useRouter()
+const userdata = useUserData()
 
 const goMessage = () => {
-  console.log("前往訊息")
+  console.log('前往訊息')
   // 例如：router.push('/home')
 }
 
 const goReport = () => {
-  console.log("前往回報")
+  console.log('前往回報')
 }
 
 const goCalender = () => {
-  console.log("行事曆")
+  console.log('行事曆')
 }
 
 const goLogout = () => {
-  cookies.remove('token');
+  cookies.remove('token')
   userdata.reset()
   router.push('/')
 }

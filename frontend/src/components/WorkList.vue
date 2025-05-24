@@ -17,10 +17,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
-import { useCookies } from 'vue3-cookies';
-import { useRouter } from 'vue-router';
+import { useCookies } from 'vue3-cookies'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
-import { useUserData } from '@/stores/UserData';
+import { useUserData } from '@/stores/UserData'
 
 export default defineComponent({
   name: 'TodayTaskList',
@@ -32,10 +32,10 @@ export default defineComponent({
   //},
   setup(/*props*/) {
     const tasks = ref<any[]>([])
-    const userdata = useUserData();
+    const userdata = useUserData()
     let timer: number
 
-    const { cookies } = useCookies();
+    const { cookies } = useCookies()
     if (cookies.get('token') === null) {
       useRouter().push('/')
     }
@@ -61,9 +61,9 @@ export default defineComponent({
     })
 
     return {
-      tasks
+      tasks,
     }
-  }
+  },
 })
 </script>
 
@@ -109,7 +109,6 @@ export default defineComponent({
   text-decoration: line-through;
   color: black;
 }
-
 
 .content {
   flex: 1;
