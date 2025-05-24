@@ -28,12 +28,12 @@ jobs:
       - name: Build Backend Image
         working-directory: ./backend/MiniLab
         run: |
-          docker build --build-arg HOST=${{ secrets.DB_HOST}} \
-          --build-arg PASS={{ secrets.DB_PASS }} \
-          --build-arg PORT={{ secrets.DB_PORT }} \
-          --build-arg USER={{ secrets.DB_USER }} \
-          -t ghcr.io/Eric7654321/minilab_backend .
-          docker push ghcr.io/Eric7654321/minilab_backend
+          docker build --build-arg HOST=${{ secrets.DB_HOST }} \
+            --build-arg PASS={{ secrets.DB_PASS }} \
+            --build-arg PORT={{ secrets.DB_PORT }} \
+            --build-arg USER={{ secrets.DB_USER }} \
+            -t ghcr.io/eric7654321/minilab_backend .
+          docker push ghcr.io/eric7654321/minilab_backend
       
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
@@ -51,11 +51,11 @@ jobs:
           username: Eric7654321
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Build Backend Image
+      - name: Build Frontend Image
         working-directory: ./frontend
         run: |
-          docker build -t ghcr.io/Eric7654321/minilab_backend .
-          docker push ghcr.io/Eric7654321/minilab_backend
+          docker build -t ghcr.io/eric7654321/minilab_frontend .
+          docker push ghcr.io/eric7654321/minilab_frontend
       
       - run: echo "🍏 This job's status is ${{ job.status }}."
   
