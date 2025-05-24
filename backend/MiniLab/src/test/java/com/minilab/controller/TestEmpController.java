@@ -28,7 +28,7 @@ public class TestEmpController {
     }
 
     @Test
-    public void testInsertEmpAndDeleteEmp(){
+    public void testInsertEmpAndDeleteEmp() {
         log.info("測試新增與移除員工是否正常");
         log.info("新增員工");
 
@@ -50,7 +50,7 @@ public class TestEmpController {
     }
 
     @Test
-    public void testSearchAndUpdateEmp(){
+    public void testSearchAndUpdateEmp() {
         log.info("測試查詢與修改員工操作是否正常");
 
         log.info("查詢操作");
@@ -72,7 +72,7 @@ public class TestEmpController {
     }
 
     @Test
-    public void testEmpTagUpdate(){
+    public void testEmpTagUpdate() {
         EmpTag empTag = new EmpTag();
         empTag.setEmpId(1);
         empTag.setEmpId(1);
