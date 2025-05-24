@@ -38,6 +38,8 @@ jobs:
               password: "${{ secrets.DB_PASS }}"
           EOF
 
+          cat application-dev.yml
+
         # echo "minilab:" > application-dev.yml
         # echo " datasource:" > application-dev.yml
         # echo "  driver-class-name:"
