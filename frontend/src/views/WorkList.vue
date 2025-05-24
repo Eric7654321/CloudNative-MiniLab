@@ -10,7 +10,7 @@
     </aside>
 
     <main class="content">
-      <h1>這裡是主內容區</h1>
+      <img src="/main_system.png" alt="Main System" />
     </main>
   </div>
 </template>
@@ -76,8 +76,7 @@ export default defineComponent({
   justify-content: flex-start;
   /* 添加這行來確保向左對齊 */
   margin-right: auto;
-  margin-left: 0;
-  /* 確保沒有左邊距 */
+  margin-left: 0; /* 確保沒有左邊距 */
 }
 
 .task-list {
@@ -112,6 +111,15 @@ export default defineComponent({
 
 .content {
   flex: 1;
-  padding: 20px;
+  padding: 50px;
+  padding-left: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+}
+.content img {
+  border-radius: 8px;
+  border: 4px solid gray;
 }
 </style>
