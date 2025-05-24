@@ -43,6 +43,7 @@ jobs:
         # echo "  driver-class-name:"
 
       - name: Execute Unit test
+        working-directory: ./backend/MiniLab
         run: |
           mvn clean install
 
