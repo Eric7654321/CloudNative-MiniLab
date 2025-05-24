@@ -1,81 +1,85 @@
 <script setup lang="ts">
-import type { Ref } from 'vue';
+import type { Ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue';
+import { ref } from 'vue'
 import axios, { type AxiosResponse } from 'axios'
-import { useCookies } from 'vue3-cookies';
-import AlertText from '../components/AlertText.vue';
+import { useCookies } from 'vue3-cookies'
+import AlertText from '../components/AlertText.vue'
 
-let submiting = false;
+let submiting = false
 
-const router = useRouter();
-const { cookies } = useCookies();
+const router = useRouter()
+const { cookies } = useCookies()
 
-const old_password: Ref<string> = ref("");
-const new_passowrd: Ref<string> = ref("");
-const new_passowrd_check: Ref<string> = ref("");
+const old_password: Ref<string> = ref('')
+const new_passowrd: Ref<string> = ref('')
+const new_passowrd_check: Ref<string> = ref('')
 
-const account_id: string = "account";
-const password_id: string = "password";
+const account_id: string = 'account'
+const password_id: string = 'password'
 
-const LoginWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null);
-const PasswdWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null);
+const LoginWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null)
+const PasswdWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null)
 
 const submit = async () => {
   if (submiting) {
-    alert("submitting...")
+    alert('submitting...')
     return
   }
-  submiting = true;
-  let is_empty: boolean = false;
+  submiting = true
+  let is_empty: boolean = false
 
-  if (account.value === "") {
+  if (account.value === '') {
     // alert("Please enter your account");
-    LoginWarn.value?.set_message("Account is required");
-    LoginWarn.value?.set_display(true);
-    submiting = false;
-    is_empty ||= true;
-  } else { LoginWarn.value?.set_display(false) }
-  if (password.value === "") {
-    PasswdWarn.value?.set_message("Password is required");
-    PasswdWarn.value?.set_display(true);
-    submiting = false;
-    is_empty ||= true;
-  } else { PasswdWarn.value?.set_display(false) }
+    LoginWarn.value?.set_message('Account is required')
+    LoginWarn.value?.set_display(true)
+    submiting = false
+    is_empty ||= true
+  } else {
+    LoginWarn.value?.set_display(false)
+  }
+  if (password.value === '') {
+    PasswdWarn.value?.set_message('Password is required')
+    PasswdWarn.value?.set_display(true)
+    submiting = false
+    is_empty ||= true
+  } else {
+    PasswdWarn.value?.set_display(false)
+  }
 
-  if (is_empty) return;
+  if (is_empty) return
 
-  console.log("submit");
-  console.log(`account: ${account.value}, passwd: ${password.value}`);
+  console.log('submit')
+  console.log(`account: ${account.value}, passwd: ${password.value}`)
 
-  let result: AxiosResponse<any, any>;
+  let result: AxiosResponse<any, any>
   try {
-    result = await axios.post('/api/login', {
-      username: account.value,
-      password: password.value,
-    }, {
-      timeout: 1000
-    });
+    result = await axios.post(
+      '/api/login',
+      {
+        username: account.value,
+        password: password.value,
+      },
+      {
+        timeout: 1000,
+      },
+    )
 
     console.log(result.data)
 
     if (result.data.code === 1) {
-      cookies.set('token', result.data.data.jwt, '7d');
+      cookies.set('token', result.data.data.jwt, '7d')
       router.push('/employee')
     } else if (result.data.code === 0) {
-      PasswdWarn.value?.set_message("Username or password error");
-      PasswdWarn.value?.set_display(true);
+      PasswdWarn.value?.set_message('Username or password error')
+      PasswdWarn.value?.set_display(true)
     }
-
-
   } catch (error) {
-    alert("Network error");
+    alert('Network error')
   }
 
-  submiting = false;
-
+  submiting = false
 }
-
 </script>
 <template>
   <header>
@@ -85,20 +89,35 @@ const submit = async () => {
     <div style="">
       <div class="input">
         <!-- <label for="account">Account</label> -->
-        <input v-model.trim="old_password" @keyup.enter="submit" :id="account_id" type="password"
-          placeholder="Password" />
+        <input
+          v-model.trim="old_password"
+          @keyup.enter="submit"
+          :id="account_id"
+          type="password"
+          placeholder="Password"
+        />
         <AlertText ref="LoginWarn" />
       </div>
       <div class="input">
         <!-- <label for="password">Password</label> -->
-        <input v-model.trim="new_passowrd" @keyup.enter="submit" :id="password_id" type="password"
-          placeholder="New Password" />
+        <input
+          v-model.trim="new_passowrd"
+          @keyup.enter="submit"
+          :id="password_id"
+          type="password"
+          placeholder="New Password"
+        />
         <AlertText ref="PasswdWarn" />
       </div>
       <div class="input">
         <!-- <label for="password">Password</label> -->
-        <input v-model.trim="new_passowrd_check" @keyup.enter="submit" :id="password_id" type="password"
-          placeholder="Check Password" />
+        <input
+          v-model.trim="new_passowrd_check"
+          @keyup.enter="submit"
+          :id="password_id"
+          type="password"
+          placeholder="Check Password"
+        />
         <AlertText ref="PasswdWarn" />
       </div>
       <div class="input">
@@ -140,18 +159,21 @@ input#account:focus {
   outline: none;
 }
 
-input[type="submit"] {
+input[type='submit'] {
   background-color: transparent;
-  color: #0185FF;
-  border: 2px solid #0185FF;
+  color: #0185ff;
+  border: 2px solid #0185ff;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
   border-radius: 6px;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s,
+    border-color 0.3s;
 }
 
-input[type="submit"]:hover {
+input[type='submit']:hover {
   background-color: #00a3ff;
   border-color: #00a3ff;
   color: #181818;
