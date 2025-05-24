@@ -30,4 +30,7 @@ public interface EmpMapper {
 
     @Delete("delete from minilab.emp where id = #{id}")
     void deleteEmpById(Emp emp);
+
+    @Select("select * from minilab.emp where username = #{username}")
+    Emp getEmpByUsername(String username);
 }

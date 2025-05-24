@@ -14,9 +14,13 @@ public interface EmpService {
 
     void insert(Emp emp);
 
+    String selectEmpTagsByUsername(String username);
+
     Result updateTag(EmpTag tag);
 
     void updateEmp(Emp emp);
 
     void deleteEmp(Emp emp);
+
+    Emp seleteEmpByUsername(String username);
 }

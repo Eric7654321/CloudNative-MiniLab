@@ -17,7 +17,7 @@
             <if test="startTime != null"> start_time = #{startTime}, </if>
             <if test="endTime != null"> end_time = #{endTime}, </if>
 
-            <if test="tag != null and tag != ''"> tag = #{tag}</if>
+            <if test="tag != null and tag != ''"> tag = #{tag}, </if>
 
             <if test="description != null and description != ''"> description = #{description}, </if>
             <if test="group != null and group != ''"> `group` = #{group}, </if>
