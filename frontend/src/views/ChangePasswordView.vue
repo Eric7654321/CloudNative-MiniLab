@@ -21,65 +21,7 @@ const password_id: string = 'password'
 const LoginWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null)
 const PasswdWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null)
 
-const submit = async () => {
-  if (submiting) {
-    alert('submitting...')
-    return
-  }
-  submiting = true
-  let is_empty: boolean = false
-
-  if (account.value === '') {
-    // alert("Please enter your account");
-    LoginWarn.value?.set_message('Account is required')
-    LoginWarn.value?.set_display(true)
-    submiting = false
-    is_empty ||= true
-  } else {
-    LoginWarn.value?.set_display(false)
-  }
-  if (password.value === '') {
-    PasswdWarn.value?.set_message('Password is required')
-    PasswdWarn.value?.set_display(true)
-    submiting = false
-    is_empty ||= true
-  } else {
-    PasswdWarn.value?.set_display(false)
-  }
-
-  if (is_empty) return
-
-  console.log('submit')
-  console.log(`account: ${account.value}, passwd: ${password.value}`)
-
-  let result: AxiosResponse<any, any>
-  try {
-    result = await axios.post(
-      '/api/login',
-      {
-        username: account.value,
-        password: password.value,
-      },
-      {
-        timeout: 1000,
-      },
-    )
-
-    console.log(result.data)
-
-    if (result.data.code === 1) {
-      cookies.set('token', result.data.data.jwt, '7d')
-      router.push('/employee')
-    } else if (result.data.code === 0) {
-      PasswdWarn.value?.set_message('Username or password error')
-      PasswdWarn.value?.set_display(true)
-    }
-  } catch (error) {
-    alert('Network error')
-  }
-
-  submiting = false
-}
+const submit = async () => {}
 </script>
 <template>
   <header>
