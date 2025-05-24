@@ -1,0 +1,53 @@
+name: CI
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on:
+  push:
+    branches-ignore:
+      - main
+jobs:
+
+  backend_unit_test:
+
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Generate necessary config file
+        working-directory: ./backend/MiniLab/target
+        run: |
+          touch application-dev.yml
+          cat <<'EOF' > application-dev.yml
+          minilab:
+            datasource:
+              driver-class-name: jdbc:mysql://minilab.mysql.database.azure.com:3306
+              host: "${{ secrets.DB_HOST }}"
+              port: "${{ secrets.DB_PORT }}"
+              username: "${{ secrets.DB_USER }}"
+              password: "${{ secrets.DB_PASS }}"
+          EOF
+
+        # echo "minilab:" > application-dev.yml
+        # echo " datasource:" > application-dev.yml
+        # echo "  driver-class-name:"
+
+      - name: Execute Unit test
+        run: |
+          mvn clean install
+
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+  
+  # auto_formatting:
+  #   needs: backend_unit_test
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
