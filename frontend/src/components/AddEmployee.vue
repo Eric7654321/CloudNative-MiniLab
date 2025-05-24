@@ -1,45 +1,45 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive } from 'vue'
 
-const emit = defineEmits(['save', 'cancel']);
+const emit = defineEmits(['save', 'cancel'])
 
 const formData = reactive({
   name: '',
   username: '',
   role: 0, // Default to '員工'
   // tags will be handled by rawTags and processed on save
-});
+})
 
-const rawTags = ref(''); // For comma-separated input
+const rawTags = ref('') // For comma-separated input
 
-const availableTags = ref<string[]>(['物性', '電性', '化性']);
-const selectedTags = ref<string[]>([]); // Holds the currently checked tags
+const availableTags = ref<string[]>(['物性', '電性', '化性'])
+const selectedTags = ref<string[]>([]) // Holds the currently checked tags
 
 const handleSubmit = () => {
   const newEmployeeData = {
     ...formData,
     tags: JSON.stringify(selectedTags.value), // Store tags as a JSON string
     // Default values for other fields as per your example data structure
-    group: "114514", // Example default
-    jwt: "...",      // Placeholder
+    group: '114514', // Example default
+    jwt: '...', // Placeholder
     updateTime: new Date().toISOString(),
-    usable: 1 as (1 | 0)
-  };
-  emit('save', newEmployeeData);
-  resetForm();
-};
+    usable: 1 as 1 | 0,
+  }
+  emit('save', newEmployeeData)
+  resetForm()
+}
 
 const handleCancel = () => {
-  emit('cancel');
-  resetForm();
-};
+  emit('cancel')
+  resetForm()
+}
 
 const resetForm = () => {
-  formData.name = '';
-  formData.username = '';
-  formData.role = 0;
-  rawTags.value = '';
-};
+  formData.name = ''
+  formData.username = ''
+  formData.role = 0
+  rawTags.value = ''
+}
 </script>
 
 <template>
@@ -65,7 +65,12 @@ const resetForm = () => {
         <label>選擇 Tags:</label>
         <div class="checkbox-group">
           <div v-for="tagOption in availableTags" :key="tagOption" class="checkbox-item">
-            <input type="checkbox" :id="'tag-' + tagOption" :value="tagOption" v-model="selectedTags" />
+            <input
+              type="checkbox"
+              :id="'tag-' + tagOption"
+              :value="tagOption"
+              v-model="selectedTags"
+            />
             <label :for="'tag-' + tagOption">{{ tagOption }}</label>
           </div>
         </div>
@@ -108,7 +113,7 @@ h2 {
   color: #555;
 }
 
-.form-group input[type="text"],
+.form-group input[type='text'],
 .form-group select {
   width: 100%;
   padding: 10px;
@@ -118,7 +123,7 @@ h2 {
   /* Important for width 100% */
 }
 
-.form-group input[type="text"]:focus,
+.form-group input[type='text']:focus,
 .form-group select:focus {
   border-color: cornflowerblue;
   outline: none;
@@ -184,7 +189,7 @@ h2 {
   align-items: center;
 }
 
-.checkbox-item input[type="checkbox"] {
+.checkbox-item input[type='checkbox'] {
   margin-right: 8px;
   width: auto;
   /* Override default width:100% for inputs */

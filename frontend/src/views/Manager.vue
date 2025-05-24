@@ -7,8 +7,15 @@
       </header>
 
       <div class="employee-list">
-        <EmployeeCard v-for="employee in employees" :key="employee.id" :employee="employee" @add-tag="handleAddTag"
-          @remove-tag="handleRemoveTag" @delete-employee="handleDeleteEmployee" @edit-employee="openEditEmployeeForm" />
+        <EmployeeCard
+          v-for="employee in employees"
+          :key="employee.id"
+          :employee="employee"
+          @add-tag="handleAddTag"
+          @remove-tag="handleRemoveTag"
+          @delete-employee="handleDeleteEmployee"
+          @edit-employee="openEditEmployeeForm"
+        />
         <p v-if="!employees.length" class="no-employees-message">目前沒有員工資料。</p>
       </div>
     </div>
@@ -16,230 +23,240 @@
     <!-- Modal for EmployeeForm (Add/Edit) -->
     <div v-if="showEmployeeFormModal" class="modal-overlay" @click.self="closeEmployeeFormModal">
       <div class="modal-content-wrapper">
-        <EmployeeForm :key="employeeToEdit ? `edit-${employeeToEdit.id}` : 'new-employee'"
-          :employeeToEdit="employeeToEdit" @save="handleSaveEmployee" @cancel="closeEmployeeFormModal" />
+        <EmployeeForm
+          :key="employeeToEdit ? `edit-${employeeToEdit.id}` : 'new-employee'"
+          :employeeToEdit="employeeToEdit"
+          @save="handleSaveEmployee"
+          @cancel="closeEmployeeFormModal"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import EmployeeCard from '@/components/EmployeeCard.vue';
-import EmployeeForm from '@/components/EmployeeForm.vue'; // Changed from AddEmployee
-import { useUserData } from '@/stores/UserData';
-import axios from 'axios';
+import { ref, onMounted, onUnmounted } from 'vue'
+import EmployeeCard from '@/components/EmployeeCard.vue'
+import EmployeeForm from '@/components/EmployeeForm.vue' // Changed from AddEmployee
+import { useUserData } from '@/stores/UserData'
+import axios from 'axios'
 
 interface Employee {
-  group: string;
-  id: number;
-  jwt: string;
-  name: string;
-  role: 0 | 1;
-  tags: string; // JSON string
-  updateTime: string;
-  usable: 1 | 0;
-  username: string;
+  group: string
+  id: number
+  jwt: string
+  name: string
+  role: 0 | 1
+  tags: string // JSON string
+  updateTime: string
+  usable: 1 | 0
+  username: string
 }
 
 // This is the structure of data coming from EmployeeForm's 'save' emit
 // It might have an ID if editing, or not if adding.
 // Other fields like group, jwt, usable are expected to be present or defaulted.
 interface EmployeeFormSavePayload extends Omit<Employee, 'updateTime'> {
-  id?: number; // id is optional if it's a new employee
+  id?: number // id is optional if it's a new employee
 }
-
 
 interface TagEventPayload {
-  employeeId: number;
-  tag: string;
+  employeeId: number
+  tag: string
 }
 
-const employees = ref<Employee[]>([]);
+const employees = ref<Employee[]>([])
 
-const userdata = useUserData();
+const userdata = useUserData()
 const get_employee_list = async () => {
   const res = await axios.get(`/api/emp/search/${userdata.group}`)
   employees.value = res?.data.data.filter((emp: any) => emp.id !== userdata.id)
   console.log(employees.value.filter((emp: any) => emp.id !== userdata.id))
 }
 
-const showEmployeeFormModal = ref<boolean>(false);
-const employeeToEdit = ref<Employee | null>(null);
+const showEmployeeFormModal = ref<boolean>(false)
+const employeeToEdit = ref<Employee | null>(null)
 
 const openAddEmployeeForm = (): void => {
-  employeeToEdit.value = null;
-  showEmployeeFormModal.value = true;
-};
+  employeeToEdit.value = null
+  showEmployeeFormModal.value = true
+}
 
 const openEditEmployeeForm = (employeeId: number): void => {
-  const foundEmployee = employees.value.find(emp => emp.id === employeeId);
+  const foundEmployee = employees.value.find((emp) => emp.id === employeeId)
   if (foundEmployee) {
-    employeeToEdit.value = { ...foundEmployee }; // Pass a copy
-    showEmployeeFormModal.value = true;
+    employeeToEdit.value = { ...foundEmployee } // Pass a copy
+    showEmployeeFormModal.value = true
   } else {
-    console.error(`Employee with ID ${employeeId} not found for editing.`);
+    console.error(`Employee with ID ${employeeId} not found for editing.`)
   }
-};
+}
 
 const closeEmployeeFormModal = (): void => {
-  showEmployeeFormModal.value = false;
-  employeeToEdit.value = null;
-};
+  showEmployeeFormModal.value = false
+  employeeToEdit.value = null
+}
 
 const handleSaveEmployee = async (formData: EmployeeFormSavePayload) => {
-  if (formData.id !== undefined) { // If ID exists (even 0), it's an update
-    const index = employees.value.findIndex(emp => emp.id === formData.id);
+  if (formData.id !== undefined) {
+    // If ID exists (even 0), it's an update
+    const index = employees.value.findIndex((emp) => emp.id === formData.id)
     if (index !== -1) {
-      const emp = employees.value[index];
+      const emp = employees.value[index]
       try {
-        await axios.put('/api/emp/tag/update',
+        await axios.put(
+          '/api/emp/tag/update',
           { empId: emp.id, tags: formData.tags },
-          { headers: { 'Content-Type': 'application/json' } }
+          { headers: { 'Content-Type': 'application/json' } },
         )
         await get_employee_list()
-        console.log('Employee updated:', employees.value[index]);
+        console.log('Employee updated:', employees.value[index])
       } catch (error) {
         console.log(error)
       }
 
       // Placeholder for API call: await api.updateEmployee(employees.value[index]);
     } else {
-      console.error("Failed to find employee for update with ID:", formData.id);
+      console.error('Failed to find employee for update with ID:', formData.id)
     }
-  } else { // No ID, so it's a new employee
+  } else {
+    // No ID, so it's a new employee
     const newEmployee = {
       // Provide defaults for fields not in EmployeeForm or use what EmployeeForm sent
       username: formData.username,
       name: formData.name,
-      password: "12345678",
+      password: '12345678',
       group: userdata.group, // Default if not provided by form
       usable: formData.usable !== undefined ? formData.usable : 1, // Default if not provided
       role: formData.role,
       tags: formData.tags, // This is already a JSON string from EmployeeForm
-    };
+    }
     try {
-      await axios.post('/api/emp/insert', newEmployee);
+      await axios.post('/api/emp/insert', newEmployee)
       await get_employee_list()
 
-      console.log('Employee added:', newEmployee);
+      console.log('Employee added:', newEmployee)
     } catch (error) {
       console.log(error)
     }
     // Placeholder for API call: await api.addEmployee(newEmployee);
   }
-  closeEmployeeFormModal();
-};
+  closeEmployeeFormModal()
+}
 
 const _updateEmployeeTags = (
   employeeId: number,
-  updateFn: (currentTags: string[]) => string[]
+  updateFn: (currentTags: string[]) => string[],
 ): void => {
-  const employee = employees.value.find(emp => emp.id === employeeId);
+  const employee = employees.value.find((emp) => emp.id === employeeId)
   if (employee) {
-    let currentTags: string[] = [];
+    let currentTags: string[] = []
     try {
       if (typeof employee.tags === 'string' && employee.tags.trim() !== '') {
-        const parsed = JSON.parse(employee.tags);
+        const parsed = JSON.parse(employee.tags)
         if (Array.isArray(parsed)) {
-          currentTags = parsed.filter(tag => typeof tag === 'string');
+          currentTags = parsed.filter((tag) => typeof tag === 'string')
         }
       }
-    } catch (e) { /* ... error handling ... */ }
+    } catch (e) {
+      /* ... error handling ... */
+    }
 
-    const updatedTags = updateFn([...currentTags]);
-    if (JSON.stringify(updatedTags) !== JSON.stringify(currentTags) ||
-      employee.tags !== JSON.stringify(currentTags)) {
-      employee.tags = JSON.stringify(updatedTags);
-      employee.updateTime = new Date().toISOString();
+    const updatedTags = updateFn([...currentTags])
+    if (
+      JSON.stringify(updatedTags) !== JSON.stringify(currentTags) ||
+      employee.tags !== JSON.stringify(currentTags)
+    ) {
+      employee.tags = JSON.stringify(updatedTags)
+      employee.updateTime = new Date().toISOString()
       // Placeholder: console.log(`Updating tags for employee ${employeeId} via API...`);
     }
   }
-};
+}
 
 const handleAddTag = async ({ employeeId, tag }: TagEventPayload) => {
   _updateEmployeeTags(employeeId, (tagsArray) => {
     if (!tagsArray.includes(tag)) {
-      return [...tagsArray, tag];
+      return [...tagsArray, tag]
     }
-    return tagsArray;
-  });
+    return tagsArray
+  })
   const emp = employees.value.find((emp) => emp.id === employeeId)
 
   try {
-    await axios.put('/api/emp/tag/update',
+    await axios.put(
+      '/api/emp/tag/update',
       { empId: employeeId, tags: emp?.tags },
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { 'Content-Type': 'application/json' } },
     )
     await get_employee_list()
     console.log('Employee updated:', emp)
   } catch (error) {
     console.log(error)
   }
-};
+}
 
 const handleRemoveTag = async ({ employeeId, tag }: TagEventPayload) => {
   _updateEmployeeTags(employeeId, (tagsArray) => {
-    const index = tagsArray.indexOf(tag);
+    const index = tagsArray.indexOf(tag)
     if (index > -1) {
-      const newTagsArray = [...tagsArray];
-      newTagsArray.splice(index, 1);
-      return newTagsArray;
+      const newTagsArray = [...tagsArray]
+      newTagsArray.splice(index, 1)
+      return newTagsArray
     }
-    return tagsArray;
-  });
+    return tagsArray
+  })
   const emp = employees.value.find((emp) => emp.id === employeeId)
 
   try {
-    await axios.put('/api/emp/tag/update',
+    await axios.put(
+      '/api/emp/tag/update',
       { empId: employeeId, tags: emp?.tags },
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { 'Content-Type': 'application/json' } },
     )
     await get_employee_list()
     console.log('Employee updated:', emp)
   } catch (error) {
     console.log(error)
   }
-};
+}
 
 const handleDeleteEmployee = async (employeeIdToDelete: number) => {
-  const employeeToDelete = employees.value.find(emp => emp.id === employeeIdToDelete);
+  const employeeToDelete = employees.value.find((emp) => emp.id === employeeIdToDelete)
   if (employeeToDelete) {
     if (confirm(`您確定要刪除員工 "${employeeToDelete.name}" (ID: ${employeeIdToDelete}) 嗎？`)) {
-      employees.value = employees.value.filter(employee => employee.id !== employeeIdToDelete);
+      employees.value = employees.value.filter((employee) => employee.id !== employeeIdToDelete)
       try {
         await axios.delete('/api/emp/delete', {
           data: { id: employeeIdToDelete },
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         })
         await get_employee_list()
 
-        console.log(`Employee with ID ${employeeIdToDelete} deleted locally.`);
-      } catch (e) {
-
-      }
+        console.log(`Employee with ID ${employeeIdToDelete} deleted locally.`)
+      } catch (e) {}
 
       // Placeholder for API call: await api.deleteEmployee(employeeIdToDelete);
     }
   }
-};
+}
 
 const handleEscKey = (event: KeyboardEvent): void => {
   if (event.key === 'Escape' && showEmployeeFormModal.value) {
-    closeEmployeeFormModal();
+    closeEmployeeFormModal()
   }
-};
+}
 
 onMounted(() => {
   get_employee_list()
-  window.addEventListener('keydown', handleEscKey);
-});
+  window.addEventListener('keydown', handleEscKey)
+})
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleEscKey);
-});
+  window.removeEventListener('keydown', handleEscKey)
+})
 </script>
 
 <style scoped>
