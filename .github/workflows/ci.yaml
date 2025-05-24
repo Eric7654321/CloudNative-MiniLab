@@ -23,6 +23,11 @@ jobs:
           cache: maven
 
       - name: Generate necessary config file
+        env:
+          DB_HOST : ${{ secrets.DB_HOST }}
+          DB_PORT : ${{ secrets.DB_PORT }}
+          DB_USER : ${{ secrets.DB_USER }}
+          DB_PASS : ${{ secrets.DB_PASS }}
         working-directory: ./backend/MiniLab
         run: |
           mkdir target
@@ -38,7 +43,7 @@ jobs:
               password: ${{ secrets.DB_PASS }}
           EOF
 
-          cat application-dev.yml | sed 's/./& /g'
+          cat application-dev.yml
         # echo ${{secrets.DB_HOST}} | sed 's/./& /g'
         # echo ${{secrets.DB_PORT}} | sed 's/./& /g'
         # echo ${{secrets.DB_USER}} | sed 's/./& /g'
