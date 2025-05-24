@@ -42,7 +42,7 @@ public class EmpController {
     public Result updateEmpTag(@RequestBody EmpTag tag) {
         log.info("修改Tag操作，Tag={}", tag);
         Result result = empService.updateTag(tag);
-        if(result.getCode() == 0){
+        if (result.getCode() == 0) {
             return Result.error(result.getMsg());
         }
 

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useCookies } from 'vue3-cookies';
-import { useUserData } from '@/stores/UserData';
+import { useCookies } from 'vue3-cookies'
+import { useUserData } from '@/stores/UserData'
 import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
@@ -15,11 +15,9 @@ const router = createRouter({
     {
       path: '/loginRedirect',
       name: 'loginRedirect',
-      redirect: to => {
-        if (useUserData().role === 0)
-          return { path: '/employee' };
-        else
-          return { path: '/manager' };
+      redirect: (to) => {
+        if (useUserData().role === 0) return { path: '/employee' }
+        else return { path: '/manager' }
       },
       meta: { requireAuth: true },
     },
@@ -46,21 +44,22 @@ const router = createRouter({
     {
       path: '/',
       name: 'root',
-      redirect: to => {
+      redirect: (to) => {
         if (useUserData().isAuth === false) {
           return { path: '/login' }
         }
         return { path: '/loginRedirect' }
-      }
-    }
+      },
+    },
   ],
 })
 
 router.beforeEach((to, from) => {
   console.log(useUserData().isAuth)
-  if (to.meta.requireAuth !== null
-    && to.meta.requireAuth === true
-    && useUserData().isAuth === false
+  if (
+    to.meta.requireAuth !== null &&
+    to.meta.requireAuth === true &&
+    useUserData().isAuth === false
   ) {
     return {
       path: '/login',
@@ -69,13 +68,13 @@ router.beforeEach((to, from) => {
   }
   if (to.path === '/login' && useUserData().isAuth) {
     return {
-      path: '/loginRedirect'
+      path: '/loginRedirect',
     }
   }
 
   if (to.meta.manager === true && useUserData().role === 0) {
     return {
-      path: '/employee'
+      path: '/employee',
     }
   }
 })
