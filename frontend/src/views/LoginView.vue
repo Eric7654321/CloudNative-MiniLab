@@ -1,86 +1,90 @@
 <script setup lang="ts">
-import type { Ref } from 'vue';
+import type { Ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue';
+import { ref } from 'vue'
 import axios, { type AxiosResponse } from 'axios'
-import { useCookies } from 'vue3-cookies';
-import AlertText from '../components/AlertText.vue';
-import { useUserData } from '@/stores/UserData';
+import { useCookies } from 'vue3-cookies'
+import AlertText from '../components/AlertText.vue'
+import { useUserData } from '@/stores/UserData'
 
-let submiting = false;
+let submiting = false
 
-const router = useRouter();
-const { cookies } = useCookies();
+const router = useRouter()
+const { cookies } = useCookies()
 
-const account: Ref<string> = ref("");
-const password: Ref<string> = ref("");
+const account: Ref<string> = ref('')
+const password: Ref<string> = ref('')
 
-const account_id: string = "account";
-const password_id: string = "password";
+const account_id: string = 'account'
+const password_id: string = 'password'
 
-const isUsernameFocused = ref(false);
-const isPasswordFocused = ref(false);
+const isUsernameFocused = ref(false)
+const isPasswordFocused = ref(false)
 
-const LoginWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null);
-const PasswdWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null);
+const LoginWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null)
+const PasswdWarn: Ref<InstanceType<typeof AlertText> | null> = ref(null)
 
 const submit = async () => {
   if (submiting) {
-    alert("submitting...")
+    alert('submitting...')
     return
   }
-  submiting = true;
-  let is_empty: boolean = false;
+  submiting = true
+  let is_empty: boolean = false
 
-  if (account.value === "") {
+  if (account.value === '') {
     // alert("Please enter your account");
-    LoginWarn.value?.set_message("Account is required");
-    LoginWarn.value?.set_display(true);
-    submiting = false;
-    is_empty ||= true;
-  } else { LoginWarn.value?.set_display(false) }
-  if (password.value === "") {
-    PasswdWarn.value?.set_message("Password is required");
-    PasswdWarn.value?.set_display(true);
-    submiting = false;
-    is_empty ||= true;
-  } else { PasswdWarn.value?.set_display(false) }
+    LoginWarn.value?.set_message('Account is required')
+    LoginWarn.value?.set_display(true)
+    submiting = false
+    is_empty ||= true
+  } else {
+    LoginWarn.value?.set_display(false)
+  }
+  if (password.value === '') {
+    PasswdWarn.value?.set_message('Password is required')
+    PasswdWarn.value?.set_display(true)
+    submiting = false
+    is_empty ||= true
+  } else {
+    PasswdWarn.value?.set_display(false)
+  }
 
-  if (is_empty) return;
+  if (is_empty) return
 
-  console.log("submit");
-  console.log(`account: ${account.value}, passwd: ${password.value}`);
+  console.log('submit')
+  console.log(`account: ${account.value}, passwd: ${password.value}`)
 
-  let result: AxiosResponse<any, any>;
+  let result: AxiosResponse<any, any>
   try {
-    result = await axios.post('/api/login', {
-      username: account.value,
-      password: password.value,
-    }, {
-      timeout: 1000
-    });
+    result = await axios.post(
+      '/api/login',
+      {
+        username: account.value,
+        password: password.value,
+      },
+      {
+        timeout: 1000,
+      },
+    )
 
     console.log(result.data)
 
     if (result.data.code === 1) {
-      cookies.set('token', result.data.data.jwt, '7d');
-      useUserData().loadDataFromCookie();
+      cookies.set('token', result.data.data.jwt, '7d')
+      useUserData().loadDataFromCookie()
 
       router.push({ path: '/loginRedirect' })
     } else if (result.data.code === 0) {
-      PasswdWarn.value?.set_message(result.data.msg);
-      PasswdWarn.value?.set_display(true);
+      PasswdWarn.value?.set_message(result.data.msg)
+      PasswdWarn.value?.set_display(true)
     }
-
-
   } catch (error) {
-    alert("Network error");
+    alert('Network error')
   }
 
-  submiting = false;
-
+  submiting = false
 }
-
 </script>
 
 <template>
@@ -116,7 +120,6 @@ const submit = async () => {
     </form>
   </div>
 </template>
-
 
 <style scoped>
 .login-container {
@@ -202,7 +205,6 @@ h2 {
   background-color: #f9f9f9;
   font-weight: bold;
 }
-
 
 .login-button {
   padding: 12px 15px;

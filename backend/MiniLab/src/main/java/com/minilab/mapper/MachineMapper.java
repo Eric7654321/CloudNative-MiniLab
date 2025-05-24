@@ -13,8 +13,8 @@ public interface MachineMapper {
     @Select("select * from minilab.machine where `group` = #{groupId}")
     List<MachineVO> getMachineByGroupId(String groupId);
 
-//    @Select("select * from minilab.machine where id = #{id}")
-//    Machine getMachineById(Integer id);
+    // @Select("select * from minilab.machine where id = #{id}")
+    // Machine getMachineById(Integer id);
 
     List<Machine> getMachinesByIds(@Param("ids") List<Integer> ids);
 
