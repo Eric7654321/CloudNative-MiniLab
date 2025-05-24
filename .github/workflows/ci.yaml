@@ -81,4 +81,4 @@ jobs:
             echo "✅ No formatting changes."
           fi
 
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - run: echo "🍏 This job's status is ${{ job.status }}." 
