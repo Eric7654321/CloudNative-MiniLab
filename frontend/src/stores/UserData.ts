@@ -1,16 +1,16 @@
-import { defineStore } from "pinia";
-import { useCookies } from "vue3-cookies";
-import { jwtDecode } from "jwt-decode";
-import axios from 'axios';
+import { defineStore } from 'pinia'
+import { useCookies } from 'vue3-cookies'
+import { jwtDecode } from 'jwt-decode'
+import axios from 'axios'
 
 interface UserData {
-  id: number,
-  name: string,
-  username: string,
-  group: string,
-  role: number,
-  usable: boolean,
-  tags: string[],
+  id: number
+  name: string
+  username: string
+  group: string
+  role: number
+  usable: boolean
+  tags: string[]
   exp: number
 }
 
@@ -32,8 +32,11 @@ export const useUserData = defineStore('UserData', {
         stat.tryCookieBeforeAuth = false
         useUserData().loadDataFromCookie()
       }
-      if (stat.token === null || stat.token === ''
-        || Number(new Date().getTime()) - stat.exp <= 0) {
+      if (
+        stat.token === null ||
+        stat.token === '' ||
+        Number(new Date().getTime()) - stat.exp <= 0
+      ) {
         return false
       } else {
         return true
@@ -41,43 +44,44 @@ export const useUserData = defineStore('UserData', {
     },
     Role: (stat): string => {
       switch (stat.role) {
-        case 1: return '管理員'
-        case 0: return '員工'
-        default: return ''
+        case 1:
+          return '管理員'
+        case 0:
+          return '員工'
+        default:
+          return ''
       }
-    }
+    },
   },
   actions: {
     loadDataFromCookie() {
-      const { cookies } = useCookies();
+      const { cookies } = useCookies()
       this.token = cookies.get('token')
       if (this.token !== '' && this.token !== null) {
-        const data = jwtDecode<UserData>(this.token);
-        this.id = data.id;
-        this.username = data.username;
-        this.name = data.name;
-        this.group = data.group;
-        this.role = data.role;
+        const data = jwtDecode<UserData>(this.token)
+        this.id = data.id
+        this.username = data.username
+        this.name = data.name
+        this.group = data.group
+        this.role = data.role
         this.exp = data.exp
         this.tryCookieBeforeAuth = false
-        axios.defaults.headers.common['token'] = `${this.token}`;
+        axios.defaults.headers.common['token'] = `${this.token}`
       } else {
         this.tryCookieBeforeAuth = true
       }
     },
     reset() {
-      this.token = '';
-      this.id = 0;
-      this.username = '';
-      this.name = '';
-      this.group = '';
-      this.role = 0;
-      this.exp = 0;
-      this.tryCookieBeforeAuth = true;
-      axios.defaults.headers.common['token'] = null;
+      this.token = ''
+      this.id = 0
+      this.username = ''
+      this.name = ''
+      this.group = ''
+      this.role = 0
+      this.exp = 0
+      this.tryCookieBeforeAuth = true
+      axios.defaults.headers.common['token'] = null
     },
-    auth() {
-
-    }
-  }
+    auth() {},
+  },
 })

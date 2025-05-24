@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 const is_display = ref(false)
-const message = ref("default message")
+const message = ref('default message')
 
 const set_message = (msg: string) => {
   message.value = msg
@@ -12,10 +12,9 @@ const set_display = (arg: boolean = false) => {
   is_display.value = arg
 }
 
-
 defineExpose({
   set_display,
-  set_message
+  set_message,
 })
 </script>
 

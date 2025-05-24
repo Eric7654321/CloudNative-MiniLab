@@ -7,7 +7,8 @@
         <input type="text" id="name" v-model="formData.name" required />
       </div>
       <div class="form-group">
-        <label for="username">帳號:</label> <!-- Assuming "帳號" means username -->
+        <label for="username">帳號:</label>
+        <!-- Assuming "帳號" means username -->
         <input type="text" id="username" v-model="formData.username" required />
       </div>
       <div class="form-group">
@@ -28,10 +29,14 @@
               :value="tagOption"
               v-model="selectedTags"
             />
-            <label :for="'tag-' + tagOption + '-' + (employeeToEdit ? employeeToEdit.id : 'new')">{{ tagOption }}</label>
+            <label :for="'tag-' + tagOption + '-' + (employeeToEdit ? employeeToEdit.id : 'new')">{{
+              tagOption
+            }}</label>
           </div>
         </div>
-        <small v-if="!selectedTags.length && availableTags.length" class="tags-hint">可選多個標籤</small>
+        <small v-if="!selectedTags.length && availableTags.length" class="tags-hint"
+          >可選多個標籤</small
+        >
         <small v-if="!availableTags.length" class="tags-hint">尚無可用標籤</small>
       </div>
 
@@ -44,128 +49,137 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, computed, onMounted } from 'vue';
+import { ref, reactive, watch, computed, onMounted } from 'vue'
 
 // Define the Employee structure (can be imported if shared)
 interface Employee {
-  group: string;
-  id: number;
-  jwt: string;
-  name: string;
-  role: 0 | 1;
-  tags: string; // JSON string
-  updateTime: string;
-  usable: 1 | 0;
-  username: string;
+  group: string
+  id: number
+  jwt: string
+  name: string
+  role: 0 | 1
+  tags: string // JSON string
+  updateTime: string
+  usable: 1 | 0
+  username: string
 }
 
 // Data for the form fields
-interface FormDataState { // Renamed to avoid conflict with global FormData
-  name: string;
-  username: string;
-  role: 0 | 1;
-  id?: number; // Will be present if editing
+interface FormDataState {
+  // Renamed to avoid conflict with global FormData
+  name: string
+  username: string
+  role: 0 | 1
+  id?: number // Will be present if editing
 }
 
 interface Props {
-  employeeToEdit?: Employee | null; // Employee data if in edit mode
+  employeeToEdit?: Employee | null // Employee data if in edit mode
 }
 
 // Emitted payload will include id if editing
 // Adjusting to ensure all Employee fields (except updateTime) are potentially part of the payload
 // as Manager.vue will spread this over existing or create new.
 interface SavePayload extends Omit<Employee, 'updateTime'> {
-  id?: number; // id is optional for new, but will be present if editing
+  id?: number // id is optional for new, but will be present if editing
 }
-
 
 interface Emits {
-  (e: 'save', payload: SavePayload): void;
-  (e: 'cancel'): void;
+  (e: 'save', payload: SavePayload): void
+  (e: 'cancel'): void
 }
 
-const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
 
 const formData = reactive<FormDataState>({
   name: '',
   username: '',
   role: 0,
-});
+})
 
-const availableTags = ref<string[]>(['物性', '電性', '化性']); // Predefined tags
-const selectedTags = ref<string[]>([]);
+const availableTags = ref<string[]>(['物性', '電性', '化性']) // Predefined tags
+const selectedTags = ref<string[]>([])
 
-const isEditMode = computed(() => !!props.employeeToEdit);
-const formTitle = computed(() => (isEditMode.value ? '修改員工資料' : '新增員工'));
+const isEditMode = computed(() => !!props.employeeToEdit)
+const formTitle = computed(() => (isEditMode.value ? '修改員工資料' : '新增員工'))
 
 const populateFormForEdit = () => {
   if (props.employeeToEdit) {
-    formData.id = props.employeeToEdit.id;
-    formData.name = props.employeeToEdit.name;
-    formData.username = props.employeeToEdit.username;
-    formData.role = props.employeeToEdit.role;
+    formData.id = props.employeeToEdit.id
+    formData.name = props.employeeToEdit.name
+    formData.username = props.employeeToEdit.username
+    formData.role = props.employeeToEdit.role
     try {
-      const parsed = JSON.parse(props.employeeToEdit.tags || '[]');
-      selectedTags.value = Array.isArray(parsed) ? parsed.filter(tag => typeof tag === 'string') : [];
+      const parsed = JSON.parse(props.employeeToEdit.tags || '[]')
+      selectedTags.value = Array.isArray(parsed)
+        ? parsed.filter((tag) => typeof tag === 'string')
+        : []
     } catch (e) {
-      console.error("Error parsing tags for editing:", e);
-      selectedTags.value = [];
+      console.error('Error parsing tags for editing:', e)
+      selectedTags.value = []
     }
   } else {
     // Reset for add mode
-    formData.id = undefined;
-    formData.name = '';
-    formData.username = '';
-    formData.role = 0;
-    selectedTags.value = [];
+    formData.id = undefined
+    formData.name = ''
+    formData.username = ''
+    formData.role = 0
+    selectedTags.value = []
   }
-};
+}
 
 onMounted(() => {
-  populateFormForEdit();
-});
+  populateFormForEdit()
+})
 
-watch(() => props.employeeToEdit, () => {
-  populateFormForEdit();
-}, { deep: true }); // Use deep watch if employeeToEdit itself might change structure or for nested objects
+watch(
+  () => props.employeeToEdit,
+  () => {
+    populateFormForEdit()
+  },
+  { deep: true },
+) // Use deep watch if employeeToEdit itself might change structure or for nested objects
 
 const handleSubmit = (): void => {
   // Construct the base payload from form data
-  const basePayload: Omit<SavePayload, 'group'|'jwt'|'usable'|'tags'> & {id?: number, tags: string} = {
+  const basePayload: Omit<SavePayload, 'group' | 'jwt' | 'usable' | 'tags'> & {
+    id?: number
+    tags: string
+  } = {
     id: formData.id, // Will be undefined for new, populated for edit
     name: formData.name,
     username: formData.username,
     role: formData.role,
     tags: JSON.stringify(selectedTags.value),
-  };
+  }
 
-  let finalPayload: SavePayload;
+  let finalPayload: SavePayload
 
   if (isEditMode.value && props.employeeToEdit) {
     // For editing, merge with existing non-editable fields from props.employeeToEdit
     finalPayload = {
       ...props.employeeToEdit, // Start with all fields from the original employee
-      ...basePayload,          // Override with form data (name, username, role, tags, id)
-    };
+      ...basePayload, // Override with form data (name, username, role, tags, id)
+    }
   } else {
     // For adding, we only send what the form collects, Manager.vue adds defaults
     // But SavePayload expects all Employee fields (minus updateTime). So we add placeholders.
     finalPayload = {
       ...basePayload,
-      group: "NEEDS_DEFAULT", // Placeholder, Manager.vue should provide actual default
-      jwt: "NEEDS_DEFAULT",   // Placeholder
-      usable: 1,           // Default, or Manager.vue provides
+      group: 'NEEDS_DEFAULT', // Placeholder, Manager.vue should provide actual default
+      jwt: 'NEEDS_DEFAULT', // Placeholder
+      usable: 1, // Default, or Manager.vue provides
       // id is already in basePayload (or undefined)
-    } as SavePayload; // Type assertion needed as we're building it partially
+    } as SavePayload // Type assertion needed as we're building it partially
   }
 
-  emit('save', finalPayload);
-};
+  emit('save', finalPayload)
+}
 
 const handleCancel = (): void => {
-  emit('cancel');
-};
+  emit('cancel')
+}
 </script>
 
 <style scoped>
@@ -173,7 +187,7 @@ const handleCancel = (): void => {
   background-color: white;
   padding: 25px;
   border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   width: 400px;
   max-width: 90vw; /* Ensure it's responsive on smaller screens */
   margin: auto;
@@ -196,7 +210,7 @@ h2 {
   color: #555;
 }
 
-.form-group input[type="text"],
+.form-group input[type='text'],
 .form-group select {
   width: 100%;
   padding: 10px;
@@ -204,7 +218,7 @@ h2 {
   border-radius: 4px;
   box-sizing: border-box;
 }
-.form-group input[type="text"]:focus,
+.form-group input[type='text']:focus,
 .form-group select:focus {
   border-color: cornflowerblue;
   outline: none;
@@ -225,7 +239,7 @@ h2 {
   align-items: center;
 }
 
-.checkbox-item input[type="checkbox"] {
+.checkbox-item input[type='checkbox'] {
   margin-right: 8px;
   width: auto;
   accent-color: cornflowerblue;
