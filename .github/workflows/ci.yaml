@@ -1,0 +1,84 @@
+name: CI
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on:
+  push:
+    branches-ignore:
+      - main
+jobs:
+  backend_unit_test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Execute Unit test
+        working-directory: ./backend/MiniLab
+        env:
+          DB_HOST : ${{ secrets.DB_HOST }}
+          DB_PORT : ${{ secrets.DB_PORT }}
+          DB_USER : ${{ secrets.DB_USER }}
+          DB_PASS : ${{ secrets.DB_PASS }}
+        run: |
+          mvn clean test
+
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+
+  frontend_unit_test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Not Implemented"
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+  
+  auto_formatting:
+    needs: [backend_unit_test, frontend_unit_test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: MVN formatting
+        working-directory: ./backend/MiniLab
+        run: mvn formatter:format
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v1
+        with:
+          node-version: 20.15.1
+
+      - name: Frontend formatting
+        working-directory: ./frontend
+        run: |
+          npm i
+          npm run format
+
+      - name: Format Commit
+        run: |
+          if ! git diff --quiet; then
+            echo "💡 Prettier made changes. Committing..."
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -am "chore: format with Prettier"
+            git push
+          else
+            echo "✅ No formatting changes."
+          fi
+
+      - run: echo "🍏 This job's status is ${{ job.status }}." 
