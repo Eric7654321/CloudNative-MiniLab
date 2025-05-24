@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useCookies } from 'vue3-cookies'
 import { useUserData } from '@/stores/UserData'
 import HomeView from '../views/HomeView.vue'
+import VueCookies from 'vue3-cookies'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
