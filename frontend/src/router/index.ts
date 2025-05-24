@@ -38,9 +38,6 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-<<<<<<< HEAD
-      component: () => import('../views/WorkList.vue'),
-=======
       component: () => import('../components/WorkList.vue'),
       //props: route => ({ employeeId: Number(route.query.employeeId) }),
       meta: { requireAuth: true },
@@ -54,7 +51,6 @@ const router = createRouter({
         }
         return { path: '/loginRedirect' }
       },
->>>>>>> origin/feat/frontend
     },
   ],
 })
