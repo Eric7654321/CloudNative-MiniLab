@@ -24,6 +24,8 @@ spec:
             limits:
               cpu: 500m
               memory: 500Mi
+      imagePullSecrets:
+      - name: regcred
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -42,6 +44,9 @@ spec:
       containers:
         - name: frontend
           image: ghcr.io/eric7654321/minilab_frontend
+          env:
+          - name: BACKEND_URL
+            value: backend:8080
           ports:
             - containerPort: 5173
           resources:
@@ -51,3 +56,6 @@ spec:
             limits:
               cpu: 500m
               memory: 500Mi
+      imagePullSecrets:
+      - name: regcred
+  
