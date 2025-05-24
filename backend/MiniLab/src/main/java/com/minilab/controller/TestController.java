@@ -13,11 +13,12 @@ import java.time.LocalDateTime;
 public class TestController {
 
     @GetMapping
-    public String testString(){
+    public String testString() {
         return "test";
     }
+
     @GetMapping("/time")
-    public String getTime(){
+    public String getTime() {
         return LocalDateTime.now().toString();
     }
 }

@@ -48,7 +48,7 @@ public class TestMachineController {
         Assertions.assertFalse(machines.isEmpty(), "找不到新增的機器");
 
         Machine toDelete = new Machine();
-        BeanUtils.copyProperties(machines.get(machines.size() - 1), toDelete);  // 取最後一個當作新增的
+        BeanUtils.copyProperties(machines.get(machines.size() - 1), toDelete); // 取最後一個當作新增的
         Result deleteResult = machineController.deleteMachine(toDelete);
         Assertions.assertEquals(1, deleteResult.getCode());
 

@@ -36,7 +36,7 @@ public class EmpServiceImpl implements EmpService {
     public List<EmpVO> getEmpByGroupId(String groupId) {
         List<EmpVO> EmpVos = empMapper.getEmpByGroupId(groupId);
         log.info("已查詢到Emps: {}, groupId={}, 接著查詢tags", EmpVos, groupId);
-        for(EmpVO empVo : EmpVos) {
+        for (EmpVO empVo : EmpVos) {
             empVo.setTags(empMapper.setTagsByUserId(empVo.getId()));
         }
         return EmpVos;
@@ -49,7 +49,7 @@ public class EmpServiceImpl implements EmpService {
         empMapper.insert(emp);
         emp = empMapper.getEmpByUsername(emp.getUsername());
         log.info("為id={}的使用者{}新增tag", emp.getId(), emp.getUsername());
-        //需要同步新增tag
+        // 需要同步新增tag
         tagMapper.initialEmpTag(emp.getId());
     }
 
@@ -64,7 +64,7 @@ public class EmpServiceImpl implements EmpService {
     @Override
     public Result updateTag(EmpTag tag) {
         List<Task> taskById = taskMapper.getTaskById(tag.getEmpId());
-        if(taskById.isEmpty()) {
+        if (taskById.isEmpty()) {
             log.info("tag操作未受其他依賴資料影響");
             tag.setUpdateTime(LocalDateTime.now());
             tagMapper.updateEmpTagById(tag);
@@ -86,7 +86,7 @@ public class EmpServiceImpl implements EmpService {
     @Transactional
     public void deleteEmp(Emp emp) {
         empMapper.deleteEmpById(emp);
-        //同步移除對應tag
+        // 同步移除對應tag
         tagMapper.deleteTagByEmpId(emp.getId());
     }
 
