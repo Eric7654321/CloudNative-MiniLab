@@ -37,7 +37,7 @@ public class MachineController {
     public Result updateMachineTag(@RequestBody MachineTag tag) {
         log.info("修改Tag操作，Tag={}", tag);
         Result result = machineService.updateTag(tag);
-        if(result.getCode() == 0){
+        if (result.getCode() == 0) {
             return Result.error(result.getMsg());
         }
 
