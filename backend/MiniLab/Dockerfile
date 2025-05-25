@@ -4,7 +4,7 @@ COPY . /build
 RUN cd /build \
     && mvn clean package -DskipTests
 
-FROM openjdk:17
+FROM openjdk:21
 
 ARG HOST
 ARG PASS
