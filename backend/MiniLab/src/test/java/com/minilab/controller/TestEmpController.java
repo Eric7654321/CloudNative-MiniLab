@@ -65,7 +65,7 @@ public class TestEmpController {
         log.info("修改操作");
         Emp emp = new Emp();
         BeanUtils.copyProperties(emps.get(0), emp);
-        emp.setPassword("Welly114514");
+        emp.setPassword("Wally114514");
 
         Result result1 = empController.updateEmp(emp);
         Assertions.assertEquals(result1.getCode(), 1);
