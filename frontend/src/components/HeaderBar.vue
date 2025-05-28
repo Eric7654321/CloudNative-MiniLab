@@ -22,9 +22,7 @@ const router = useRouter()
 const route = useRoute()
 const userdata = useUserData()
 
-const showExit = computed(() =>
-  ['/message', '/calender', '/report'].includes(route.path)
-)
+const showExit = computed(() => ['/message', '/calender', '/report'].includes(route.path))
 
 const exit = () => {
   router.push('/')
