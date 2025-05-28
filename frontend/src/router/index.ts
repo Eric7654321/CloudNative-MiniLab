@@ -52,6 +52,12 @@ const router = createRouter({
         return { path: '/loginRedirect' }
       },
     },
+    {
+      path: '/message',
+      name: 'Message',
+      component: () => import('../views/Message.vue'),
+      meta: { requireAuth: true },
+    },
   ],
 })
 
