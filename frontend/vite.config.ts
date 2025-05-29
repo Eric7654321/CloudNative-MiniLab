@@ -22,7 +22,8 @@ export default (mode: string) => {
     server: {
       proxy: {
         '^/api/.*': {
-          target: `http://${process.env.VITE_BACKEND_URL}`,
+          // target: `http://${process.env.VITE_BACKEND_URL}`,
+          target: `http://${process.env.BACKEND_URL}`,
           // target: `http://localhost:8080`,
           changeOrigin: true,
           rewrite: (path: string) => path.replace(/^\/api/, ''),
