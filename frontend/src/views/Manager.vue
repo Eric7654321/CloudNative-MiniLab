@@ -98,7 +98,9 @@ const closeEmployeeFormModal = (): void => {
 }
 
 const handleSaveEmployee = async (formData: EmployeeFormSavePayload) => {
-  if (formData.id !== undefined) {
+  // console.log('Saving employee data:', formData)
+  // if (formData.id !== undefined) {
+  if (formData.id !== 0) {
     // If ID exists (even 0), it's an update
     const index = employees.value.findIndex((emp) => emp.id === formData.id)
     if (index !== -1) {
