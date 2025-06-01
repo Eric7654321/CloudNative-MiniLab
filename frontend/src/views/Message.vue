@@ -9,8 +9,10 @@
           :class="{ selected: message.id === selectedMessageId }"
           @click="selectedMessageId = message.id"
         >
-          <span>{{ message.id }}</span><br>
-          <span>任務 ID: {{ message.taskId }}</span><br>
+          <span>{{ message.id }}</span
+          ><br />
+          <span>任務 ID: {{ message.taskId }}</span
+          ><br />
           <span>更新時間: {{ message.updateTime }}</span>
         </li>
       </ul>
@@ -44,9 +46,7 @@ const userdata = useUserData()
 let intervalId: number | undefined
 
 const selectedMessageId = ref<number | null>(null)
-const selectedMessage = computed(() =>
-  messages.value.find(m => m.id === selectedMessageId.value)
-)
+const selectedMessage = computed(() => messages.value.find((m) => m.id === selectedMessageId.value))
 
 const get_messages = async () => {
   const res = await axios.get(`/api//task/msg/get/${userdata.group}`)
