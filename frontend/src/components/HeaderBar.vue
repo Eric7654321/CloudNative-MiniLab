@@ -2,9 +2,10 @@
   <header class="header-bar">
     <div>
       <div>{{ userdata.Role }} {{ userdata.name }}</div>
+      <button @click="exit" v-if="showExit">離開</button>
       <button @click="goMessage">訊息</button>
       <button @click="goReport">回報</button>
-      <button @click="goCalender">行事曆</button>
+      <button @click="goCalendar">行事曆</button>
       <button @click="goLogout">登出</button>
     </div>
   </header>
@@ -12,24 +13,33 @@
 
 <script setup lang="ts">
 import { useCookies } from 'vue3-cookies'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { computed } from 'vue'
 import { useUserData } from '@/stores/UserData'
 
 const { cookies } = useCookies()
 const router = useRouter()
+const route = useRoute()
 const userdata = useUserData()
 
+const showExit = computed(() => ['/message', '/calendar', '/report'].includes(route.path))
+
+const exit = () => {
+  router.push('/')
+}
+
 const goMessage = () => {
-  console.log('前往訊息')
-  // 例如：router.push('/home')
+  router.push('/message')
 }
 
 const goReport = () => {
-  console.log('前往回報')
+  // console.log('前往回報')
+  router.push('/report')
 }
 
-const goCalender = () => {
-  console.log('行事曆')
+const goCalendar = () => {
+  // console.log('行事曆')
+  router.push('/calendar')
 }
 
 const goLogout = () => {
@@ -67,6 +77,7 @@ const goLogout = () => {
   padding: 8px 16px;
   border-radius: 5px;
   cursor: pointer;
+  margin: 4px;
 }
 
 .header-bar button:hover {
