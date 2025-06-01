@@ -4,7 +4,7 @@
       <h2>我的工作</h2>
       <ul>
         <li v-for="task in tasks" :key="task.id">
-          <span :class="{ done: task.done }">{{ task.label }}</span>
+          <span :class="{ done: task.isFinish }">{{ task.id }}</span>
         </li>
       </ul>
     </aside>
@@ -15,55 +15,56 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useCookies } from 'vue3-cookies'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useUserData } from '@/stores/UserData'
 
-export default defineComponent({
-  name: 'TodayTaskList',
-  //props: {
-  //  employeeId: {
-  //    type: Number,
-  //    required: true
-  //  }
-  //},
-  setup(/*props*/) {
-    const tasks = ref<any[]>([])
-    const userdata = useUserData()
-    let timer: number
+interface Task {
+  id: number // 任務 ID
+  emp: number // 員工 ID
+  empName: string // 員工名稱（後端填入）
+  machine: string[] // JSON 字串陣列形式，例如：["1","2"]
+  machineName: string[] // JSON 字串陣列形式（後端填入）
+  startTime: string // 任務開始時間 (ISO 字串)
+  endTime: string // 任務結束時間 (ISO 字串)
+  tag: string // 所需技能（如：電性）
+  description: string // 任務描述
+  group: string // 所屬群組 ID
+  updaterId: number // 更新者 ID
+  isFinish: number // 是否已完成（1=完成，0=未完成）
+  updateTime: string // 更新時間 (ISO 字串)
+}
 
-    const { cookies } = useCookies()
-    if (cookies.get('token') === null) {
-      useRouter().push('/')
-    }
+const tasks = ref<Task[]>([])
+const userdata = useUserData()
+let intervalId: number | undefined
 
-    const fetchTodayTasks = async () => {
-      try {
-        const response = await axios.get(`/api/task/check/today/${userdata.id}`)
-        console.log(response)
-        console.log(axios.defaults.headers.common['Authorization'])
-        tasks.value = response.data.data // 因為你的 Result.success() 包了 data
-      } catch (error) {
-        console.error('取得任務失敗', error)
-      }
-    }
+const { cookies } = useCookies()
+if (cookies.get('token') === null) {
+  useRouter().push('/')
+}
 
-    onMounted(() => {
-      fetchTodayTasks()
-      timer = window.setInterval(fetchTodayTasks, 60000) // 每分鐘刷新一次
-    })
+const fetchTodayTasks = async () => {
+  try {
+    const response = await axios.get(`/api/task/check/today/${userdata.id}`)
+    console.log(response)
+    tasks.value = response.data.data // 因為你的 Result.success() 包了 data
+    console.log('今日任務', tasks.value)
+  } catch (error) {
+    console.error('取得任務失敗', error)
+  }
+}
 
-    onUnmounted(() => {
-      clearInterval(timer)
-    })
+onMounted(() => {
+  fetchTodayTasks()
+  intervalId = window.setInterval(fetchTodayTasks, 10000) // 10,000 ms = 10 seconds
+})
 
-    return {
-      tasks,
-    }
-  },
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId)
 })
 </script>
 
@@ -72,11 +73,12 @@ export default defineComponent({
   display: flex;
   padding-top: 60px;
   /* Header 的高度 */
-  height: 100vh;
+  height: 100vh-60px;
+  overflow: hidden;
+  width: 100vw;
   justify-content: flex-start;
   /* 添加這行來確保向左對齊 */
-  margin-right: auto;
-  margin-left: 0; /* 確保沒有左邊距 */
+  margin: 0;
 }
 
 .task-list {
@@ -111,8 +113,6 @@ export default defineComponent({
 
 .content {
   flex: 1;
-  padding: 50px;
-  padding-left: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
