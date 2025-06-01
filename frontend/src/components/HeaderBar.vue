@@ -22,7 +22,7 @@ const router = useRouter()
 const route = useRoute()
 const userdata = useUserData()
 
-const showExit = computed(() => ['/message', '/calender', '/report'].includes(route.path))
+const showExit = computed(() => ['/message', '/calendar', '/report'].includes(route.path))
 
 const exit = () => {
   router.push('/')
@@ -39,7 +39,7 @@ const goReport = () => {
 
 const goCalender = () => {
   // console.log('行事曆')
-  router.push('/calender')
+  router.push('/calendar')
 }
 
 const goLogout = () => {
