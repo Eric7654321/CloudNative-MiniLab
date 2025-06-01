@@ -66,7 +66,6 @@ onUnmounted(() => {
 <style scoped>
 .container {
   display: flex;
-  padding-top: 60px;
   height: 100vh;
   overflow: hidden;
   width: 100vw;
