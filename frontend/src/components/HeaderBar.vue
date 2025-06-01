@@ -5,7 +5,7 @@
       <button @click="exit" v-if="showExit">離開</button>
       <button @click="goMessage">訊息</button>
       <button @click="goReport">回報</button>
-      <button @click="goCalender">行事曆</button>
+      <button @click="goCalendar">行事曆</button>
       <button @click="goLogout">登出</button>
     </div>
   </header>
@@ -22,7 +22,7 @@ const router = useRouter()
 const route = useRoute()
 const userdata = useUserData()
 
-const showExit = computed(() => ['/message', '/calender', '/report'].includes(route.path))
+const showExit = computed(() => ['/message', '/calendar', '/report'].includes(route.path))
 
 const exit = () => {
   router.push('/')
@@ -37,9 +37,9 @@ const goReport = () => {
   router.push('/report')
 }
 
-const goCalender = () => {
+const goCalendar = () => {
   // console.log('行事曆')
-  router.push('/calender')
+  router.push('/calendar')
 }
 
 const goLogout = () => {
@@ -77,6 +77,7 @@ const goLogout = () => {
   padding: 8px 16px;
   border-radius: 5px;
   cursor: pointer;
+  margin: 4px;
 }
 
 .header-bar button:hover {
