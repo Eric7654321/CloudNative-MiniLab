@@ -264,7 +264,6 @@ onUnmounted(() => {
 <style scoped>
 .manager-page-wrapper {
   position: relative;
-  padding-top: 60px;
 }
 
 .manager-content-area {
