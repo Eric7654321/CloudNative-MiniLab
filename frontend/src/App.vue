@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import HeaderBar from './components/HeaderBar.vue'
 import { RouterLink, RouterView } from 'vue-router'
+import { NMessageProvider, NConfigProvider, darkTheme } from 'naive-ui'
 </script>
 
 <template>
-  <div>
-    <HeaderBar v-if="$route.path !== '/login'" />
-    <RouterView />
-  </div>
+  <n-config-provider :theme="darkTheme">
+    <n-message-provider>
       <HeaderBar v-if="$route.path !== '/login'" />
       <div class="content"></div>
       <RouterView />
+    </n-message-provider>
+  </n-config-provider>
 </template>
 
-<style scoped></style>
 <style>
 #app {
   display: flex;
