@@ -1,6 +1,9 @@
 <template>
   <div class="manager-page-wrapper">
-    <div class="manager-content-area" :class="{ 'modal-active-background': showEmployeeFormModal || showMachineFormModal }">
+    <div
+      class="manager-content-area"
+      :class="{ 'modal-active-background': showEmployeeFormModal || showMachineFormModal }"
+    >
       <header class="manager-header">
         <h1>工人管理</h1>
         <button @click="openAddEmployeeForm" class="add-btn">新增員工</button>
@@ -19,7 +22,10 @@
         <p v-if="!employees.length" class="no-message">目前沒有員工資料。</p>
       </div>
     </div>
-    <div class="manager-content-area" :class="{ 'modal-active-background': showEmployeeFormModal || showMachineFormModal }">
+    <div
+      class="manager-content-area"
+      :class="{ 'modal-active-background': showEmployeeFormModal || showMachineFormModal }"
+    >
       <header class="manager-header">
         <h1>機器管理</h1>
         <button @click="openAddMachineForm" class="add-btn">新增機器</button>
@@ -193,11 +199,7 @@ const handleSaveEmployee = async (formData: EmployeeFormSavePayload) => {
           { empId: emp.id, tags: formData.tags },
           { headers: { 'Content-Type': 'application/json' } },
         )
-        await axios.put(
-          '/api/emp/update',
-          emp,
-          { headers: { 'Content-Type': 'application/json' } },
-        )
+        await axios.put('/api/emp/update', emp, { headers: { 'Content-Type': 'application/json' } })
 
         await get_employee_list()
         console.log('Employee updated:', employees.value[index])
@@ -251,11 +253,9 @@ const handleSaveMachine = async (formData: MachineFormSavePayload) => {
           { machineId: mach.id, tags: formData.tags },
           { headers: { 'Content-Type': 'application/json' } },
         )
-        await axios.put(
-          '/api/machine/update',
-          mach,
-          { headers: { 'Content-Type': 'application/json' } },
-        )
+        await axios.put('/api/machine/update', mach, {
+          headers: { 'Content-Type': 'application/json' },
+        })
         await get_machine_list()
         console.log('Machine updated:', machines.value[index])
       } catch (error) {
@@ -358,7 +358,7 @@ const handleAddEmployeeTag = async ({ employeeId, tag }: EmployeeTagEventPayload
   const emp = employees.value.find((emp) => emp.id === employeeId)
   console.log('emp', emp)
   try {
-    const res=await axios.put(
+    const res = await axios.put(
       '/api/emp/tag/update',
       { empId: employeeId, tags: emp?.tags },
       { headers: { 'Content-Type': 'application/json' } },
