@@ -1,28 +1,20 @@
 <template>
-  <div class="employee-form-container">
+  <div class="machine-form-container">
     <h2>{{ formTitle }}</h2>
     <form @submit.prevent="handleSubmit">
       <div class="form-group">
-        <label for="name">姓名:</label>
+        <label for="name">機器:</label>
         <input type="text" id="name" v-model="formData.name" required />
       </div>
       <div class="form-group">
-        <label for="username">帳號:</label>
-        <!-- Assuming "帳號" means username -->
-        <input type="text" id="username" v-model="formData.username" required />
+        <label for="machinename">機器正式名稱:</label>
+        <input type="text" id="machinename" v-model="formData.machinename" required />
       </div>
-      <div class="form-group" v-if="!employeeToEdit">
-        <label for="role">選擇身份:</label>
+      <div class="form-group">
+        <label for="role">選擇狀態:</label>
         <select id="role" v-model.number="formData.role">
-          <option :value="0">員工</option>
-          <option :value="1">管理員</option>
-        </select>
-      </div>
-      <div class="form-group" v-else>
-        <label for="role">身份不可更改:</label>
-        <select id="role" v-model.number="formData.role" disabled>
-          <option :value="0">員工</option>
-          <option :value="1">管理員</option>
+          <option :value="0">未啟用</option>
+          <option :value="1">啟用中</option>
         </select>
       </div>
 
@@ -32,11 +24,11 @@
           <div v-for="tagOption in availableTags" :key="tagOption" class="checkbox-item">
             <input
               type="checkbox"
-              :id="'tag-' + tagOption + '-' + (employeeToEdit ? employeeToEdit.id : 'new')"
+              :id="'tag-' + tagOption + '-' + (machineToEdit ? machineToEdit.id : 'new')"
               :value="tagOption"
               v-model="selectedTags"
             />
-            <label :for="'tag-' + tagOption + '-' + (employeeToEdit ? employeeToEdit.id : 'new')">{{
+            <label :for="'tag-' + tagOption + '-' + (machineToEdit ? machineToEdit.id : 'new')">{{
               tagOption
             }}</label>
           </div>
@@ -58,36 +50,33 @@
 <script setup lang="ts">
 import { ref, reactive, watch, computed, onMounted } from 'vue'
 
-// Define the Employee structure (can be imported if shared)
-interface Employee {
-  group: string
-  id: number
-  jwt: string
-  name: string
-  role: 0 | 1
-  tags: string // JSON string
-  updateTime: string
-  usable: 1 | 0
-  username: string
+interface Machine {
+  id: number // 機器 ID
+  name: string // 顯示名稱
+  machineName: string // 機器內部名稱
+  usable: number // 是否啟用
+  group: string // 所屬群組
+  updateTime: string // 更新時間 (ISO string)
+  tags: string // JSON 格式標籤陣列
 }
 
 // Data for the form fields
 interface FormDataState {
   // Renamed to avoid conflict with global FormData
   name: string
-  username: string
-  role: 0 | 1
+  machinename: string
+  role: number
   id: number // Will be present if editing
 }
 
 interface Props {
-  employeeToEdit?: Employee | null // Employee data if in edit mode
+  machineToEdit?: Machine | null // Employee data if in edit mode
 }
 
 // Emitted payload will include id if editing
 // Adjusting to ensure all Employee fields (except updateTime) are potentially part of the payload
 // as Manager.vue will spread this over existing or create new.
-interface SavePayload extends Omit<Employee, 'updateTime'> {
+interface SavePayload extends Omit<Machine, 'updateTime'> {
   id: number // id is optional for new, but will be present if editing
 }
 
@@ -101,7 +90,7 @@ const emit = defineEmits<Emits>()
 
 const formData = reactive<FormDataState>({
   name: '',
-  username: '',
+  machinename: '',
   role: 0,
   id: 0,
 })
@@ -109,17 +98,17 @@ const formData = reactive<FormDataState>({
 const availableTags = ref<string[]>(['物性', '電性', '化性']) // Predefined tags
 const selectedTags = ref<string[]>([])
 
-const isEditMode = computed(() => !!props.employeeToEdit)
-const formTitle = computed(() => (isEditMode.value ? '修改員工資料' : '新增員工'))
+const isEditMode = computed(() => !!props.machineToEdit)
+const formTitle = computed(() => (isEditMode.value ? '修改機器資料' : '新增機器'))
 
 const populateFormForEdit = () => {
-  if (props.employeeToEdit) {
-    formData.id = props.employeeToEdit.id
-    formData.name = props.employeeToEdit.name
-    formData.username = props.employeeToEdit.username
-    formData.role = props.employeeToEdit.role
+  if (props.machineToEdit) {
+    formData.id = props.machineToEdit.id
+    formData.name = props.machineToEdit.name
+    formData.machinename = props.machineToEdit.machineName
+    formData.role = props.machineToEdit.usable
     try {
-      const parsed = JSON.parse(props.employeeToEdit.tags || '[]')
+      const parsed = JSON.parse(props.machineToEdit.tags || '[]')
       selectedTags.value = Array.isArray(parsed)
         ? parsed.filter((tag) => typeof tag === 'string')
         : []
@@ -131,7 +120,7 @@ const populateFormForEdit = () => {
     // Reset for add mode
     formData.id = 0
     formData.name = ''
-    formData.username = ''
+    formData.machinename = ''
     formData.role = 0
     selectedTags.value = []
   }
@@ -142,33 +131,33 @@ onMounted(() => {
 })
 
 watch(
-  () => props.employeeToEdit,
+  () => props.machineToEdit,
   () => {
     populateFormForEdit()
   },
   { deep: true },
-) // Use deep watch if employeeToEdit itself might change structure or for nested objects
+) // Use deep watch if machineToEdit itself might change structure or for nested objects
 
 const handleSubmit = (): void => {
   // Construct the base payload from form data
-  const basePayload: Omit<SavePayload, 'group' | 'jwt' | 'usable' | 'tags'> & {
+  const basePayload: Omit<SavePayload, 'group' | 'tags'> & {
     id: number
     tags: string
   } = {
     id: formData.id, // Will be undefined for new, populated for edit
     name: formData.name,
-    username: formData.username,
-    role: formData.role,
+    machineName: formData.machinename,
+    usable: formData.role,
     tags: JSON.stringify(selectedTags.value),
   }
 
   let finalPayload: SavePayload
 
-  if (isEditMode.value && props.employeeToEdit) {
-    // For editing, merge with existing non-editable fields from props.employeeToEdit
+  if (isEditMode.value && props.machineToEdit) {
+    // For editing, merge with existing non-editable fields from props.machineToEdit
     finalPayload = {
-      ...props.employeeToEdit, // Start with all fields from the original employee
-      ...basePayload, // Override with form data (name, username, role, tags, id)
+      ...props.machineToEdit, // Start with all fields from the original machine
+      ...basePayload, // Override with form data (name, machinename, role, tags, id)
     }
   } else {
     // For adding, we only send what the form collects, Manager.vue adds defaults
@@ -176,9 +165,6 @@ const handleSubmit = (): void => {
     finalPayload = {
       ...basePayload,
       group: 'NEEDS_DEFAULT', // Placeholder, Manager.vue should provide actual default
-      jwt: 'NEEDS_DEFAULT', // Placeholder
-      usable: 1, // Default, or Manager.vue provides
-      // id is already in basePayload (or undefined)
     } as SavePayload // Type assertion needed as we're building it partially
   }
 
@@ -191,7 +177,7 @@ const handleCancel = (): void => {
 </script>
 
 <style scoped>
-.employee-form-container {
+.machine-form-container {
   background-color: white;
   padding: 25px;
   border-radius: 8px;

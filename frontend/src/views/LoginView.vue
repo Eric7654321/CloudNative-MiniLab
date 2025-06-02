@@ -6,6 +6,7 @@ import axios, { type AxiosResponse } from 'axios'
 import { useCookies } from 'vue3-cookies'
 import AlertText from '../components/AlertText.vue'
 import { useUserData } from '@/stores/UserData'
+import { NFlex, NH2 } from 'naive-ui'
 
 let submiting = false
 
@@ -88,40 +89,46 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="login-container">
-    <h2>登入系統 (Login to the System)</h2>
-    <form @submit.prevent="submit" class="login-form">
-      <div class="input-group" :class="{ 'has-content': account || isUsernameFocused }">
-        <label for="username">使用者名稱 (Username)</label>
-        <input
-          type="text"
-          id="username"
-          v-model="account"
-          @focus="isUsernameFocused = true"
-          @blur="isUsernameFocused = false"
-          required
-        />
-        <AlertText ref="LoginWarn" />
-      </div>
+  <n-flex justify="center">
+    <div class="login-container">
+      <n-h2>登入系統 (Login to the System)</n-h2>
+      <form @submit.prevent="submit" class="login-form">
+        <div class="input-group" :class="{ 'has-content': account || isUsernameFocused }">
+          <label for="username">使用者名稱 (Username)</label>
+          <input
+            type="text"
+            id="username"
+            v-model="account"
+            @focus="isUsernameFocused = true"
+            @blur="isUsernameFocused = false"
+            required
+          />
+          <AlertText ref="LoginWarn" />
+        </div>
 
-      <div class="input-group" :class="{ 'has-content': password || isPasswordFocused }">
-        <label for="password">密碼 (Password)</label>
-        <input
-          type="password"
-          id="password"
-          v-model="password"
-          @focus="isPasswordFocused = true"
-          @blur="isPasswordFocused = false"
-          required
-        />
-        <AlertText ref="PasswdWarn" />
-      </div>
-      <button type="submit" class="login-button">登入 (Login)</button>
-    </form>
-  </div>
+        <div class="input-group" :class="{ 'has-content': password || isPasswordFocused }">
+          <label for="password">密碼 (Password)</label>
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            @focus="isPasswordFocused = true"
+            @blur="isPasswordFocused = false"
+            required
+          />
+          <AlertText ref="PasswdWarn" />
+        </div>
+        <button type="submit" class="login-button">登入 (Login)</button>
+      </form>
+    </div>
+  </n-flex>
 </template>
 
 <style scoped>
+.n-flex {
+  width: 100vw;
+}
+
 .login-container {
   max-width: 400px;
   margin: 100px auto;

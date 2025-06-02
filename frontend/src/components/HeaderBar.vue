@@ -1,45 +1,68 @@
 <template>
-  <header class="header-bar">
-    <div>
-      <div>{{ userdata.Role }} {{ userdata.name }}</div>
-      <button @click="exit" v-if="showExit">離開</button>
-      <button @click="goMessage">訊息</button>
-      <button @click="goReport">回報</button>
-      <button @click="goCalendar">行事曆</button>
-      <button @click="goLogout">登出</button>
-    </div>
-  </header>
+  <n-grid x-gap="12" :cols="2" class="header-bar-grid" :class="headerThemeClass">
+    <n-grid-item class="header-user-info">
+      <n-p>您好! {{ userdata.Role }} {{ userdata.name }}</n-p>
+    </n-grid-item>
+    <n-grid-item class="header-menu-items">
+      <n-button text style="font-size: 20px" @click="requestToggleTheme">
+        <n-icon>
+          <DarkModeOutlined v-if="themeStore.theme.name === 'dark'" />
+          <LightModeOutlined v-if="themeStore.theme.name === 'light'" />
+        </n-icon>
+      </n-button>
+      <n-menu mode="horizontal" :options="options" @update:value="handleUpdateValue" />
+    </n-grid-item>
+  </n-grid>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue' // Import computed
 import { useCookies } from 'vue3-cookies'
-import { useRouter, useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUserData } from '@/stores/UserData'
+import { NButton, NGrid, NGridItem, NP, NMenu, NIcon, type MenuOption } from 'naive-ui'
+import { LightModeOutlined, DarkModeOutlined } from '@vicons/material'
+import { useTheme } from '@/stores/theme'
 
-const { cookies } = useCookies()
 const router = useRouter()
-const route = useRoute()
 const userdata = useUserData()
+const { cookies } = useCookies()
+const themeStore = useTheme()
 
-const showExit = computed(() => ['/message', '/calendar', '/report'].includes(route.path))
+// Computed property to determine the header's theme class
+const headerThemeClass = computed(() => {
+  return themeStore.theme.name === 'dark' ? 'header-dark' : 'header-light'
+})
 
-const exit = () => {
-  router.push('/')
-}
+const options: MenuOption[] = [
+  {
+    label: userdata.role == 1 ? '管理員' : '任務',
+    key: userdata.role == 1 ? '/manager' : '/employee',
+  },
+  {
+    label: '行事曆',
+    key: '/calendar',
+  },
+  {
+    label: '訊息',
+    key: '/message',
+  },
+  {
+    label: '回報',
+    key: '/report',
+  },
+  {
+    label: '登出',
+    key: 'logout',
+  },
+]
 
-const goMessage = () => {
-  router.push('/message')
-}
-
-const goReport = () => {
-  // console.log('前往回報')
-  router.push('/report')
-}
-
-const goCalendar = () => {
-  // console.log('行事曆')
-  router.push('/calendar')
+const handleUpdateValue = (key: string, item: MenuOption) => {
+  if (key === 'logout') {
+    goLogout()
+  } else {
+    router.push(key)
+  }
 }
 
 const goLogout = () => {
@@ -47,41 +70,83 @@ const goLogout = () => {
   userdata.reset()
   router.push('/')
 }
+
+const requestToggleTheme = () => {
+  themeStore.toggleTheme()
+}
+
+const emit = defineEmits()
 </script>
 
 <style scoped>
-.header-bar {
+.header-bar-grid {
   position: fixed;
-  /* ✅ 固定在畫面某個位置 */
   top: 0;
-  /* ✅ 靠上方 */
   left: 0;
   width: 100%;
-  /* ✅ 滿版 */
   height: 60px;
+  padding: 0 24px;
+  box-sizing: border-box;
+  align-items: center;
+  z-index: 1000;
+  transition: background-color 0.3s; /* Add transition for smooth background color change */
+  /* Default/Light theme background and border */
+  /* background-color: #ffffff; */ /* Naive UI light theme card color by default is white */
+  /* border-bottom: 1px solid #efefef; */ /* A light border */
+}
+
+/* Styles for light theme header */
+.header-light {
+  background-color: #ffffff; /* Or your preferred light theme header background */
+  border-bottom: 1px solid #efefef;
+}
+
+/* Styles for dark theme header */
+.header-dark {
+  background-color: #2c2c2c; /* Or your preferred dark theme header background, e.g., Naive UI's dark card color */
+  border-bottom: 1px solid #3a3a3a; /* A slightly lighter border for dark theme */
+}
+
+/* Ensure text color in header is readable against different backgrounds */
+/* You might need to adjust this based on your specific theme colors */
+.header-light .n-p,
+.header-light .n-menu .n-menu-item-content__title {
+  color: #333333; /* Darker text for light background */
+}
+.header-dark .n-p,
+.header-dark .n-menu .n-menu-item-content__title {
+  color: #ffffffcc; /* Lighter text for dark background (Naive UI uses opacity) */
+}
+.header-dark .n-button .n-icon,
+.header-dark .n-menu .n-icon {
+  color: #ffffffcc;
+}
+
+.header-user-info {
+  /* The n-grid-item itself will align its content (n-p) based on the parent's align-items */
+}
+
+.header-user-info .n-p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.header-menu-items {
   display: flex;
   justify-content: flex-end;
-  /* 右側對齊 */
   align-items: center;
-  background-color: #1e293b;
-  color: white;
-  z-index: 1000;
-  /* ✅ 確保在最上層 */
 }
 
-.header-bar button {
-  color: white;
-  background-color: #3b82f6;
-  /* 藍色按鈕 */
-  border: none;
-  padding: 8px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 4px;
+.header-menu-items > .n-button {
+  margin-right: 20px;
 }
 
-.header-bar button:hover {
-  background-color: #2563eb;
-  /* 深一點藍色 */
+/* If Naive UI menu items need specific color overrides for themes */
+.header-light .n-menu {
+  /* background-color: transparent; */ /* Ensure menu inherits header bg or is transparent */
+  background-color: #ffffff;
+}
+.header-dark .n-menu {
+  background-color: transparent;
 }
 </style>
