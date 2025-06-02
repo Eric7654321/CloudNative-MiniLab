@@ -1,43 +1,38 @@
 <template>
-  <div class="report-form">
-    <h1>回報表單</h1>
+  <n-flex align="center" vertical>
+    <n-h1>回報表單</n-h1>
 
-    <div>
-      <n-form
-        ref="FormRef"
-        :model="FormInput"
-        :rules="rules"
-        label-placement="left"
-        label-width="auto"
-        require-mark-placement="right-hanging"
-        :style="{
-          maxWidth: '640px',
-        }"
-      >
-        <n-form-item path="groupId" label="群組ID">
-          <n-input v-model:value="FormInput.groupId" :disabled="true" type="text" />
-        </n-form-item>
-        <n-form-item path="taskid" label="任務ID">
-          <n-input-number v-model:value="FormInput.taskid" :min="1" placeholder="任務ID" />
-        </n-form-item>
-        <n-form-item path="type" label="回報種類">
-          <n-select :options="options" v-model:value="FormInput.type" placeholder="選擇種類" />
-        </n-form-item>
-        <n-form-item path="message" label="備註">
-          <n-input
-            v-model:value="FormInput.message"
-            type="textarea"
-            @keydown.enter.prevent
-            clearable
-            placeholder="輸入備註"
-          />
-        </n-form-item>
-        <n-button type="primary" @click="handle_submit">
-          <n-spin :show="loading" size="small"> 提交 </n-spin>
-        </n-button>
-      </n-form>
-    </div>
-  </div>
+    <n-form
+      ref="FormRef"
+      :model="FormInput"
+      :rules="rules"
+      label-placement="left"
+      label-width="auto"
+      require-mark-placement="right-hanging"
+    >
+      <n-form-item path="groupId" label="群組ID">
+        <n-input v-model:value="FormInput.groupId" :disabled="true" type="text" />
+      </n-form-item>
+      <n-form-item path="taskid" label="任務ID">
+        <n-input-number v-model:value="FormInput.taskid" :min="1" placeholder="任務ID" />
+      </n-form-item>
+      <n-form-item path="type" label="回報種類">
+        <n-select :options="options" v-model:value="FormInput.type" placeholder="選擇種類" />
+      </n-form-item>
+      <n-form-item path="message" label="備註">
+        <n-input
+          v-model:value="FormInput.message"
+          type="textarea"
+          @keydown.enter.prevent
+          clearable
+          placeholder="輸入備註"
+        />
+      </n-form-item>
+      <n-button type="primary" @click="handle_submit">
+        <n-spin :show="loading" size="small"> 提交 </n-spin>
+      </n-button>
+    </n-form>
+  </n-flex>
 </template>
 
 <script lang="ts" setup>
@@ -51,8 +46,9 @@ import {
   NSelect,
   NInputNumber,
   NSpin,
+  NH1,
+  NFlex,
   useMessage,
-  NInputGroup,
 } from 'naive-ui'
 import axios from 'axios'
 import { ref } from 'vue'
@@ -149,14 +145,11 @@ const handle_submit = async (e: MouseEvent) => {
 </script>
 
 <style lang="css" scoped>
-.report-form {
-  width: 50%; /* 需要指定宽度 */
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-}
-h1 {
-  text-align: center;
-  margin: 20px;
+.n-flex {
+  position: flex;
+  width: 100vw;
+  height: calc(100vh - 60px);
+  display: flex;
+  overflow: hidden;
 }
 </style>

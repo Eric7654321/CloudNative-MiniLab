@@ -4,7 +4,20 @@
       <h2>我的工作</h2>
       <ul>
         <li v-for="task in tasks" :key="task.id">
-          <span :class="{ done: task.isFinish }">{{ task.id }}</span>
+          <span :class="{ done: task.isFinish }">{{ task.id }}</span
+          ><br />
+          <span>完成: {{ task.isFinish ? '是' : '否' }}</span
+          ><br />
+          <span>開始時間: {{ task.startTime }}</span
+          ><br />
+          <span>結束時間: {{ task.endTime }}</span
+          ><br />
+          <span>更新時間: {{ task.updateTime }}</span
+          ><br />
+          <span>所需技能: {{ task.tag }}</span
+          ><br />
+          <span>任務描述: {{ task.description }}</span
+          ><br />
         </li>
       </ul>
     </aside>
@@ -49,9 +62,10 @@ if (cookies.get('token') === null) {
 
 const fetchTodayTasks = async () => {
   try {
-    const response = await axios.get(`/api/task/check/today/${userdata.id}`)
-    console.log(response)
+    const response = await axios.get(`/api/task/search/${userdata.group}`)
+    // console.log(response)
     tasks.value = response.data.data // 因為你的 Result.success() 包了 data
+    tasks.value = tasks.value.filter((emp: any) => emp.emp === userdata.id)
     console.log('今日任務', tasks.value)
   } catch (error) {
     console.error('取得任務失敗', error)
@@ -71,23 +85,20 @@ onUnmounted(() => {
 <style scoped>
 .container {
   display: flex;
-  padding-top: 60px;
-  /* Header 的高度 */
-  height: 100vh-60px;
   overflow: hidden;
-  width: 100vw;
-  justify-content: flex-start;
-  /* 添加這行來確保向左對齊 */
-  margin: 0;
+  /* padding-top: 60px; */
+  height: calc(100vh - 60px); /* Adjust for any header height or padding */
+  width: auto;
+  background-color: black;
 }
 
 .task-list {
-  width: 250px;
+  width: auto;
+  height: calc(100vh - 60px);
   background-color: white;
   padding: 20px;
   border-right: 1px solid #e5e7eb;
-  margin-left: 0;
-  /* 確保沒有左邊距 */
+  overflow-y: scroll;
 }
 
 .task-list h2 {
@@ -108,15 +119,18 @@ onUnmounted(() => {
 
 .task-list .done {
   text-decoration: line-through;
-  color: black;
+  color: blue;
 }
 
 .content {
-  flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex: 1;
   background-color: black;
+  width: auto;
+  height: calc(100vh - 60px);
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
 }
 .content img {
   border-radius: 8px;
