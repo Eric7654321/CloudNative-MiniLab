@@ -70,6 +70,7 @@ import MachineCard from '@/components/MachineCard.vue' // Placeholder for future
 import MachineForm from '@/components/MachineForm.vue' // Placeholder for future machine form component
 import { useUserData } from '@/stores/UserData'
 import axios from 'axios'
+import { c } from 'naive-ui'
 
 interface Employee {
   group: string
@@ -355,13 +356,14 @@ const handleAddEmployeeTag = async ({ employeeId, tag }: EmployeeTagEventPayload
     return tagsArray
   })
   const emp = employees.value.find((emp) => emp.id === employeeId)
-
+  console.log('emp', emp)
   try {
-    await axios.put(
+    const res=await axios.put(
       '/api/emp/tag/update',
       { empId: employeeId, tags: emp?.tags },
       { headers: { 'Content-Type': 'application/json' } },
     )
+    console.log('res', res)
     await get_employee_list()
     console.log('Employee updated:', emp)
   } catch (error) {
@@ -377,6 +379,7 @@ const handleAddMachineTag = async ({ machineId, tag }: MachineTagEventPayload) =
     return tagsArray
   })
   const mach = machines.value.find((mach) => mach.id === machineId)
+  console.log('mach', mach)
 
   try {
     await axios.put(
@@ -505,8 +508,8 @@ onUnmounted(() => {
 <style scoped>
 .manager-page-wrapper {
   position: relative;
-  padding-top: 60px;
-  height: 100vh;
+  /* padding-top: 60px; */
+  height: calc(100vh - 60px); /* Adjust for any header height */
   width: 100vw;
   display: flex;
   overflow: hidden;
