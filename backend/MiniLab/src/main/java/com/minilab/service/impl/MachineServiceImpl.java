@@ -52,8 +52,6 @@ public class MachineServiceImpl implements MachineService {
 
     @Override
     public Result updateTag(MachineTag tag) {
-        tag.setUpdateTime(LocalDateTime.now());
-        tagMapper.updateMachineTagById(tag);
 
         List<Task> taskById = taskMapper.getTaskById(tag.getId());
         if (taskById.isEmpty()) {

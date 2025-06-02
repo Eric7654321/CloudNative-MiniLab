@@ -15,9 +15,6 @@
             <if test="usable != null">
                 usable = #{usable},
             </if>
-            <if test="usable != null and usable != ''">
-                usable = #{usable},
-            </if>
             <if test="`group` != null and `group` != ''">
                 `group` = #{group},
             </if>
