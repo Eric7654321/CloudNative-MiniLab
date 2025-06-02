@@ -5,8 +5,8 @@
       :class="{ 'modal-active-background': showEmployeeFormModal || showMachineFormModal }"
     >
       <header class="manager-header">
-        <h1>工人管理</h1>
-        <button @click="openAddEmployeeForm" class="add-btn">新增員工</button>
+        <n-h1>工人管理</n-h1>
+        <n-button @click="openAddEmployeeForm" type="info">新增員工</n-button>
       </header>
 
       <div class="employee-list">
@@ -27,8 +27,8 @@
       :class="{ 'modal-active-background': showEmployeeFormModal || showMachineFormModal }"
     >
       <header class="manager-header">
-        <h1>機器管理</h1>
-        <button @click="openAddMachineForm" class="add-btn">新增機器</button>
+        <n-h1>機器管理</n-h1>
+        <n-button @click="openAddMachineForm" type="info">新增機器</n-button>
       </header>
       <div class="machine-list">
         <MachineCard
@@ -519,7 +519,7 @@ onUnmounted(() => {
   padding: 20px;
   font-family: 'Arial', sans-serif;
   transition: filter 0.3s ease-in-out;
-  background-color: #f4f7f6;
+  background-color: var(--base-color);
   width: 50vw; /* Adjusted to fit two columns */
   height: 100vh-60px;
   overflow-y: scroll;
@@ -537,11 +537,6 @@ onUnmounted(() => {
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 2px solid #eee;
-}
-
-.manager-header h1 {
-  margin: 0;
-  color: #333;
 }
 
 .add-btn {

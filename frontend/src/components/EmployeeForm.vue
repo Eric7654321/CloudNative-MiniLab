@@ -1,61 +1,77 @@
 <template>
-  <div class="employee-form-container">
-    <h2>{{ formTitle }}</h2>
-    <form @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label for="name">姓名:</label>
-        <input type="text" id="name" v-model="formData.name" required />
-      </div>
-      <div class="form-group">
-        <label for="username">帳號:</label>
-        <!-- Assuming "帳號" means username -->
-        <input type="text" id="username" v-model="formData.username" required />
-      </div>
-      <div class="form-group" v-if="!employeeToEdit">
-        <label for="role">選擇身份:</label>
-        <select id="role" v-model.number="formData.role">
-          <option :value="0">員工</option>
-          <option :value="1">管理員</option>
-        </select>
-      </div>
-      <div class="form-group" v-else>
-        <label for="role">身份不可更改:</label>
-        <select id="role" v-model.number="formData.role" disabled>
-          <option :value="0">員工</option>
-          <option :value="1">管理員</option>
-        </select>
-      </div>
+  <n-card :title="formTitle">
+    <n-form
+      ref="formRef"
+      :model="formData"
+      :rules="rules"
+      label-placement="left"
+      label-width="auto"
+      require-mark-placement="right-hanging"
+      style="max-width: 600px; margin: auto"
+    >
+      <!-- <h2>{{ formTitle }}</h2> -->
+      <n-form-item label="姓名" path="name">
+        <n-input v-model:value="formData.name" placeholder="請輸入姓名" />
+      </n-form-item>
+      <n-form-item label="帳號" path="username">
+        <n-input v-model:value="formData.username" placeholder="請輸入帳號" />
+      </n-form-item>
 
-      <div class="form-group">
-        <label>選擇 Tags:</label>
-        <div class="checkbox-group">
-          <div v-for="tagOption in availableTags" :key="tagOption" class="checkbox-item">
-            <input
-              type="checkbox"
-              :id="'tag-' + tagOption + '-' + (employeeToEdit ? employeeToEdit.id : 'new')"
+      <n-form-item v-if="!employeeToEdit" label="選擇身份" path="role">
+        <n-select v-model:value="formData.role" placeholder="請選擇身份" :options="roleOptions" />
+      </n-form-item>
+      <n-form-item v-else label="身份" path="role">
+        <!-- Displaying role as text when editing, or use disabled select -->
+        <n-input
+          :value="getRoleLabel(formData.role)"
+          readonly
+          disabled
+          placeholder="身份不可更改"
+        />
+        <!-- Alternative: Disabled select
+      <n-select
+        v-model:value="formData.role"
+        :options="roleOptions"
+        disabled
+        placeholder="身份不可更改"
+      />
+      -->
+      </n-form-item>
+
+      <n-form-item label="選擇 Tags" path="selectedTags">
+        <n-checkbox-group v-model:value="selectedTags">
+          <n-space item-style="display: flex;">
+            <n-checkbox
+              v-for="tagOption in availableTags"
+              :key="tagOption"
               :value="tagOption"
-              v-model="selectedTags"
+              :label="tagOption"
             />
-            <label :for="'tag-' + tagOption + '-' + (employeeToEdit ? employeeToEdit.id : 'new')">{{
-              tagOption
-            }}</label>
-          </div>
-        </div>
-        <small v-if="!selectedTags.length && availableTags.length" class="tags-hint"
-          >可選多個標籤</small
+          </n-space>
+        </n-checkbox-group>
+        <div
+          v-if="!selectedTags.length && availableTags.length"
+          style="font-size: 12px; color: #aaa; margin-top: 4px"
         >
-        <small v-if="!availableTags.length" class="tags-hint">尚無可用標籤</small>
-      </div>
+          可選多個標籤
+        </div>
+        <div v-if="!availableTags.length" style="font-size: 12px; color: #aaa; margin-top: 4px">
+          尚無可用標籤
+        </div>
+      </n-form-item>
 
-      <div class="form-actions">
-        <button type="submit" class="btn-save">儲存</button>
-        <button type="button" @click="handleCancel" class="btn-cancel">取消</button>
-      </div>
-    </form>
-  </div>
+      <n-form-item>
+        <n-space>
+          <n-button type="primary" @click="handleSubmit">儲存</n-button>
+          <n-button @click="handleCancel">取消</n-button>
+        </n-space>
+      </n-form-item>
+    </n-form>
+  </n-card>
 </template>
 
 <script setup lang="ts">
+import type { FormInst, FormRules } from 'naive-ui'
 import { ref, reactive, watch, computed, onMounted } from 'vue'
 
 // Define the Employee structure (can be imported if shared)
@@ -96,6 +112,37 @@ interface Emits {
   (e: 'cancel'): void
 }
 
+const roleOptions = ref([
+  { label: '員工', value: 0 },
+  { label: '管理員', value: 1 },
+])
+
+// Rules for validation
+const rules: FormRules = {
+  name: {
+    required: true,
+    trigger: ['blur', 'input'],
+    message: '請輸入姓名',
+  },
+  username: {
+    required: true,
+    trigger: ['blur', 'input'],
+    message: '請輸入帳號',
+  },
+  role: {
+    type: 'number', // Important for n-select with number values
+    required: true,
+    trigger: ['blur', 'change'],
+    message: '請選擇身份',
+  },
+}
+const formRef = ref<FormInst | null>(null)
+
+// Helper to get role label for display when editing
+const getRoleLabel = (roleValue: any) => {
+  const role = roleOptions.value.find((option) => option.value === roleValue)
+  return role ? role.label : '未知身份'
+}
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
@@ -149,40 +196,46 @@ watch(
   { deep: true },
 ) // Use deep watch if employeeToEdit itself might change structure or for nested objects
 
-const handleSubmit = (): void => {
+const handleSubmit = (e: MouseEvent): void => {
   // Construct the base payload from form data
-  const basePayload: Omit<SavePayload, 'group' | 'jwt' | 'usable' | 'tags'> & {
-    id: number
-    tags: string
-  } = {
-    id: formData.id, // Will be undefined for new, populated for edit
-    name: formData.name,
-    username: formData.username,
-    role: formData.role,
-    tags: JSON.stringify(selectedTags.value),
-  }
+  e.preventDefault()
+  formRef?.value?.validate((errors) => {
+    if (errors) {
+    } else {
+      const basePayload: Omit<SavePayload, 'group' | 'jwt' | 'usable' | 'tags'> & {
+        id: number
+        tags: string
+      } = {
+        id: formData.id, // Will be undefined for new, populated for edit
+        name: formData.name,
+        username: formData.username,
+        role: formData.role,
+        tags: JSON.stringify(selectedTags.value),
+      }
 
-  let finalPayload: SavePayload
+      let finalPayload: SavePayload
 
-  if (isEditMode.value && props.employeeToEdit) {
-    // For editing, merge with existing non-editable fields from props.employeeToEdit
-    finalPayload = {
-      ...props.employeeToEdit, // Start with all fields from the original employee
-      ...basePayload, // Override with form data (name, username, role, tags, id)
+      if (isEditMode.value && props.employeeToEdit) {
+        // For editing, merge with existing non-editable fields from props.employeeToEdit
+        finalPayload = {
+          ...props.employeeToEdit, // Start with all fields from the original employee
+          ...basePayload, // Override with form data (name, username, role, tags, id)
+        }
+      } else {
+        // For adding, we only send what the form collects, Manager.vue adds defaults
+        // But SavePayload expects all Employee fields (minus updateTime). So we add placeholders.
+        finalPayload = {
+          ...basePayload,
+          group: 'NEEDS_DEFAULT', // Placeholder, Manager.vue should provide actual default
+          jwt: 'NEEDS_DEFAULT', // Placeholder
+          usable: 1, // Default, or Manager.vue provides
+          // id is already in basePayload (or undefined)
+        } as SavePayload // Type assertion needed as we're building it partially
+      }
+
+      emit('save', finalPayload)
     }
-  } else {
-    // For adding, we only send what the form collects, Manager.vue adds defaults
-    // But SavePayload expects all Employee fields (minus updateTime). So we add placeholders.
-    finalPayload = {
-      ...basePayload,
-      group: 'NEEDS_DEFAULT', // Placeholder, Manager.vue should provide actual default
-      jwt: 'NEEDS_DEFAULT', // Placeholder
-      usable: 1, // Default, or Manager.vue provides
-      // id is already in basePayload (or undefined)
-    } as SavePayload // Type assertion needed as we're building it partially
-  }
-
-  emit('save', finalPayload)
+  })
 }
 
 const handleCancel = (): void => {
