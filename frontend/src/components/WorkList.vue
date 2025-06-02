@@ -4,13 +4,20 @@
       <h2>我的工作</h2>
       <ul>
         <li v-for="task in tasks" :key="task.id">
-          <span :class="{ done: task.isFinish }">{{ task.id }}</span><br>
-          <span>完成: {{ task.isFinish ? '是' : '否' }}</span><br>
-          <span>開始時間: {{ task.startTime }}</span><br>
-          <span>結束時間: {{ task.endTime }}</span><br>
-          <span>更新時間: {{ task.updateTime }}</span><br>
-          <span>所需技能: {{ task.tag }}</span><br>
-          <span>任務描述: {{ task.description }}</span><br>
+          <span :class="{ done: task.isFinish }">{{ task.id }}</span
+          ><br />
+          <span>完成: {{ task.isFinish ? '是' : '否' }}</span
+          ><br />
+          <span>開始時間: {{ task.startTime }}</span
+          ><br />
+          <span>結束時間: {{ task.endTime }}</span
+          ><br />
+          <span>更新時間: {{ task.updateTime }}</span
+          ><br />
+          <span>所需技能: {{ task.tag }}</span
+          ><br />
+          <span>任務描述: {{ task.description }}</span
+          ><br />
         </li>
       </ul>
     </aside>
@@ -44,12 +51,9 @@ interface Task {
   updateTime: string // 更新時間 (ISO 字串)
 }
 
-
-
 const tasks = ref<Task[]>([])
 const userdata = useUserData()
 let intervalId: number | undefined
-
 
 const { cookies } = useCookies()
 if (cookies.get('token') === null) {
@@ -72,7 +76,6 @@ onMounted(() => {
   fetchTodayTasks()
   intervalId = window.setInterval(fetchTodayTasks, 10000) // 10,000 ms = 10 seconds
 })
-
 
 onUnmounted(() => {
   if (intervalId) clearInterval(intervalId)

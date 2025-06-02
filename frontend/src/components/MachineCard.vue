@@ -59,7 +59,7 @@ interface Machine {
 }
 
 interface Props {
-  machine: Machine 
+  machine: Machine
 }
 
 interface Emits {
