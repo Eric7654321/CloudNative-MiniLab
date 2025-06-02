@@ -23,8 +23,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-<script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
 import { useCookies } from 'vue3-cookies'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
