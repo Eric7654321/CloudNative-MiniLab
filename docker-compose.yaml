@@ -2,23 +2,14 @@ services:
   backend:
     build:
       context: ./backend/MiniLab/
-      # dockerfile: ./Dockerfile.dev
       dockerfile: ./Dockerfile
     env_file: "./backend/MiniLab/target/env"
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: "512M"
-    # ports:
-      # - "8080:8080"
-      # - "3306:3306"
 
   frontend:
     build:
       context: ./frontend/
-      # dockerfile: ./Dockerfile.dev
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.dev
+      # dockerfile: ./Dockerfile
     environment:
       BACKEND_URL: backend:8080
     ports:

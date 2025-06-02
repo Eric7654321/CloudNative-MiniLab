@@ -24,7 +24,7 @@
         <h1>機器管理</h1>
         <button @click="openAddMachineForm" class="add-btn">新增機器</button>
       </header>
-      <div class="machine-list">  
+      <div class="machine-list">
         <MachineCard
           v-for="machine in machines"
           :key="machine.id"
@@ -36,7 +36,7 @@
         />
         <p v-if="!machines.length" class="no-message">目前沒有機器資料。</p>
       </div>
-    </div>    
+    </div>
 
     <!-- Modal for EmployeeForm (Add/Edit) -->
     <div v-if="showEmployeeFormModal" class="modal-overlay" @click.self="closeEmployeeFormModal">
@@ -197,7 +197,7 @@ const handleSaveEmployee = async (formData: EmployeeFormSavePayload) => {
           emp,
           { headers: { 'Content-Type': 'application/json' } },
         )
-        
+
         await get_employee_list()
         console.log('Employee updated:', employees.value[index])
       } catch (error) {
@@ -505,7 +505,6 @@ onUnmounted(() => {
 <style scoped>
 .manager-page-wrapper {
   position: relative;
-  padding-top: 60px;
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -566,7 +565,7 @@ onUnmounted(() => {
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   /* Slightly wider for new buttons */
   gap: 20px;
-} 
+}
 
 .no-message {
   text-align: center;
