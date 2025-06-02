@@ -1,5 +1,5 @@
 <template>
-  <div class="machine-card">
+  <n-el tag="div" class="machine-card">
     <div class="machine-attribute">
       <strong class="name-label">機器:</strong>
       <span class="name-value">{{ machine.name }}</span>
@@ -21,28 +21,27 @@
     </div>
 
     <div class="add-tag-section">
-      <input
+      <n-input
         type="text"
-        v-model="newTag"
+        v-model:value="newTag"
         @keyup.enter="requestAddTag"
         placeholder="新增標籤到此機器"
-        class="add-tag-input"
       />
-      <button @click="requestAddTag" class="add-tag-btn" :disabled="!newTag.trim()">新增</button>
+      <n-button @click="requestAddTag" :disabled="!newTag.trim()">新增</n-button>
     </div>
 
-    <div class="machine-attribute subtle-info">
-      <span>ID: {{ machine.id }}</span>
-      <span>機器正式名稱: {{ machine.machineName }}</span>
-    </div>
+    <n-el tag="div" class="machine-attribute subtle-info">
+      <n-el tag="span">ID: {{ machine.id }}</n-el>
+      <n-el tag="span">機器正式名稱: {{ machine.machineName }}</n-el>
+    </n-el>
     <div class="machine-attribute subtle-info">
       <span>更新時間: {{ new Date(machine.updateTime).toLocaleString() }}</span>
     </div>
     <div class="machine-actions">
-      <button @click="requestEditMachine" class="edit-machine-btn">修改資料</button>
-      <button @click="requestDeleteMachine" class="delete-machine-btn">刪除機器</button>
+      <n-button @click="requestEditMachine" type="warning">修改資料</n-button>
+      <n-button @click="requestDeleteMachine" type="error">刪除機器</n-button>
     </div>
-  </div>
+  </n-el>
 </template>
 
 <script setup lang="ts">
@@ -127,12 +126,12 @@ const requestEditMachine = (): void => {
 
 <style scoped>
 .machine-card {
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+  box-shadow: var(--box-shadow-1);
+  background-color: var(--card-color);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -152,24 +151,24 @@ const requestEditMachine = (): void => {
 }
 
 .name-label {
-  color: #333;
+  color: var(--text-color-1);
 }
 .name-value {
-  color: cornflowerblue;
+  color: var(--info-color-pressed);
   font-weight: bold;
   font-size: 1.1em;
 }
 
 .role-label {
-  color: #333;
+  color: var(--text-color-1);
 }
 .role-value {
-  color: mediumseagreen;
+  color: var(--primary-color);
   font-style: italic;
 }
 
 .tags-label {
-  color: coral;
+  color: var(--warning-color-suppl);
   white-space: nowrap;
   margin-top: 3px;
 }
@@ -180,8 +179,8 @@ const requestEditMachine = (): void => {
   flex-grow: 1;
 }
 .tag-item {
-  background-color: lightslategray;
-  color: white;
+  background-color: var(--tag-color);
+  color: var(--text-color);
   padding: 4px 8px 4px 10px;
   border-radius: 12px;
   font-size: 0.9em;
@@ -203,7 +202,7 @@ const requestEditMachine = (): void => {
 .remove-tag-btn {
   background: none;
   border: none;
-  color: white;
+  color: var(--text-color);
   cursor: pointer;
   margin-left: 6px;
   font-size: 1.2em;
@@ -256,7 +255,7 @@ const requestEditMachine = (): void => {
 
 .subtle-info {
   font-size: 0.8em;
-  color: #666;
+  color: var(--text-color-2);
   display: flex;
   flex-direction: column;
   gap: 2px;
