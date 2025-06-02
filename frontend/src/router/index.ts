@@ -11,6 +11,7 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () => import('@/views/LoginView.vue'),
+      component: () => import('@/views/LoginView.vue'),
       meta: { requireAuth: false },
     },
     {
@@ -29,6 +30,7 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('@/views/Manager.vue'),
+      component: () => import('@/views/Manager.vue'),
       //props: route => ({ employeeId: Number(route.query.employeeId) }),
       meta: { requireAuth: true, manager: true },
     },
@@ -38,6 +40,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
+      component: () => import('@/components/WorkList.vue'),
       component: () => import('@/components/WorkList.vue'),
       //props: route => ({ employeeId: Number(route.query.employeeId) }),
       meta: { requireAuth: true },
