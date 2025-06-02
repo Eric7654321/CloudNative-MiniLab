@@ -10,13 +10,13 @@
           <LightModeOutlined v-if="themeStore.theme.name === 'light'" />
         </n-icon>
       </n-button>
-      <n-menu mode="horizontal" :options="options" @update:value="handleUpdateValue" />
+      <n-menu mode="horizontal" v-model:options="options" @update:value="handleUpdateValue" />
     </n-grid-item>
   </n-grid>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue' // Import computed
+import { computed, ref } from 'vue' // Import computed
 import { useCookies } from 'vue3-cookies'
 import { useRouter } from 'vue-router'
 import { useUserData } from '@/stores/UserData'
@@ -34,10 +34,10 @@ const headerThemeClass = computed(() => {
   return themeStore.theme.name === 'dark' ? 'header-dark' : 'header-light'
 })
 
-const options: MenuOption[] = [
+const options = ref<MenuOption[]>([
   {
-    label: userdata.role == 1 ? '管理員' : '任務',
-    key: userdata.role == 1 ? '/manager' : '/employee',
+    label: '首頁',
+    key: '/',
   },
   {
     label: '行事曆',
@@ -55,7 +55,7 @@ const options: MenuOption[] = [
     label: '登出',
     key: 'logout',
   },
-]
+])
 
 const handleUpdateValue = (key: string, item: MenuOption) => {
   if (key === 'logout') {
@@ -141,12 +141,4 @@ const emit = defineEmits()
   margin-right: 20px;
 }
 
-/* If Naive UI menu items need specific color overrides for themes */
-.header-light .n-menu {
-  /* background-color: transparent; */ /* Ensure menu inherits header bg or is transparent */
-  background-color: #ffffff;
-}
-.header-dark .n-menu {
-  background-color: transparent;
-}
 </style>
