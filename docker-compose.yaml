@@ -10,6 +10,7 @@ services:
       context: ./frontend/
       dockerfile: ./Dockerfile.dev
       # dockerfile: ./Dockerfile
+      # dockerfile: ./Dockerfile
     environment:
       BACKEND_URL: backend:8080
     ports:

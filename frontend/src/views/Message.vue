@@ -66,7 +66,7 @@ onUnmounted(() => {
 <style scoped>
 .container {
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 60px);
   overflow: hidden;
   width: 100vw;
   justify-content: center;
@@ -79,7 +79,7 @@ onUnmounted(() => {
   padding: 20px;
   border-right: 1px solid #e5e7eb;
   margin-left: 0;
-  height: 100vh-60px;
+  height: calc(100vh - 60px);
   overflow-y: auto;
   position: sticky;
   top: 0;
