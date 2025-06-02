@@ -44,9 +44,12 @@ interface Task {
   updateTime: string // 更新時間 (ISO 字串)
 }
 
+
+
 const tasks = ref<Task[]>([])
 const userdata = useUserData()
 let intervalId: number | undefined
+
 
 const { cookies } = useCookies()
 if (cookies.get('token') === null) {
@@ -70,6 +73,7 @@ onMounted(() => {
   intervalId = window.setInterval(fetchTodayTasks, 10000) // 10,000 ms = 10 seconds
 })
 
+
 onUnmounted(() => {
   if (intervalId) clearInterval(intervalId)
 })
@@ -78,24 +82,20 @@ onUnmounted(() => {
 <style scoped>
 .container {
   display: flex;
-  padding-top: 60px;
-  /* Header 的高度 */
-  height: 100vh;
   overflow: hidden;
-  width: 100vw;
-  justify-content: flex-start;
-  /* 添加這行來確保向左對齊 */
-  margin: 0;
+  /* padding-top: 60px; */
+  height: calc(100vh - 60px); /* Adjust for any header height or padding */
+  width: auto;
+  background-color: black;
 }
 
 .task-list {
   width: auto;
+  height: calc(100vh - 60px);
   background-color: white;
   padding: 20px;
   border-right: 1px solid #e5e7eb;
-  overflow-y: auto;
-  margin-left: 0;
-  /* 確保沒有左邊距 */
+  overflow-y: scroll;
 }
 
 .task-list h2 {
@@ -120,11 +120,14 @@ onUnmounted(() => {
 }
 
 .content {
-  flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex: 1;
   background-color: black;
+  width: auto;
+  height: calc(100vh - 60px);
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
 }
 .content img {
   border-radius: 8px;
