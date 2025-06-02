@@ -15,7 +15,7 @@
             <if test="password != null and password != ''">
                 password = #{password},
             </if>
-            <if test="usable != null and usable != ''">
+            <if test="usable != null">
                 usable = #{usable},
             </if>
             <if test="`group` != null and `group` != ''">

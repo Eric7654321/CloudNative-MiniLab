@@ -23,6 +23,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useCookies } from 'vue3-cookies'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
@@ -47,7 +49,30 @@ interface Task {
 const tasks = ref<Task[]>([])
 const userdata = useUserData()
 let intervalId: number | undefined
+interface Task {
+  id: number // 任務 ID
+  emp: number // 員工 ID
+  empName: string // 員工名稱（後端填入）
+  machine: string[] // JSON 字串陣列形式，例如：["1","2"]
+  machineName: string[] // JSON 字串陣列形式（後端填入）
+  startTime: string // 任務開始時間 (ISO 字串)
+  endTime: string // 任務結束時間 (ISO 字串)
+  tag: string // 所需技能（如：電性）
+  description: string // 任務描述
+  group: string // 所屬群組 ID
+  updaterId: number // 更新者 ID
+  isFinish: number // 是否已完成（1=完成，0=未完成）
+  updateTime: string // 更新時間 (ISO 字串)
+}
 
+const tasks = ref<Task[]>([])
+const userdata = useUserData()
+let intervalId: number | undefined
+
+const { cookies } = useCookies()
+if (cookies.get('token') === null) {
+  useRouter().push('/')
+}
 const { cookies } = useCookies()
 if (cookies.get('token') === null) {
   useRouter().push('/')
@@ -69,7 +94,13 @@ onMounted(() => {
   fetchTodayTasks()
   intervalId = window.setInterval(fetchTodayTasks, 10000) // 10,000 ms = 10 seconds
 })
+onMounted(() => {
+  fetchTodayTasks()
+  intervalId = window.setInterval(fetchTodayTasks, 10000) // 10,000 ms = 10 seconds
+})
 
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId)
 onUnmounted(() => {
   if (intervalId) clearInterval(intervalId)
 })
@@ -85,6 +116,7 @@ onUnmounted(() => {
   width: 100vw;
   justify-content: flex-start;
   /* 添加這行來確保向左對齊 */
+  margin: 0;
   margin: 0;
 }
 
