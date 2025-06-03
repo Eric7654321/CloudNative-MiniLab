@@ -1,53 +1,59 @@
 <template>
-  <div class="machine-form-container">
-    <h2>{{ formTitle }}</h2>
-    <form @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label for="name">機器:</label>
-        <input type="text" id="name" v-model="formData.name" required />
-      </div>
-      <div class="form-group">
-        <label for="machinename">機器正式名稱:</label>
-        <input type="text" id="machinename" v-model="formData.machinename" required />
-      </div>
-      <div class="form-group">
-        <label for="role">選擇狀態:</label>
-        <select id="role" v-model.number="formData.role">
-          <option :value="0">未啟用</option>
-          <option :value="1">啟用中</option>
-        </select>
-      </div>
+  <n-card :title="formTitle">
+    <n-form
+      ref="formRef"
+      :model="formData"
+      :rules="rules"
+      label-placement="left"
+      label-width="auto"
+      require-mark-placement="right-hanging"
+      style="max-width: 600px; margin: auto"
+    >
+      <!--<h2>{{ formTitle }}</h2>-->
+      <n-form-item label="機器" path="name">
+        <n-input v-model:value="formData.name" placeholder="請輸入機器名稱" />
+      </n-form-item>
+      <n-form-item label="機器正式名稱" path="machinename">
+        <n-input v-model:value="formData.machinename" placeholder="請輸入機器正式名稱" />
+      </n-form-item>
+      <n-form-item label="選擇狀態" path="role">
+        <n-select v-model:value="formData.role" placeholder="請選擇狀態" :options="statusOptions" />
+      </n-form-item>
 
-      <div class="form-group">
-        <label>選擇 Tags:</label>
-        <div class="checkbox-group">
-          <div v-for="tagOption in availableTags" :key="tagOption" class="checkbox-item">
-            <input
-              type="checkbox"
-              :id="'tag-' + tagOption + '-' + (machineToEdit ? machineToEdit.id : 'new')"
+      <n-form-item label="選擇 Tags" path="selectedTags">
+        <n-checkbox-group v-model:value="selectedTags">
+          <n-space item-style="display: flex;">
+            <n-checkbox
+              v-for="tagOption in availableTags"
+              :key="tagOption"
               :value="tagOption"
-              v-model="selectedTags"
+              :label="tagOption"
             />
-            <label :for="'tag-' + tagOption + '-' + (machineToEdit ? machineToEdit.id : 'new')">{{
-              tagOption
-            }}</label>
-          </div>
-        </div>
-        <small v-if="!selectedTags.length && availableTags.length" class="tags-hint"
-          >可選多個標籤</small
+          </n-space>
+        </n-checkbox-group>
+        <div
+          v-if="!selectedTags.length && availableTags.length"
+          style="font-size: 12px; color: #aaa; margin-top: 4px"
         >
-        <small v-if="!availableTags.length" class="tags-hint">尚無可用標籤</small>
-      </div>
+          可選多個標籤
+        </div>
+        <div v-if="!availableTags.length" style="font-size: 12px; color: #aaa; margin-top: 4px">
+          尚無可用標籤
+        </div>
+      </n-form-item>
 
-      <div class="form-actions">
-        <button type="submit" class="btn-save">儲存</button>
-        <button type="button" @click="handleCancel" class="btn-cancel">取消</button>
-      </div>
-    </form>
-  </div>
+      <n-form-item>
+        <n-space>
+          <n-button type="primary" @click="handleSubmit">儲存</n-button>
+          <n-button @click="handleCancel">取消</n-button>
+        </n-space>
+      </n-form-item>
+    </n-form>
+  </n-card>
 </template>
 
 <script setup lang="ts">
+import type { FormInst, FormRules } from 'naive-ui'
 import { ref, reactive, watch, computed, onMounted } from 'vue'
 
 interface Machine {
@@ -83,6 +89,30 @@ interface SavePayload extends Omit<Machine, 'updateTime'> {
 interface Emits {
   (e: 'save', payload: SavePayload): void
   (e: 'cancel'): void
+}
+const statusOptions = ref([
+  { label: '未啟用', value: 0 },
+  { label: '啟用中', value: 1 },
+])
+
+// Rules for validation (example)
+const rules: FormRules = {
+  name: {
+    required: true,
+    trigger: ['blur', 'input'],
+    message: '請輸入機器名稱',
+  },
+  machinename: {
+    required: true,
+    trigger: ['blur', 'input'],
+    message: '請輸入機器正式名稱',
+  },
+  role: {
+    type: 'number', // Important for n-select with number values
+    required: true,
+    trigger: ['blur', 'change'],
+    message: '請選擇狀態',
+  },
 }
 
 const props = defineProps<Props>()
@@ -138,149 +168,48 @@ watch(
   { deep: true },
 ) // Use deep watch if machineToEdit itself might change structure or for nested objects
 
-const handleSubmit = (): void => {
-  // Construct the base payload from form data
-  const basePayload: Omit<SavePayload, 'group' | 'tags'> & {
-    id: number
-    tags: string
-  } = {
-    id: formData.id, // Will be undefined for new, populated for edit
-    name: formData.name,
-    machineName: formData.machinename,
-    usable: formData.role,
-    tags: JSON.stringify(selectedTags.value),
-  }
+const formRef = ref<FormInst | null>(null)
 
-  let finalPayload: SavePayload
+const handleSubmit = (e: MouseEvent): void => {
+  e.preventDefault()
+  formRef?.value?.validate((errors) => {
+    if (errors) {
+    } else {
+      // Construct the base payload from form data
+      const basePayload: Omit<SavePayload, 'group' | 'tags'> & {
+        id: number
+        tags: string
+      } = {
+        id: formData.id, // Will be undefined for new, populated for edit
+        name: formData.name,
+        machineName: formData.machinename,
+        usable: formData.role,
+        tags: JSON.stringify(selectedTags.value),
+      }
 
-  if (isEditMode.value && props.machineToEdit) {
-    // For editing, merge with existing non-editable fields from props.machineToEdit
-    finalPayload = {
-      ...props.machineToEdit, // Start with all fields from the original machine
-      ...basePayload, // Override with form data (name, machinename, role, tags, id)
+      let finalPayload: SavePayload
+
+      if (isEditMode.value && props.machineToEdit) {
+        // For editing, merge with existing non-editable fields from props.machineToEdit
+        finalPayload = {
+          ...props.machineToEdit, // Start with all fields from the original machine
+          ...basePayload, // Override with form data (name, machinename, role, tags, id)
+        }
+      } else {
+        // For adding, we only send what the form collects, Manager.vue adds defaults
+        // But SavePayload expects all Employee fields (minus updateTime). So we add placeholders.
+        finalPayload = {
+          ...basePayload,
+          group: 'NEEDS_DEFAULT', // Placeholder, Manager.vue should provide actual default
+        } as SavePayload // Type assertion needed as we're building it partially
+      }
+
+      emit('save', finalPayload)
     }
-  } else {
-    // For adding, we only send what the form collects, Manager.vue adds defaults
-    // But SavePayload expects all Employee fields (minus updateTime). So we add placeholders.
-    finalPayload = {
-      ...basePayload,
-      group: 'NEEDS_DEFAULT', // Placeholder, Manager.vue should provide actual default
-    } as SavePayload // Type assertion needed as we're building it partially
-  }
-
-  emit('save', finalPayload)
+  })
 }
 
 const handleCancel = (): void => {
   emit('cancel')
 }
 </script>
-
-<style scoped>
-.machine-form-container {
-  background-color: white;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  width: 400px;
-  max-width: 90vw; /* Ensure it's responsive on smaller screens */
-  margin: auto;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #555;
-}
-
-.form-group input[type='text'],
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-.form-group input[type='text']:focus,
-.form-group select:focus {
-  border-color: cornflowerblue;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(100, 149, 237, 0.2);
-}
-
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  padding: 10px;
-}
-
-.checkbox-item {
-  display: flex;
-  align-items: center;
-}
-
-.checkbox-item input[type='checkbox'] {
-  margin-right: 8px;
-  width: auto;
-  accent-color: cornflowerblue;
-}
-
-.checkbox-item label {
-  font-weight: normal;
-  color: #333;
-  cursor: pointer;
-  margin-bottom: 0;
-}
-
-.form-group small.tags-hint {
-  display: block;
-  margin-top: 5px;
-  font-size: 0.8em;
-  color: #777;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.form-actions button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.btn-save {
-  background-color: mediumseagreen;
-  color: white;
-}
-.btn-save:hover {
-  background-color: #31a571;
-}
-
-.btn-cancel {
-  background-color: #f44336;
-  color: white;
-}
-.btn-cancel:hover {
-  background-color: #d32f2f;
-}
-</style>
