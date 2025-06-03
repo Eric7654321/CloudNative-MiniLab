@@ -1,29 +1,31 @@
 <template>
-  <n-flex align="center" vertical>
-    <n-h1>回報表單</n-h1>
+  <div class="report-container">
+    <n-flex vertical>
+      <n-h1>回報表單</n-h1>
 
-    <n-form ref="FormRef" :model="FormInput" :rules="rules" label-placement="left" label-width="auto"
-      require-mark-placement="right-hanging">
-      <n-form-item path="groupId" label="群組ID">
-        <n-input v-model:value="FormInput.groupId" :disabled="true" type="text" />
-      </n-form-item>
-      <n-form-item path="taskid" label="任務ID">
-        <!-- 修改開始 -->
-        <n-select v-model:value="FormInput.taskid" :options="taskOptions" placeholder="選擇任務ID" clearable filterable />
-        <!-- 修改結束 -->
-      </n-form-item>
-      <n-form-item path="type" label="回報種類">
-        <n-select :options="reportTypeOptions" v-model:value="FormInput.type" placeholder="選擇種類" />
-      </n-form-item>
-      <n-form-item path="message" label="備註">
-        <n-input v-model:value="FormInput.message" type="textarea" @keydown.enter.prevent clearable
-          placeholder="輸入備註" />
-      </n-form-item>
-      <n-button type="primary" @click="handle_submit">
-        <n-spin :show="loading" size="small"> 提交 </n-spin>
-      </n-button>
-    </n-form>
-  </n-flex>
+      <n-form ref="FormRef" :model="FormInput" :rules="rules" label-placement="left" label-width="auto"
+        require-mark-placement="right-hanging" style="width: 500px;">
+        <n-form-item path="groupId" label="群組ID">
+          <n-input v-model:value="FormInput.groupId" :disabled="true" type="text" />
+        </n-form-item>
+        <n-form-item path="taskid" label="任務ID">
+          <!-- 修改開始 -->
+          <n-select v-model:value="FormInput.taskid" :options="taskOptions" placeholder="選擇任務ID" clearable filterable />
+          <!-- 修改結束 -->
+        </n-form-item>
+        <n-form-item path="type" label="回報種類">
+          <n-select :options="reportTypeOptions" v-model:value="FormInput.type" placeholder="選擇種類" />
+        </n-form-item>
+        <n-form-item path="message" label="備註">
+          <n-input v-model:value="FormInput.message" type="textarea" @keydown.enter.prevent clearable
+            placeholder="輸入備註" />
+        </n-form-item>
+      </n-form>
+        <n-button type="primary" @click="handle_submit">
+          <n-spin :show="loading" size="small"> 提交 </n-spin>
+        </n-button>
+    </n-flex>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -197,6 +199,12 @@ const handle_submit = async (e: MouseEvent) => {
 </script>
 
 <style lang="css" scoped>
+.report-container {
+  height: calc(100vh - 60px);
+  width: 100vw;
+  justify-content: center;
+  overflow: hidden;
+}
 .n-flex {
   /* position: flex; */
   /* 'flex' 不是 position 的有效值，通常是 relative, absolute, fixed, static, sticky */
@@ -218,8 +226,9 @@ const handle_submit = async (e: MouseEvent) => {
   /* 內部留白 */
   box-sizing: border-box;
   /* 確保 padding 不會增加總寬度 */
+  justify-items: center;
+  align-items: center;
 }
-
 /* 如果希望表單內容在垂直方向上填滿可用空間，同時允許滾動 */
 /* .n-flex {
   display: flex;
