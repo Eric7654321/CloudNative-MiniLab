@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MachineTag {
     Integer id;
-    Integer machine_Id;
+    Integer machineId;
     String tags;
     LocalDateTime updateTime;
 }
