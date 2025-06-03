@@ -382,10 +382,10 @@ const handleAddMachineTag = async ({ machineId, tag }: MachineTagEventPayload) =
   console.log('mach', mach)
 
   try {
+    console.log(machines, mach?.tags)
     await axios.put(
       '/api/machine/tag/update',
       { machineId: machineId, tags: mach?.tags },
-      { headers: { 'Content-Type': 'application/json' } },
     )
     await get_machine_list()
     console.log('Machine updated:', mach)
