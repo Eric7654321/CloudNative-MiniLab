@@ -521,7 +521,7 @@ onUnmounted(() => {
   transition: filter 0.3s ease-in-out;
   background-color: var(--base-color);
   width: 50vw; /* Adjusted to fit two columns */
-  height: 100vh-60px;
+  height: 100%;
   overflow-y: scroll;
   /* Ensure it takes full viewport height if content is short */
 }
