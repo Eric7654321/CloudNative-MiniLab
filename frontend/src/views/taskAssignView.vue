@@ -1,85 +1,86 @@
 <template>
-  <n-layout style="height: 100vh">
-    <n-layout-header bordered
-      style="padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;">
-      <n-h2 style="margin: 0;">
-        <n-icon :component="TaskIcon" style="margin-right: 8px; vertical-align: -0.15em;" />
-        任務排程
-      </n-h2>
-      <n-space>
-        <n-button type="primary" @click="handleConfirmBufferedTasks" :disabled="bufferedTasks.length === 0"
-          :icon="renderIcon(SendIcon)">
-          確認並提交緩衝區 ({{ bufferedTasks.length }})
-        </n-button>
-        <n-button ghost @click="handleShowAddModal" :icon="renderIcon(AddIcon)">新增任務至緩衝區</n-button>
-      </n-space>
-    </n-layout-header>
-    <n-layout-content content-style="padding: 24px;">
-      <!-- Buffer Table -->
-      <n-card v-if="bufferedTasks.length > 0" title="待確認任務緩衝區" :bordered="false" style="margin-bottom: 24px;"
-        content-style="padding:0;">
-        <n-data-table :columns="bufferColumns" :data="bufferedTasks" :bordered="false" :single-line="false" size="small"
-          :row-key="row => row.id" />
-      </n-card>
+  <div class="task-container">
+    <n-layout style="height: 100vh">
+      <n-layout-header bordered
+        style="padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; height: 60px;">
+        <n-h2 style="margin: 0;">
+          <n-icon :component="TaskIcon" style="margin-right: 8px; vertical-align: -0.15em;" />
+          任務排程
+        </n-h2>
+        <n-space>
+          <n-button type="primary" @click="handleConfirmBufferedTasks" :disabled="bufferedTasks.length === 0"
+            :icon="renderIcon(SendIcon)">
+            確認並提交緩衝區 ({{ bufferedTasks.length }})
+          </n-button>
+          <n-button ghost @click="handleShowAddModal" :icon="renderIcon(AddIcon)">新增任務至緩衝區</n-button>
+        </n-space>
+      </n-layout-header>
+      <n-layout-content style="padding-left: 24px; padding-right: 24px;">
+        <!-- Buffer Table -->
+        <n-card v-if="bufferedTasks.length > 0" title="待確認任務緩衝區" :bordered="false" style="margin-bottom: 24px;"
+          content-style="padding:0;">
+          <n-data-table :columns="bufferColumns" :data="bufferedTasks" :bordered="false" :single-line="false" size="small"
+            :row-key="row => row.id" />
+        </n-card>
 
-      <n-card :bordered="false" content-style="padding: 0;">
-        <n-data-table :columns="columns" :data="data" :bordered="false" :single-line="false" :pagination="pagination"
-          :row-key="row => row.id" striped size="small" :max-height="tableMaxHeight" :scroll-x="1900" />
-      </n-card>
-    </n-layout-content>
-  </n-layout>
+        <n-card :bordered="false" content-style="padding: 0;">
+          <n-data-table :columns="columns" :data="data" :bordered="false" :single-line="false" :pagination="pagination"
+            :row-key="row => row.id" striped size="small" :max-height="tableMaxHeight" :scroll-x="1900" />
+        </n-card>
+      </n-layout-content>
+    </n-layout>
 
-  <!-- Add/Edit Task Modal -->
-  <n-modal v-model:show="showTaskModal" preset="card" style="width: 600px" :title="modalTitle" :bordered="false"
-    size="huge" :segmented="{ content: 'soft', footer: 'soft' }" :mask-closable="false">
-    <n-form ref="formRef" :model="currentTask" :rules="formRules" label-placement="left" label-width="auto">
-      <n-form-item label="任務 ID" path="id" v-if="isEditing">
-        <n-input-number v-model:value="currentTask.id" disabled />
-      </n-form-item>
-      <!-- 1. 員工 ID 刪除 -->
-      <!-- 2. 員工名稱改成選項 -->
-      <n-form-item label="員工名稱" path="emp"> <!-- Path is now 'emp' for the ID -->
-        <n-select v-model:value="currentTask.emp" filterable placeholder="請選擇員工" :options="employeeOptions" clearable
-          style="width: 100%;" />
-      </n-form-item>
-      <!-- 3. 機台ID 刪除 -->
-      <!-- 4. 機臺名稱改成選項 -->
-      <n-form-item label="機臺名稱" path="machineIds"> <!-- Custom path for validation if needed -->
-        <n-select v-model:value="selectedMachineIds" multiple filterable placeholder="請選擇機台 (可多選)"
-          :options="machineOptions" clearable style="width: 100%;" />
-      </n-form-item>
-      <n-form-item label="開始時間" path="startTime">
-        <n-date-picker v-model:formatted-value="currentTask.startTime" type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss" clearable style="width: 100%;" placeholder="請選擇開始時間" />
-      </n-form-item>
-      <n-form-item label="結束時間" path="endTime">
-        <n-date-picker v-model:formatted-value="currentTask.endTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
-          clearable style="width: 100%;" placeholder="請選擇結束時間" />
-      </n-form-item>
-      <!-- 5. 技能標籤改成勾選包含 ( 電性、物性、化性 ） -->
-      <n-form-item label="技能標籤" path="skillTags"> <!-- Custom path for validation if needed -->
-        <n-checkbox-group v-model:value="selectedSkillTags">
-          <n-space item-style="display: flex;">
-            <n-checkbox v-for="skill in skillTagOptions" :key="skill.value" :value="skill.value" :label="skill.label" />
-          </n-space>
-        </n-checkbox-group>
-      </n-form-item>
-      <n-form-item label="任務描述" path="description">
-        <n-input v-model:value="currentTask.description" type="textarea" :autosize="{ minRows: 2, maxRows: 5 }"
-          placeholder="請輸入任務描述" />
-      </n-form-item>
-      <!-- 6. 群組 ID 跟使用者一樣 (已在 getEmptyTask 設定, 不顯示在表單) -->
-      <!-- 7. ID使用使用者ID (假設指更新者ID, 已在 getEmptyTask 設定, 不顯示在表單) -->
-      <!-- 8. 刪除完成/未完成選項，一律為未完成 (已在 getEmptyTask 設定, 不顯示在表單) -->
-    </n-form>
-    <template #footer>
-      <n-space justify="end">
-        <n-button @click="showTaskModal = false">取消</n-button>
-        <n-button type="primary" @click="handleSaveTask">{{ isEditing ? '儲存變更' : '新增至緩衝區' }}</n-button>
-      </n-space>
-    </template>
-  </n-modal>
-
+    <!-- Add/Edit Task Modal -->
+    <n-modal v-model:show="showTaskModal" preset="card" style="width: 600px;" :title="modalTitle" :bordered="false"
+      size="huge" :segmented="{ content: 'soft', footer: 'soft' }" :mask-closable="false">
+      <n-form ref="formRef" :model="currentTask" :rules="formRules" label-placement="left" label-width="auto">
+        <n-form-item label="任務 ID" path="id" v-if="isEditing">
+          <n-input-number v-model:value="currentTask.id" disabled />
+        </n-form-item>
+        <!-- 1. 員工 ID 刪除 -->
+        <!-- 2. 員工名稱改成選項 -->
+        <n-form-item label="員工名稱" path="emp"> <!-- Path is now 'emp' for the ID -->
+          <n-select v-model:value="currentTask.emp" filterable placeholder="請選擇員工" :options="employeeOptions" clearable
+            style="width: 100%;" />
+        </n-form-item>
+        <!-- 3. 機台ID 刪除 -->
+        <!-- 4. 機臺名稱改成選項 -->
+        <n-form-item label="機臺名稱" path="machineIds"> <!-- Custom path for validation if needed -->
+          <n-select v-model:value="selectedMachineIds" multiple filterable placeholder="請選擇機台 (可多選)"
+            :options="machineOptions" clearable style="width: 100%;" />
+        </n-form-item>
+        <n-form-item label="開始時間" path="startTime">
+          <n-date-picker v-model:formatted-value="currentTask.startTime" type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss" clearable style="width: 100%;" placeholder="請選擇開始時間" />
+        </n-form-item>
+        <n-form-item label="結束時間" path="endTime">
+          <n-date-picker v-model:formatted-value="currentTask.endTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
+            clearable style="width: 100%;" placeholder="請選擇結束時間" />
+        </n-form-item>
+        <!-- 5. 技能標籤改成勾選包含 ( 電性、物性、化性 ） -->
+        <n-form-item label="技能標籤" path="skillTags"> <!-- Custom path for validation if needed -->
+          <n-checkbox-group v-model:value="selectedSkillTags">
+            <n-space item-style="display: flex;">
+              <n-checkbox v-for="skill in skillTagOptions" :key="skill.value" :value="skill.value" :label="skill.label" />
+            </n-space>
+          </n-checkbox-group>
+        </n-form-item>
+        <n-form-item label="任務描述" path="description">
+          <n-input v-model:value="currentTask.description" type="textarea" :autosize="{ minRows: 2, maxRows: 5 }"
+            placeholder="請輸入任務描述" />
+        </n-form-item>
+        <!-- 6. 群組 ID 跟使用者一樣 (已在 getEmptyTask 設定, 不顯示在表單) -->
+        <!-- 7. ID使用使用者ID (假設指更新者ID, 已在 getEmptyTask 設定, 不顯示在表單) -->
+        <!-- 8. 刪除完成/未完成選項，一律為未完成 (已在 getEmptyTask 設定, 不顯示在表單) -->
+      </n-form>
+      <template #footer>
+        <n-space justify="end">
+          <n-button @click="showTaskModal = false">取消</n-button>
+          <n-button type="primary" @click="handleSaveTask">{{ isEditing ? '儲存變更' : '新增至緩衝區' }}</n-button>
+        </n-space>
+      </template>
+    </n-modal>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -660,4 +661,9 @@ onUnmounted(() => {
 
 <style scoped>
 /* Styles remain the same */
+.task-container {
+  height: calc(100vh - 60px);
+  width: 100vw;
+  overflow: hidden;
+}
 </style>

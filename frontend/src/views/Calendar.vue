@@ -1,64 +1,66 @@
 <template>
-  <n-space vertical :size="12">
-    <h2>任務行事曆</h2>
+  <div class="task-calendar-container">
+    <n-space vertical :size="12">
+      <!-- 篩選區域 -->
+      <n-card title="篩選條件" class="filter-card" content-style="padding-top: 20px;">
+        <n-space>
+          <n-date-picker v-model:value="filterDateRange" type="daterange" clearable placeholder="篩選任務起迄日期" />
+          <n-select v-model:value="filterEmployee" :options="employeeOptions" clearable placeholder="篩選員工"
+        style="width: 200px" />
+          <n-select v-model:value="filterIsFinish" :options="finishStatusOptions" clearable placeholder="篩選完成狀態"
+        style="width: 150px" />
+          <n-button @click="clearFilters" type="warning">清除篩選</n-button>
+        </n-space>
+      </n-card>
 
-    <!-- 篩選區域 -->
-    <n-card title="篩選條件">
-      <n-space>
-        <n-date-picker v-model:value="filterDateRange" type="daterange" clearable placeholder="篩選任務起迄日期" />
-        <n-select v-model:value="filterEmployee" :options="employeeOptions" clearable placeholder="篩選員工"
-          style="width: 200px" />
-        <n-select v-model:value="filterIsFinish" :options="finishStatusOptions" clearable placeholder="篩選完成狀態"
-          style="width: 150px" />
-        <n-button @click="clearFilters" type="warning">清除篩選</n-button>
-      </n-space>
-    </n-card>
-
-    <!-- 行事曆 -->
-    <n-calendar v-model:value="calendarDate" #default="{ year, month, date }" style="height: 700px">
-      <div class="calendar-tasks-container">
-        <template v-for="task in getTasksForDate(year, month, date)" :key="task.id">
-          <n-popover trigger="hover" placement="bottom-start" :style="{ width: '320px', maxWidth: '90vw' }" scrollable>
-            <template #trigger>
-              <div class="task-entry" :class="{ 'overdue-task-indicator': isTaskOverdueAndUnfinished(task) }">
-                <n-ellipsis :line-clamp="1" :tooltip="false"> <!-- tooltip=false to prevent n-ellipsis's own tooltip -->
-                  {{ task.description }}
-                </n-ellipsis>
-              </div>
+      <!-- 行事曆 -->
+      <div class="calendar-content">
+        <n-calendar v-model:value="calendarDate" #default="{ year, month, date }" style="height: 700px">
+          <div class="calendar-tasks-container">
+            <template v-for="task in getTasksForDate(year, month, date)" :key="task.id">
+              <n-popover trigger="hover" placement="bottom-start" :style="{ width: '320px', maxWidth: '90vw' }" scrollable>
+                <template #trigger>
+                  <div class="task-entry" :class="{ 'overdue-task-indicator': isTaskOverdueAndUnfinished(task) }">
+                    <n-ellipsis :line-clamp="1" :tooltip="false"> <!-- tooltip=false to prevent n-ellipsis's own tooltip -->
+                      {{ task.description }}
+                    </n-ellipsis>
+                  </div>
+                </template>
+                <!-- Popover Content: Task Details -->
+                <n-thing>
+                  <template #header>
+                    <n-ellipsis style="max-width: 280px;">
+                      {{ task.description }}
+                    </n-ellipsis>
+                  </template>
+                  <template #header-extra>
+                    <n-tag :type="task.isFinish === 1 ? 'success' : 'error'" size="small">
+                      {{ task.isFinish === 1 ? '已完成' : '未完成' }}
+                    </n-tag>
+                  </template>
+                  <template #description>
+                    <n-space vertical size="small" style="margin-top: 8px;">
+                      <div><strong>員工:</strong> {{ task.empName }}</div>
+                      <div>
+                        <strong>開始:</strong> {{ formatDateTime(task.startTime) }}
+                      </div>
+                      <div>
+                        <strong>結束:</strong> {{ formatDateTime(task.endTime) }}
+                      </div>
+                    </n-space>
+                  </template>
+                </n-thing>
+                <n-alert v-if="isTaskOverdueAndUnfinished(task)" title="任務提醒" type="warning" :bordered="false"
+                  class="overdue-alert-popover">
+                  此任務已逾期且未完成！
+                </n-alert>
+              </n-popover>
             </template>
-            <!-- Popover Content: Task Details -->
-            <n-thing>
-              <template #header>
-                <n-ellipsis style="max-width: 280px;">
-                  {{ task.description }}
-                </n-ellipsis>
-              </template>
-              <template #header-extra>
-                <n-tag :type="task.isFinish === 1 ? 'success' : 'error'" size="small">
-                  {{ task.isFinish === 1 ? '已完成' : '未完成' }}
-                </n-tag>
-              </template>
-              <template #description>
-                <n-space vertical size="small" style="margin-top: 8px;">
-                  <div><strong>員工:</strong> {{ task.empName }}</div>
-                  <div>
-                    <strong>開始:</strong> {{ formatDateTime(task.startTime) }}
-                  </div>
-                  <div>
-                    <strong>結束:</strong> {{ formatDateTime(task.endTime) }}
-                  </div>
-                </n-space>
-              </template>
-            </n-thing>
-            <n-alert v-if="isTaskOverdueAndUnfinished(task)" title="任務提醒" type="warning" :bordered="false"
-              class="overdue-alert-popover">
-              此任務已逾期且未完成！
-            </n-alert>
-          </n-popover>
-        </template>
+          </div>
+        </n-calendar>
       </div>
-    </n-calendar>
-  </n-space>
+    </n-space>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -271,6 +273,25 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.task-calendar-container {
+  height: calc(100vh - 60px);
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.calendar-content {
+  flex: 1;
+  height: calc(100vh - 120px);
+  width: 100vw;
+  padding-left: 20px;
+  overflow-y: auto;
+}
+.filter-card {
+  height: 60px;
+  flex-direction: row;
+  align-items: center;
+}
 .calendar-tasks-container {
   display: flex;
   flex-direction: column;
