@@ -24,15 +24,17 @@ const toggleTheme = () => {
 <template>
   <n-config-provider :theme="theme.theme">
     <n-message-provider>
-      <n-layout>
-        <n-layout-header>
-          <HeaderBar v-if="$route.path !== '/login'" @ToggleTheme="toggleTheme" />
-        </n-layout-header>
-        <div class="content"></div>
-        <n-layout-content>
-          <RouterView />
-        </n-layout-content>
-      </n-layout>
+      <n-dialog-provider>
+        <n-layout>
+          <n-layout-header>
+            <HeaderBar v-if="$route.path !== '/login'" @ToggleTheme="toggleTheme" />
+          </n-layout-header>
+          <div class="content"></div>
+          <n-layout-content>
+            <RouterView />
+          </n-layout-content>
+        </n-layout>
+      </n-dialog-provider>
     </n-message-provider>
   </n-config-provider>
 </template>
