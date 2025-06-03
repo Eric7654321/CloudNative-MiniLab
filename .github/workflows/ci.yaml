@@ -39,7 +39,7 @@ jobs:
   #     - run: echo "🍏 This job's status is ${{ job.status }}."
   
   auto_formatting:
-    needs: [backend_unit_test, frontend_unit_test]
+    needs: backend_unit_test
     runs-on: ubuntu-latest
     permissions:
       contents: write
