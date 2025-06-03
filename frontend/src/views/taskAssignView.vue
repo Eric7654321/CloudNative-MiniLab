@@ -615,7 +615,7 @@ const loadData = async () => {
     const MachineapiData: Machine[] = MachineApiRes?.data.data || []
     machineOptions.value = MachineapiData.map(item => {
       return {
-        label: item.name,
+        label: `${item.name} (${item.id})`,
         value: item.id
       }
     });
