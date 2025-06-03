@@ -9,6 +9,7 @@ FROM nginx:1.28.0-alpine-slim AS final
 
 COPY --from=build /frontend/dist /var/www/
 COPY ./entrypoint.sh /
+COPY ./default.conf.template /etc/nginx/conf.d/default.conf.template
 RUN chmod +x /entrypoint.sh
 RUN apk add --no-cache gettext
 

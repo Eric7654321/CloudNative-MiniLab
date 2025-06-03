@@ -1,9 +1,12 @@
 <template>
   <div class="manager-page-wrapper">
-    <div class="manager-content-area" :class="{ 'modal-active-background': showEmployeeFormModal || showMachineFormModal }">
+    <div
+      class="manager-content-area"
+      :class="{ 'modal-active-background': showEmployeeFormModal || showMachineFormModal }"
+    >
       <header class="manager-header">
-        <h1>工人管理</h1>
-        <button @click="openAddEmployeeForm" class="add-btn">新增員工</button>
+        <n-h1>工人管理</n-h1>
+        <n-button @click="openAddEmployeeForm" type="info">新增員工</n-button>
       </header>
 
       <div class="employee-list">
@@ -19,12 +22,15 @@
         <p v-if="!employees.length" class="no-message">目前沒有員工資料。</p>
       </div>
     </div>
-    <div class="manager-content-area" :class="{ 'modal-active-background': showEmployeeFormModal || showMachineFormModal }">
+    <div
+      class="manager-content-area"
+      :class="{ 'modal-active-background': showEmployeeFormModal || showMachineFormModal }"
+    >
       <header class="manager-header">
-        <h1>機器管理</h1>
-        <button @click="openAddMachineForm" class="add-btn">新增機器</button>
+        <n-h1>機器管理</n-h1>
+        <n-button @click="openAddMachineForm" type="info">新增機器</n-button>
       </header>
-      <div class="machine-list">  
+      <div class="machine-list">
         <MachineCard
           v-for="machine in machines"
           :key="machine.id"
@@ -193,12 +199,8 @@ const handleSaveEmployee = async (formData: EmployeeFormSavePayload) => {
           { empId: emp.id, tags: formData.tags },
           { headers: { 'Content-Type': 'application/json' } },
         )
-        await axios.put(
-          '/api/emp/update',
-          emp,
-          { headers: { 'Content-Type': 'application/json' } },
-        )
-        
+        await axios.put('/api/emp/update', emp, { headers: { 'Content-Type': 'application/json' } })
+
         await get_employee_list()
         console.log('Employee updated:', employees.value[index])
       } catch (error) {
@@ -251,11 +253,9 @@ const handleSaveMachine = async (formData: MachineFormSavePayload) => {
           { machineId: mach.id, tags: formData.tags },
           { headers: { 'Content-Type': 'application/json' } },
         )
-        await axios.put(
-          '/api/machine/update',
-          mach,
-          { headers: { 'Content-Type': 'application/json' } },
-        )
+        await axios.put('/api/machine/update', mach, {
+          headers: { 'Content-Type': 'application/json' },
+        })
         await get_machine_list()
         console.log('Machine updated:', machines.value[index])
       } catch (error) {
@@ -358,7 +358,7 @@ const handleAddEmployeeTag = async ({ employeeId, tag }: EmployeeTagEventPayload
   const emp = employees.value.find((emp) => emp.id === employeeId)
   console.log('emp', emp)
   try {
-    const res=await axios.put(
+    const res = await axios.put(
       '/api/emp/tag/update',
       { empId: employeeId, tags: emp?.tags },
       { headers: { 'Content-Type': 'application/json' } },
@@ -382,10 +382,10 @@ const handleAddMachineTag = async ({ machineId, tag }: MachineTagEventPayload) =
   console.log('mach', mach)
 
   try {
+    console.log(machines, mach?.tags)
     await axios.put(
       '/api/machine/tag/update',
       { machineId: machineId, tags: mach?.tags },
-      { headers: { 'Content-Type': 'application/json' } },
     )
     await get_machine_list()
     console.log('Machine updated:', mach)
@@ -519,7 +519,7 @@ onUnmounted(() => {
   padding: 20px;
   font-family: 'Arial', sans-serif;
   transition: filter 0.3s ease-in-out;
-  background-color: #f4f7f6;
+  background-color: var(--base-color);
   width: 50vw; /* Adjusted to fit two columns */
   height: 100vh-60px;
   overflow-y: scroll;
@@ -537,11 +537,6 @@ onUnmounted(() => {
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 2px solid #eee;
-}
-
-.manager-header h1 {
-  margin: 0;
-  color: #333;
 }
 
 .add-btn {
@@ -569,7 +564,7 @@ onUnmounted(() => {
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   /* Slightly wider for new buttons */
   gap: 20px;
-} 
+}
 
 .no-message {
   text-align: center;
