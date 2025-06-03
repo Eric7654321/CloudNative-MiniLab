@@ -3,6 +3,9 @@ import { useCookies } from 'vue3-cookies'
 import { useUserData } from '@/stores/UserData'
 import HomeView from '../views/HomeView.vue'
 import VueCookies from 'vue3-cookies'
+import { useMessage } from 'naive-ui'
+
+const message = useMessage()
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,10 +69,16 @@ const router = createRouter({
       meta: { requireAuth: true },
     },
     {
-      path: '/report',
-      name: 'Report',
-      component: () => import('../views/ReportViews.vue'),
+      path: '/calendar',
+      name: 'Calendar',
+      component: () => import('@/views/Calendar.vue'),
       meta: { requireAuth: true },
+    },
+    {
+      path: '/taskassign',
+      name: 'Task Assign',
+      component: () => import('@/views/taskAssignView.vue'),
+      meta: { requireAuth: true, manager: true },
     },
   ],
 })
