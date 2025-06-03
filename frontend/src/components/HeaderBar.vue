@@ -52,6 +52,10 @@ const options = ref<MenuOption[]>([
     key: '/report',
   },
   {
+    label: '排程',
+    key: '/taskassign'
+  },
+  {
     label: '登出',
     key: 'logout',
   },
