@@ -32,11 +32,11 @@ jobs:
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
-  frontend_unit_test:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Not Implemented"
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+  # frontend_unit_test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo "Not Implemented"
+  #     - run: echo "🍏 This job's status is ${{ job.status }}."
   
   auto_formatting:
     needs: [backend_unit_test, frontend_unit_test]
