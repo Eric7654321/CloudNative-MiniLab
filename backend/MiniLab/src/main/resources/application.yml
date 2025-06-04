@@ -7,9 +7,9 @@ spring:
   main:
     allow-circular-references: true
   datasource:
-    url: ${minilab.datasource.driver-class-name}
-    username: ${minilab.datasource.username}
-    password: ${minilab.datasource.password}
+    url: jdbc:mysql://${DB_HOST}:3306
+    username: ${DB_USER}
+    password: ${DB_PASS}
   application:
     name: minilab-backend
   boot:
