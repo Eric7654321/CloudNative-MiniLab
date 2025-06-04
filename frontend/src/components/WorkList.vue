@@ -1,9 +1,25 @@
 <template>
-  <div style="height: calc(100vh - 60px); width: 100vw; overflow: hidden; display: flex; flex-direction: row; justify-content: flex-start;">
-    <n-layout style="height: calc(100vh - 60px); width: 400px;">
-      <n-layout-content bordered show-trigger collapse-mode="width" :collapsed-width="64" :width="320"
-        :native-scrollbar="false" content-style="padding: 20px;">
-        <n-h2 style="margin-bottom: 10px;">我的工作</n-h2>
+  <div
+    style="
+      height: calc(100vh - 60px);
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+    "
+  >
+    <n-layout style="height: calc(100vh - 60px); width: 400px">
+      <n-layout-content
+        bordered
+        show-trigger
+        collapse-mode="width"
+        :collapsed-width="64"
+        :width="320"
+        :native-scrollbar="false"
+        content-style="padding: 20px;"
+      >
+        <n-h2 style="margin-bottom: 10px">我的工作</n-h2>
         <n-list hoverable clickable v-if="tasks.length > 0">
           <n-list-item v-for="task in tasks" :key="task.id">
             <n-thing>
@@ -36,9 +52,17 @@
                   </n-ellipsis>
                 </n-descriptions-item>
                 <!-- 可選擇性顯示機器信息 -->
-                <n-descriptions-item v-if="task.machineName && task.machineName.length > 0" label="使用機台">
-                  <n-tag v-for="machine in JSON.parse(task.machineName)" :key="machine" type="info" size="small"
-                    style="margin-right: 4px;">
+                <n-descriptions-item
+                  v-if="task.machineName && task.machineName.length > 0"
+                  label="使用機台"
+                >
+                  <n-tag
+                    v-for="machine in JSON.parse(task.machineName)"
+                    :key="machine"
+                    type="info"
+                    size="small"
+                    style="margin-right: 4px"
+                  >
                     {{ machine }}
                   </n-tag>
                 </n-descriptions-item>
@@ -46,11 +70,18 @@
             </n-thing>
           </n-list-item>
         </n-list>
-        <n-empty v-else description="今日無任務" style="margin-top: 20px;" />
+        <n-empty v-else description="今日無任務" style="margin-top: 20px" />
       </n-layout-content>
     </n-layout>
-    <n-layout style="height: calc(100vh - 60px); width: calc(100vw - 400px); display: flex; justify-content: center;">
-      <n-image src="/main_system.png" height="calc(100vh-60px);"/>
+    <n-layout
+      style="
+        height: calc(100vh - 60px);
+        width: calc(100vw - 400px);
+        display: flex;
+        justify-content: center;
+      "
+    >
+      <n-image src="/main_system.png" height="calc(100vh-60px);" />
     </n-layout>
   </div>
 </template>
@@ -75,7 +106,7 @@ import {
   NTag,
   NImage,
   NEllipsis,
-  NEmpty
+  NEmpty,
 } from 'naive-ui'
 
 interface Task {
@@ -94,12 +125,9 @@ interface Task {
   updateTime: string // 更新時間 (ISO 字串)
 }
 
-
-
 const tasks = ref<Task[]>([])
 const userdata = useUserData()
 let intervalId: number | undefined
-
 
 const { cookies } = useCookies()
 const router = useRouter() // 在 setup 頂層調用
@@ -129,7 +157,6 @@ onMounted(() => {
   fetchTodayTasks()
   intervalId = window.setInterval(fetchTodayTasks, 10000) // 10,000 ms = 10 seconds
 })
-
 
 onUnmounted(() => {
   if (intervalId) clearInterval(intervalId)
