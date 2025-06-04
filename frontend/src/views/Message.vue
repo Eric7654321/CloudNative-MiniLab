@@ -1,56 +1,58 @@
 <template>
-  <n-space vertical style="height: 100vh; width: 100vw" :size="12">
-    <n-card :bordered="false"> 群組：{{ userdata.group }} </n-card>
+  <div class="message-container">
+    <n-space vertical style="height: calc(100vh - 60px); width: 100vw" :size="0">
+      <n-card :bordered="false" style="height: 60px"> 群組：{{ userdata.group }} </n-card>
 
-    <n-layout has-sider style="flex-grow: 1; height: calc(100vh - 60px)">
-      <n-layout-sider
-        bordered
-        collapse-mode="width"
-        :collapsed-width="88"
-        :width="440"
-        show-trigger="arrow-circle"
-        :inverted="invertedSide"
-        content-style="padding: 12px"
-      >
-        <n-menu
-          v-model:value="selectedMessageKey"
+      <n-layout has-sider style="flex-grow: 1; height: calc(100vh - 120px)">
+        <n-layout-sider
+          bordered
+          collapse-mode="width"
+          :collapsed-width="88"
+          :width="440"
+          show-trigger="arrow-circle"
           :inverted="invertedSide"
-          :collapsed-width="64"
-          :collapsed-icon-size="22"
-          :options="messageMenuOptions"
-          @update:value="onMenuUpdate"
-        />
-      </n-layout-sider>
-      <n-layout content-style="padding: 24px;">
-        <n-card
-          :title="selectedMessage ? selectedMessage.description : '沒有選擇訊息'"
-          :bordered="true"
+          content-style="padding: 12px"
         >
-          <div v-if="selectedMessage">
-            <n-descriptions label-placement="left" bordered :columns="1" size="small">
-              <n-descriptions-item label="訊息 ID">
-                {{ selectedMessage.id }}
-              </n-descriptions-item>
-              <n-descriptions-item label="任務 ID">
-                {{ selectedMessage.taskId }}
-              </n-descriptions-item>
-              <n-descriptions-item label="更新時間">
-                {{ selectedMessage.updateTime }}
-              </n-descriptions-item>
-              <n-descriptions-item label="訊息內容">
-                <div class="content" style="white-space: pre-wrap">
-                  {{ selectedMessage.description }}
-                </div>
-              </n-descriptions-item>
-            </n-descriptions>
-          </div>
-          <div v-else>
-            <n-empty description="請從左側菜單選擇一個訊息以查看詳情。" size="large"> </n-empty>
-          </div>
-        </n-card>
+          <n-menu
+            v-model:value="selectedMessageKey"
+            :inverted="invertedSide"
+            :collapsed-width="64"
+            :collapsed-icon-size="22"
+            :options="messageMenuOptions"
+            @update:value="onMenuUpdate"
+          />
+        </n-layout-sider>
+        <n-layout content-style="padding: 24px;">
+          <n-card
+            :title="selectedMessage ? selectedMessage.description : '沒有選擇訊息'"
+            :bordered="true"
+          >
+            <div v-if="selectedMessage">
+              <n-descriptions label-placement="left" bordered :columns="1" size="small">
+                <n-descriptions-item label="訊息 ID">
+                  {{ selectedMessage.id }}
+                </n-descriptions-item>
+                <n-descriptions-item label="任務 ID">
+                  {{ selectedMessage.taskId }}
+                </n-descriptions-item>
+                <n-descriptions-item label="更新時間">
+                  {{ selectedMessage.updateTime }}
+                </n-descriptions-item>
+                <n-descriptions-item label="訊息內容">
+                  <div class="content" style="white-space: pre-wrap">
+                    {{ selectedMessage.description }}
+                  </div>
+                </n-descriptions-item>
+              </n-descriptions>
+            </div>
+            <div v-else>
+              <n-empty description="請從左側菜單選擇一個訊息以查看詳情。" size="large"> </n-empty>
+            </div>
+          </n-card>
+        </n-layout>
       </n-layout>
-    </n-layout>
-  </n-space>
+    </n-space>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -146,6 +148,11 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.message-container {
+  height: calc(100vh - 60px);
+  width: 100vw;
+  overflow: hidden;
+}
 /* Add any component-specific styles here */
 .content {
   /* Styles for the description content if needed */
