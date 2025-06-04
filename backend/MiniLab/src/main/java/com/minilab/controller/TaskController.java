@@ -41,7 +41,7 @@ public class TaskController {
         List<Task> tasks = taskService.getTaskByIdAndTime(id, LocalDate.now());
         return Result.success(tasks);
     }
-    
+
     @PostMapping("/msg/send")
     public Result reveiveMsg(@RequestBody Message message) {
         log.info("任務回報，msg: {}", message);
@@ -54,6 +54,5 @@ public class TaskController {
         log.info("查詢訊息，groupId: {}", groupId);
         return Result.success(messageService.getMsgByGroupId(groupId));
     }
-
 
 }
