@@ -74,12 +74,13 @@ public class TestScheduleController {
         Task taskB = new Task();
         taskB.setEmp(1);
         taskB.setMachine("[\"1\",\"43\"]");
-        taskB.setStartTime(LocalDateTime.now().plusHours(1));
-        taskB.setEndTime(LocalDateTime.now().plusHours(6));
+        taskB.setStartTime(LocalDateTime.of(2025, 6, 4, 15, 0));
+        taskB.setEndTime(LocalDateTime.of(2025, 6, 4, 22, 0));
         taskB.setTag("電性");
-        taskB.setDescription("應該會衝突");
+        taskB.setDescription("應該會衝突吧");
         taskB.setGroup("114514");
         taskB.setUpdaterId(1);
+        taskB.setIsFinish(0);
 
         Result resultB = scheduleController.TasksCheckAndAdd(Collections.singletonList(taskB));
         Assertions.assertNotEquals(1, resultB.getCode(), "重疊任務竟然被新增成功！");
