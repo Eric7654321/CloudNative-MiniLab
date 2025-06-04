@@ -175,7 +175,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task getTaskByEmpName(String empName) {
-        return taskMapper.selectTaskByEmpName(empName);
+        List<Task> tasks = taskMapper.selectTaskByEmpName(empName);
+        return taskMapper.selectTaskByEmpName(empName).get(0);
     }
 
     private boolean isTimeOverlap(Task t1, Task t2) {
