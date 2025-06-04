@@ -125,7 +125,7 @@ public class TaskServiceImpl implements TaskService {
                 String empTagsJson = empMapper.setTagsByUserId(task.getEmp());
                 List<String> empTags = objectMapper.readValue(empTagsJson, new TypeReference<List<String>>() {});
                 if (!empTags.contains(task.getTag())) {
-                    return Result.error("工人不具備任務所需的技能：" + task.getEmpName());
+                    return Result.error("工人不具備任務所需的技能：" + task.getTag());
                 }
 
                 // 2. 檢查機器是否具備該標籤
@@ -139,7 +139,7 @@ public class TaskServiceImpl implements TaskService {
                     String machineTagsJson = machineMapper.setTagsByUserId(machine.getId());
                     List<String> machineTags = objectMapper.readValue(machineTagsJson, new TypeReference<List<String>>() {});
                     if (!machineTags.contains(task.getTag())) {
-                        return Result.error("機器【" + machine.getMachineName() + "】不支援此任務所需技能");
+                        return Result.error("機器【" + machine.getMachineName() + "】不支援此任務所需技能:" + task.getTag());
                     }
                 }
 
@@ -151,7 +151,7 @@ public class TaskServiceImpl implements TaskService {
 
                 for (Task t : empTasks) {
                     if (isTimeOverlap(task, t)) {
-                        return Result.error("工人 " + task.getEmpName() + " 時間重疊，與任務編號：" + t.getId());
+                        return Result.error("工人 " + empMapper.getEmpById(task.getEmp()).getUsername() + " 時間重疊，與任務編號：" + t.getId());
                     }
                 }
 
