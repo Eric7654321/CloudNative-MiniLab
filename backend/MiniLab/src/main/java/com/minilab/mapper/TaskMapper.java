@@ -29,5 +29,5 @@ public interface TaskMapper {
     void insertTask(Task task);
 
     @Select("select * from minilab.task where emp_name = #{empName}")
-    Task selectTaskByEmpName(String empName);
+    List<Task> selectTaskByEmpName(String empName);
 }

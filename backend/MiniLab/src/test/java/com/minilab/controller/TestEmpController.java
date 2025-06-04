@@ -74,8 +74,8 @@ public class TestEmpController {
     @Test
     public void testEmpTagUpdate(){
         EmpTag empTag = new EmpTag();
-        empTag.setEmpId(1);
-        empTag.setEmpId(1);
+        empTag.setEmpId(69);
+        empTag.setEmpId(69);
         empTag.setTags("[\"物性\",\"電性\",\"獸性\",\"野性\",\"鹼性\",\"弱酸性\"]");
 
         Result result = empController.updateEmpTag(empTag);
