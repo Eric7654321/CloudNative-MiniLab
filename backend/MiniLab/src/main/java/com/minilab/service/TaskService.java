@@ -9,7 +9,7 @@ import java.util.List;
 public interface TaskService {
     void deleteTask(Task task);
 
-    void updateTask(Task task);
+    Result updateTask(Task task);
 
     List<Task> getTaskByGroupId(String groupId);
 
