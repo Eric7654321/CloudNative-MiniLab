@@ -28,7 +28,7 @@ public class TestEmpController {
     }
 
     @Test
-    public void testInsertEmpAndDeleteEmp(){
+    public void testInsertEmpAndDeleteEmp() {
         log.info("測試新增與移除員工是否正常");
         log.info("新增員工");
 
@@ -50,7 +50,7 @@ public class TestEmpController {
     }
 
     @Test
-    public void testSearchAndUpdateEmp(){
+    public void testSearchAndUpdateEmp() {
         log.info("測試查詢與修改員工操作是否正常");
 
         log.info("查詢操作");
@@ -65,14 +65,14 @@ public class TestEmpController {
         log.info("修改操作");
         Emp emp = new Emp();
         BeanUtils.copyProperties(emps.get(0), emp);
-        emp.setPassword("Welly114514");
+        emp.setPassword("Wally114514");
 
         Result result1 = empController.updateEmp(emp);
         Assertions.assertEquals(result1.getCode(), 1);
     }
 
     @Test
-    public void testEmpTagUpdate(){
+    public void testEmpTagUpdate() {
         EmpTag empTag = new EmpTag();
         empTag.setEmpId(69);
         empTag.setEmpId(69);
