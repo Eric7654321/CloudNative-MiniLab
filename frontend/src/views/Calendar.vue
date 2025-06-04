@@ -269,12 +269,12 @@ const filteredTasks = computed(() => {
 })
 
 // --- Helper 函數 ---
-const formatDateTime = (dateTimeString) => {
+const formatDateTime = (dateTimeString: any) => {
   if (!dateTimeString) return ''
   return format(parseISO(dateTimeString), 'yyyy-MM-dd HH:mm')
 }
 
-const getTasksForDate = (year, month, day) => {
+const getTasksForDate = (year: any, month: any, day: any) => {
   const cellDateStart = startOfDay(new Date(year, month - 1, day))
   const cellDateEnd = endOfDay(new Date(year, month - 1, day))
 
@@ -284,10 +284,9 @@ const getTasksForDate = (year, month, day) => {
       const taskEnd = parseISO(task.endTime)
       return taskStart <= cellDateEnd && taskEnd >= cellDateStart
     })
-    .sort((a, b) => parseISO(a.startTime) - parseISO(b.startTime)) // 按開始時間排序
 }
 
-const isTaskOverdueAndUnfinished = (task) => {
+const isTaskOverdueAndUnfinished = (task: any) => {
   if (task.isFinish === 1) return false
   const taskEndTime = parseISO(task.endTime)
   return isBefore(taskEndTime, new Date())
