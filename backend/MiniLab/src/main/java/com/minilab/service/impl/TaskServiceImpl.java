@@ -47,7 +47,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(rollbackFor = Exception.class)
     public Result tasksValidateAndCheck(List<Task> tasks) {
         Result result = tasksCheck(tasks);
-        if (result.getCode() != 1) {
+        if(result.getCode() != 1){
             return Result.error(result.getMsg());
         }
 
@@ -96,6 +96,7 @@ public class TaskServiceImpl implements TaskService {
         return Result.success();
     }
 
+
     @Override
     public List<Task> getTaskByIdAndTimeWeeks(Integer id, LocalDate now) {
         List<Task> tasks = taskMapper.getTaskByIdAndTime(id, now, now.plusDays(14));
@@ -109,9 +110,18 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void updateTask(Task task) {
+    public Result updateTask(Task task) {
+
+        List<Task> tasks = new ArrayList<>();
+        tasks.add(task);
+        Result result = tasksCheckForUpdate(tasks);
+        if(result.getCode() != 1){
+            log.info("任務修改錯誤");
+            return Result.error("任務修改將導致衝突，不予通過");
+        }
         task.setUpdateTime(LocalDateTime.now());
         taskMapper.updateTask(task);
+        return Result.success();
     }
 
     @Override
@@ -122,8 +132,7 @@ public class TaskServiceImpl implements TaskService {
             try {
                 // 1. 檢查工人是否具備該標籤
                 String empTagsJson = empMapper.setTagsByUserId(task.getEmp());
-                List<String> empTags = objectMapper.readValue(empTagsJson, new TypeReference<List<String>>() {
-                });
+                List<String> empTags = objectMapper.readValue(empTagsJson, new TypeReference<List<String>>() {});
                 if (!empTags.contains(task.getTag())) {
                     return Result.error("工人不具備任務所需的技能：" + task.getTag());
                 }
@@ -137,22 +146,21 @@ public class TaskServiceImpl implements TaskService {
                 List<Machine> machines = machineMapper.getMachinesByIds(machineIds);
                 for (Machine machine : machines) {
                     String machineTagsJson = machineMapper.setTagsByUserId(machine.getId());
-                    List<String> machineTags = objectMapper.readValue(machineTagsJson,
-                            new TypeReference<List<String>>() {
-                            });
+                    List<String> machineTags = objectMapper.readValue(machineTagsJson, new TypeReference<List<String>>() {});
                     if (!machineTags.contains(task.getTag())) {
                         return Result.error("機器【" + machine.getMachineName() + "】不支援此任務所需技能:" + task.getTag());
                     }
                 }
 
                 // 3. 檢查工人時間是否衝突
-                List<Task> empTasks = taskMapper.getTaskByIdAndTime(task.getEmp(), task.getStartTime().toLocalDate(),
+                List<Task> empTasks = taskMapper.getTaskByIdAndTime(
+                        task.getEmp(),
+                        task.getStartTime().toLocalDate(),
                         task.getEndTime().toLocalDate());
 
                 for (Task t : empTasks) {
-                    if (isTimeOverlap(task, t)) {
-                        return Result.error(
-                                "工人 " + empMapper.getEmpById(task.getEmp()).getUsername() + " 時間重疊，與任務編號：" + t.getId());
+                    if (isTimeOverlap(task, t) && task.getId() != t.getId()) {
+                        return Result.error("工人 " + empMapper.getEmpById(task.getEmp()).getUsername() + " 時間重疊，與任務編號：" + t.getId());
                     }
                 }
 
@@ -161,7 +169,7 @@ public class TaskServiceImpl implements TaskService {
                     List<Task> allTasks = taskMapper.getTaskByGroupId(task.getGroup());
                     for (Task t : allTasks) {
                         List<Integer> tMachineIds = parseMachineIds(t.getMachine());
-                        if (tMachineIds.contains(machineId) && isTimeOverlap(task, t)) {
+                        if (tMachineIds.contains(machineId) && isTimeOverlap(task, t) && task.getId() != t.getId()) {
                             return Result.error("機器 ID: " + machineId + " 被佔用，與任務編號：" + t.getId());
                         }
                     }
@@ -173,12 +181,74 @@ public class TaskServiceImpl implements TaskService {
 
         return Result.success();
     }
+    public Result tasksCheckForUpdate(List<Task> tasks) {
+        ObjectMapper objectMapper = new ObjectMapper();
 
+        for (Task task : tasks) {
+            try {
+                // 1. 檢查工人是否具備該標籤
+                String empTagsJson = empMapper.setTagsByUserId(task.getEmp());
+                List<String> empTags = objectMapper.readValue(empTagsJson, new TypeReference<List<String>>() {});
+                if (!empTags.contains(task.getTag())) {
+                    return Result.error("工人不具備任務所需的技能：" + task.getTag());
+                }
+
+                // 2. 檢查機器是否具備該標籤
+                List<Integer> machineIds = parseMachineIds(task.getMachine());
+                if (machineIds.isEmpty()) {
+                    return Result.error("機器 ID 格式錯誤：" + task.getMachine());
+                }
+
+                List<Machine> machines = machineMapper.getMachinesByIds(machineIds);
+                for (Machine machine : machines) {
+                    String machineTagsJson = machineMapper.setTagsByUserId(machine.getId());
+                    List<String> machineTags = objectMapper.readValue(machineTagsJson, new TypeReference<List<String>>() {});
+                    if (!machineTags.contains(task.getTag())) {
+                        return Result.error("機器【" + machine.getMachineName() + "】不支援此任務所需技能:" + task.getTag());
+                    }
+                }
+                Integer checkNum = 0;
+                // 3. 檢查工人時間是否衝突
+                List<Task> empTasks = taskMapper.getTaskByIdAndTime(
+                        task.getEmp(),
+                        task.getStartTime().toLocalDate(),
+                        task.getEndTime().toLocalDate());
+
+                for (Task t : empTasks) {
+                    if (isTimeOverlap(task, t)) {
+                        checkNum++;
+                        if(checkNum > 1){
+                            return Result.error("工人 " + empMapper.getEmpById(task.getEmp()).getUsername() + " 時間重疊，與任務編號：" + t.getId());
+                        }
+                    }
+                }
+                checkNum = 0;
+                // 4. 檢查機器是否被其他任務佔用
+                for (Integer machineId : machineIds) {
+                    List<Task> allTasks = taskMapper.getTaskByGroupId(task.getGroup());
+                    for (Task t : allTasks) {
+                        List<Integer> tMachineIds = parseMachineIds(t.getMachine());
+                        if (tMachineIds.contains(machineId) && isTimeOverlap(task, t)) {
+                            checkNum++;
+                            if(checkNum > 1){
+                                return Result.error("機器 ID: " + machineId + " 被佔用，與任務編號：" + t.getId());
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                return Result.error("機器或標籤格式錯誤：" + e.getMessage());
+            }
+        }
+
+        return Result.success();
+    }
     @Override
     public Task getTaskByEmpName(String empName) {
         List<Task> tasks = taskMapper.selectTaskByEmpName(empName);
         return taskMapper.selectTaskByEmpName(empName).get(0);
     }
+
 
     private boolean isTimeOverlap(Task t1, Task t2) {
         return !(t1.getEndTime().isBefore(t2.getStartTime()) || t1.getStartTime().isAfter(t2.getEndTime()));
@@ -190,8 +260,7 @@ public class TaskServiceImpl implements TaskService {
 
             if (input.startsWith("[") && input.endsWith("]")) {
                 // 是 JSON 陣列
-                List<String> strList = objectMapper.readValue(input, new TypeReference<List<String>>() {
-                });
+                List<String> strList = objectMapper.readValue(input, new TypeReference<List<String>>() {});
                 return strList.stream().map(Integer::parseInt).collect(Collectors.toList());
             } else {
                 // 單一 ID
