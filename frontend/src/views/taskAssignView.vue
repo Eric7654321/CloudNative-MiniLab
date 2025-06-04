@@ -129,10 +129,10 @@
       </n-form-item>
       <n-form-item label="持續時間" path="duration">
         <n-input-number
-          v-model:formatted-value="currentTask.duration"
+          v-model:value="currentTask.duration"
           clearable
           style="width: 100%"
-          placeholder="請選擇持續時間"
+          placeholder="請輸入持續時間(分鐘)"
         />
       </n-form-item>
       <n-form-item label="結束時間" path="endTime">
@@ -345,13 +345,14 @@ const getEmptyTask = (): Task => ({
   tag: '', // Comma-separated string, will be derived
   description: '',
   group: userdata.group || '', // 6. 群組 ID 跟使用者一樣
-  updaterId: parseInt(userdata.id || '999'), // 7. ID使用使用者ID (updaterId)
+  updaterId: userdata.id, // 7. ID使用使用者ID (updaterId)
   isFinish: 0, // 8. 一律為未完成
   updateTime: null,
 })
 
 const formRules: FormRules = {
   emp: [{ required: true, type: 'number', message: '請選擇員工', trigger: ['change', 'blur'] }],
+  duration: [{ required: true, type: 'number', message: '請輸入持續時間', trigger: ['change', 'blur'] }],
   endTime: [
     { required: true, message: '請選擇結束時間', trigger: ['change', 'blur'], type: 'string' },
   ],
@@ -444,7 +445,8 @@ const handleSaveTask = () => {
 
       // 5. Set updateTime, updaterId, and group (already handled by getEmptyTask for new, but ensure for edits too)
       taskToProcess.updateTime = new Date().toISOString().slice(0, 19).replace('T', ' ')
-      taskToProcess.updaterId = parseInt(userdata.id || '999')
+      taskToProcess.startTime = new Date().toISOString().slice(0, 19).replace('T', ' ')
+      taskToProcess.updaterId = userdata.id
       taskToProcess.group = userdata.group || ''
       // taskToProcess.isFinish remains as is for editing, or 0 for new (set by getEmptyTask)
 
@@ -524,9 +526,7 @@ const handleConfirmBufferedTasks = async () => {
           await loadData() // Refresh the main task list from the server
         } else {
           // Handle cases where API call was "successful" (no network error) but didn't create tasks as expected
-          message.error(
-            `提交失敗：伺服器回應狀態 ${response.status}. ${response.data?.message || ''}`,
-          )
+          message.error(`提交失敗：伺服器回應狀態 ${response.status}. ${response.data?.msg || ''}`)
           // Optionally, log response.data for more details
           console.error('Error submitting tasks, server response:', response.data)
         }
@@ -602,7 +602,6 @@ const handleDelete = (taskToDelete: Task) => {
   })
 }
 const createColumns = ({
-  onEdit,
   onDelete,
 }: {
   onEdit: (rowData: Task) => void
@@ -622,7 +621,7 @@ const createColumns = ({
     title: '機台ID',
     key: 'machine',
     width: 150,
-    ellipsis: { tooltip: { placement: 'top', width: 300, style: { maxWidth: '300px' } } },
+    ellipsis: { tooltip: { placement: 'top', width: 300,  maxWidth: 300 } },
     render(row) {
       return renderJsonArray(row.machine)
     },
@@ -632,7 +631,7 @@ const createColumns = ({
     title: '機台名稱',
     key: 'machineName',
     width: 180,
-    ellipsis: { tooltip: { placement: 'top', width: 300, style: { maxWidth: '300px' } } },
+    ellipsis: { tooltip: { placement: 'top', width: 300,  maxWidth: 300 } },
     render(row) {
       return renderJsonArray(row.machineName)
     },
@@ -659,7 +658,7 @@ const createColumns = ({
     title: '任務描述',
     key: 'description',
     width: 200,
-    ellipsis: { tooltip: { placement: 'top', width: 300, style: { maxWidth: '300px' } } },
+    ellipsis: { tooltip: { placement: 'top', width: 300,  maxWidth: 300 } },
     resizable: true,
   },
   { title: '群組ID', key: 'group', width: 90, resizable: true },
@@ -741,12 +740,18 @@ const bufferColumns = computed(
         return renderJsonArray(row.machineName)
       },
       resizable: true,
+    },{
+      title: '所需時間(分鐘)',
+      key: 'duration',
+      width: 180,
+      render: (row) => row.duration,
+      resizable: true,
     },
     {
-      title: '開始時間',
+      title: '死線',
       key: 'startTime',
       width: 180,
-      render: (row) => formatDateTime(row.startTime),
+      render: (row) => formatDateTime(row.endTime),
       resizable: true,
     },
     {
@@ -913,9 +918,4 @@ onUnmounted(() => {
 
 <style scoped>
 /* Styles remain the same */
-.task-container {
-  height: calc(100vh - 60px);
-  width: 100vw;
-  overflow-y: auto;
-}
 </style>
