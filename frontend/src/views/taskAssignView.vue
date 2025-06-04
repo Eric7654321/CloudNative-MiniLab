@@ -127,14 +127,12 @@
           style="width: 100%"
         />
       </n-form-item>
-      <n-form-item label="開始時間" path="startTime">
-        <n-date-picker
-          v-model:formatted-value="currentTask.startTime"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
+      <n-form-item label="持續時間" path="duration">
+        <n-input-number
+          v-model:formatted-value="currentTask.duration"
           clearable
           style="width: 100%"
-          placeholder="請選擇開始時間"
+          placeholder="請選擇持續時間"
         />
       </n-form-item>
       <n-form-item label="結束時間" path="endTime">
@@ -213,7 +211,8 @@ interface Task {
   empName: string // Employee Name
   machine: string // JSON string of machine IDs
   machineName: string // JSON string of machine names
-  startTime: string | null
+  startTime?: string | null
+  duration?: number // minute
   endTime: string | null
   tag: string // Comma-separated string of skills
   description: string
@@ -353,8 +352,8 @@ const getEmptyTask = (): Task => ({
 
 const formRules: FormRules = {
   emp: [{ required: true, type: 'number', message: '請選擇員工', trigger: ['change', 'blur'] }],
-  startTime: [
-    { required: true, message: '請選擇開始時間', trigger: ['change', 'blur'], type: 'string' },
+  endTime: [
+    { required: true, message: '請選擇結束時間', trigger: ['change', 'blur'], type: 'string' },
   ],
   // Validation for selectedMachineIds and selectedSkillTags can be added if needed, e.g., at least one selected
   machineIds: [
