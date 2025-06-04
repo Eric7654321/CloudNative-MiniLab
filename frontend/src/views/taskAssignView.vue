@@ -1,6 +1,6 @@
 <template>
   <div class="task-container">
-    <n-layout style="height: 100vh">
+    <n-layout style="height: calc(100vh - 60px);">
       <n-layout-header bordered
         style="padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; height: 60px;">
         <n-h2 style="margin: 0;">
@@ -664,6 +664,6 @@ onUnmounted(() => {
 .task-container {
   height: calc(100vh - 60px);
   width: 100vw;
-  overflow: hidden;
+  overflow-y: auto;
 }
 </style>
