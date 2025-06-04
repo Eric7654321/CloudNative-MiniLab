@@ -4,24 +4,52 @@
       <!-- 篩選區域 -->
       <n-card title="篩選條件" class="filter-card" content-style="padding-top: 20px;">
         <n-space>
-          <n-date-picker v-model:value="filterDateRange" type="daterange" clearable placeholder="篩選任務起迄日期" />
-          <n-select v-model:value="filterEmployee" :options="employeeOptions" clearable placeholder="篩選員工"
-        style="width: 200px" />
-          <n-select v-model:value="filterIsFinish" :options="finishStatusOptions" clearable placeholder="篩選完成狀態"
-        style="width: 150px" />
+          <n-date-picker
+            v-model:value="filterDateRange"
+            type="daterange"
+            clearable
+            placeholder="篩選任務起迄日期"
+          />
+          <n-select
+            v-model:value="filterEmployee"
+            :options="employeeOptions"
+            clearable
+            placeholder="篩選員工"
+            style="width: 200px"
+          />
+          <n-select
+            v-model:value="filterIsFinish"
+            :options="finishStatusOptions"
+            clearable
+            placeholder="篩選完成狀態"
+            style="width: 150px"
+          />
           <n-button @click="clearFilters" type="warning">清除篩選</n-button>
         </n-space>
       </n-card>
 
       <!-- 行事曆 -->
       <div class="calendar-content">
-        <n-calendar v-model:value="calendarDate" #default="{ year, month, date }" style="height: 700px">
+        <n-calendar
+          v-model:value="calendarDate"
+          #default="{ year, month, date }"
+          style="height: 700px"
+        >
           <div class="calendar-tasks-container">
             <template v-for="task in getTasksForDate(year, month, date)" :key="task.id">
-              <n-popover trigger="hover" placement="bottom-start" :style="{ width: '320px', maxWidth: '90vw' }" scrollable>
+              <n-popover
+                trigger="hover"
+                placement="bottom-start"
+                :style="{ width: '320px', maxWidth: '90vw' }"
+                scrollable
+              >
                 <template #trigger>
-                  <div class="task-entry" :class="{ 'overdue-task-indicator': isTaskOverdueAndUnfinished(task) }">
-                    <n-ellipsis :line-clamp="1" :tooltip="false"> <!-- tooltip=false to prevent n-ellipsis's own tooltip -->
+                  <div
+                    class="task-entry"
+                    :class="{ 'overdue-task-indicator': isTaskOverdueAndUnfinished(task) }"
+                  >
+                    <n-ellipsis :line-clamp="1" :tooltip="false">
+                      <!-- tooltip=false to prevent n-ellipsis's own tooltip -->
                       {{ task.description }}
                     </n-ellipsis>
                   </div>
@@ -29,7 +57,7 @@
                 <!-- Popover Content: Task Details -->
                 <n-thing>
                   <template #header>
-                    <n-ellipsis style="max-width: 280px;">
+                    <n-ellipsis style="max-width: 280px">
                       {{ task.description }}
                     </n-ellipsis>
                   </template>
@@ -39,19 +67,20 @@
                     </n-tag>
                   </template>
                   <template #description>
-                    <n-space vertical size="small" style="margin-top: 8px;">
+                    <n-space vertical size="small" style="margin-top: 8px">
                       <div><strong>員工:</strong> {{ task.empName }}</div>
-                      <div>
-                        <strong>開始:</strong> {{ formatDateTime(task.startTime) }}
-                      </div>
-                      <div>
-                        <strong>結束:</strong> {{ formatDateTime(task.endTime) }}
-                      </div>
+                      <div><strong>開始:</strong> {{ formatDateTime(task.startTime) }}</div>
+                      <div><strong>結束:</strong> {{ formatDateTime(task.endTime) }}</div>
                     </n-space>
                   </template>
                 </n-thing>
-                <n-alert v-if="isTaskOverdueAndUnfinished(task)" title="任務提醒" type="warning" :bordered="false"
-                  class="overdue-alert-popover">
+                <n-alert
+                  v-if="isTaskOverdueAndUnfinished(task)"
+                  title="任務提醒"
+                  type="warning"
+                  :bordered="false"
+                  class="overdue-alert-popover"
+                >
                   此任務已逾期且未完成！
                 </n-alert>
               </n-popover>
@@ -64,41 +93,53 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue'
 import {
-  NCalendar, NCard, NSpace, NTag, NThing, NAlert, NEllipsis,
-  NDatePicker, NSelect, NButton, NPopover
-} from 'naive-ui';
+  NCalendar,
+  NCard,
+  NSpace,
+  NTag,
+  NThing,
+  NAlert,
+  NEllipsis,
+  NDatePicker,
+  NSelect,
+  NButton,
+  NPopover,
+} from 'naive-ui'
 import {
-  parseISO, format, isWithinInterval, startOfDay, endOfDay, isBefore,
-  getTime
-} from 'date-fns';
-import { useUserData } from '@/stores/UserData';
-import axios from 'axios';
+  parseISO,
+  format,
+  isWithinInterval,
+  startOfDay,
+  endOfDay,
+  isBefore,
+  getTime,
+} from 'date-fns'
+import { useUserData } from '@/stores/UserData'
+import axios from 'axios'
 
 // --- Task Interface ---
 interface TaskDataForm {
-  id: number;
-  emp: number; // Employee ID
-  empName: string;   // Employee Name
-  machine: string;   // JSON string of machine IDs
-  machineName: string; // JSON string of machine names
-  startTime: string;
-  endTime: string;
-  tag: string; // Comma-separated string of skills
-  description: string;
-  group: string;
-  updaterId: number;
-  isFinish: number; // 0 for not finished, 1 for finished
-  updateTime: string;
-
+  id: number
+  emp: number // Employee ID
+  empName: string // Employee Name
+  machine: string // JSON string of machine IDs
+  machineName: string // JSON string of machine names
+  startTime: string
+  endTime: string
+  tag: string // Comma-separated string of skills
+  description: string
+  group: string
+  updaterId: number
+  isFinish: number // 0 for not finished, 1 for finished
+  updateTime: string
 }
 // --- 模擬的 Task 資料 (與之前相同) ---
-const now = new Date();
-const today = startOfDay(now);
-const yesterday = startOfDay(new Date(new Date().setDate(new Date().getDate() - 1))); // Corrected yesterday
-const tomorrow = startOfDay(new Date(new Date().setDate(new Date().getDate() + 1))); // Corrected tomorrow
-
+const now = new Date()
+const today = startOfDay(now)
+const yesterday = startOfDay(new Date(new Date().setDate(new Date().getDate() - 1))) // Corrected yesterday
+const tomorrow = startOfDay(new Date(new Date().setDate(new Date().getDate() + 1))) // Corrected tomorrow
 
 const rawTasks = ref<TaskDataForm[]>([
   {
@@ -176,100 +217,99 @@ const rawTasks = ref<TaskDataForm[]>([
     isFinish: 0,
     updateTime: new Date().toISOString(),
   },
-]);
+])
 
 // --- 行事曆狀態 ---
-const calendarDate = ref(getTime(new Date()));
+const calendarDate = ref(getTime(new Date()))
 
 // --- 篩選狀態 ---
-const filterDateRange = ref(null);
-const filterEmployee = ref(null);
-const filterIsFinish = ref(null);
+const filterDateRange = ref(null)
+const filterEmployee = ref(null)
+const filterIsFinish = ref(null)
 
 const employeeOptions = computed(() => {
-  const names = new Set(rawTasks.value.map(task => task.empName));
-  return Array.from(names).map(name => ({ label: name, value: name }));
-});
+  const names = new Set(rawTasks.value.map((task) => task.empName))
+  return Array.from(names).map((name) => ({ label: name, value: name }))
+})
 
 const finishStatusOptions = [
   { label: '未完成', value: 0 },
   { label: '已完成', value: 1 },
-];
+]
 
 const clearFilters = () => {
-  filterDateRange.value = null;
-  filterEmployee.value = null;
-  filterIsFinish.value = null;
-};
+  filterDateRange.value = null
+  filterEmployee.value = null
+  filterIsFinish.value = null
+}
 
 // --- 篩選後的任務 ---
 const filteredTasks = computed(() => {
-  let tasks = rawTasks.value;
+  let tasks = rawTasks.value
   if (filterDateRange.value && filterDateRange.value[0] && filterDateRange.value[1]) {
-    const filterStart = startOfDay(new Date(filterDateRange.value[0]));
-    const filterEnd = endOfDay(new Date(filterDateRange.value[1]));
-    tasks = tasks.filter(task => {
-      const taskStart = parseISO(task.startTime);
-      const taskEnd = parseISO(task.endTime);
+    const filterStart = startOfDay(new Date(filterDateRange.value[0]))
+    const filterEnd = endOfDay(new Date(filterDateRange.value[1]))
+    tasks = tasks.filter((task) => {
+      const taskStart = parseISO(task.startTime)
+      const taskEnd = parseISO(task.endTime)
       return (
         isWithinInterval(taskStart, { start: filterStart, end: filterEnd }) ||
         isWithinInterval(taskEnd, { start: filterStart, end: filterEnd }) ||
         (isBefore(taskStart, filterStart) && isBefore(filterEnd, taskEnd))
-      );
-    });
+      )
+    })
   }
   if (filterEmployee.value) {
-    tasks = tasks.filter(task => task.empName === filterEmployee.value);
+    tasks = tasks.filter((task) => task.empName === filterEmployee.value)
   }
   if (filterIsFinish.value !== null && filterIsFinish.value !== undefined) {
-    tasks = tasks.filter(task => task.isFinish === filterIsFinish.value);
+    tasks = tasks.filter((task) => task.isFinish === filterIsFinish.value)
   }
-  return tasks;
-});
-
+  return tasks
+})
 
 // --- Helper 函數 ---
 const formatDateTime = (dateTimeString) => {
-  if (!dateTimeString) return '';
-  return format(parseISO(dateTimeString), 'yyyy-MM-dd HH:mm');
-};
+  if (!dateTimeString) return ''
+  return format(parseISO(dateTimeString), 'yyyy-MM-dd HH:mm')
+}
 
 const getTasksForDate = (year, month, day) => {
-  const cellDateStart = startOfDay(new Date(year, month - 1, day));
-  const cellDateEnd = endOfDay(new Date(year, month - 1, day));
+  const cellDateStart = startOfDay(new Date(year, month - 1, day))
+  const cellDateEnd = endOfDay(new Date(year, month - 1, day))
 
-  return filteredTasks.value.filter(task => {
-    const taskStart = parseISO(task.startTime);
-    const taskEnd = parseISO(task.endTime);
-    return taskStart <= cellDateEnd && taskEnd >= cellDateStart;
-  }).sort((a, b) => parseISO(a.startTime) - parseISO(b.startTime)); // 按開始時間排序
-};
+  return filteredTasks.value
+    .filter((task) => {
+      const taskStart = parseISO(task.startTime)
+      const taskEnd = parseISO(task.endTime)
+      return taskStart <= cellDateEnd && taskEnd >= cellDateStart
+    })
+    .sort((a, b) => parseISO(a.startTime) - parseISO(b.startTime)) // 按開始時間排序
+}
 
 const isTaskOverdueAndUnfinished = (task) => {
-  if (task.isFinish === 1) return false;
-  const taskEndTime = parseISO(task.endTime);
-  return isBefore(taskEndTime, new Date());
-};
+  if (task.isFinish === 1) return false
+  const taskEndTime = parseISO(task.endTime)
+  return isBefore(taskEndTime, new Date())
+}
 
 const userdata = useUserData()
 
 // 模擬從API獲取任務列表
 const fetchTaskOptions = async () => {
   // 假設的 API 請求
-  const response = await axios.get(`/api/task/search/${userdata.group}`);
+  const response = await axios.get(`/api/task/search/${userdata.group}`)
   const task: TaskDataForm[] = response?.data.data
 
   // taskOptions.value = response.data.map(task => ({ label: `任務 ${task.name} (ID: ${task.id})`, value: task.id }));
 
   // 靜態範例數據
   rawTasks.value = task
-    ;
 }
 
 onMounted(() => {
   fetchTaskOptions()
 })
-
 </script>
 
 <style scoped>
