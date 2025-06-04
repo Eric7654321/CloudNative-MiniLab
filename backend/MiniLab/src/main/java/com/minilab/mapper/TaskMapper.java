@@ -11,10 +11,10 @@ public interface TaskMapper {
     @Select("select * from minilab.task where `group` = #{groupId}")
     List<Task> getTaskByGroupId(String groupId);
 
-    @Select("select * from minilab.task where emp = #{id} and start_time >= #{start} and end_time <= #{end} and is_finish != 1")
+    @Select("select * from minilab.task where emp = #{id} AND NOT (end_time <= #{start} OR start_time >= #{end}) and is_finish != 1")
     List<Task> getTaskByIdAndTime(Integer id, LocalDate start, LocalDate end);
 
-    @Select("select * from minilab.task where emp = #{id} and start_time >= #{start} and end_time <= #{end} and is_finish != 1")
+    @Select("select * from minilab.task where emp = #{id} and is_finish != 1")
     List<Task> getTaskById(Integer id);
 
     @Update("update minilab.task set is_finish = 1, update_time = now() where id = #{taskId}")
