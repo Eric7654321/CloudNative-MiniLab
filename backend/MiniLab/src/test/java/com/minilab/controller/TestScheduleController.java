@@ -28,7 +28,7 @@ public class TestScheduleController {
 
         // === 1. 新增任務 ===
         Task newTask = new Task();
-        newTask.setEmp(1); // 預設測試資料中有 empId = 1
+        newTask.setEmp(1);  // 預設測試資料中有 empId = 1
         newTask.setEmpName("測試用員工");
         newTask.setMachine("[\"999\"]");
         newTask.setMachineName("[\"測試機台\"]");
@@ -51,7 +51,7 @@ public class TestScheduleController {
 
         // === 2. 修改任務 ===
         newTask.setDescription("單元測試更新描述");
-        newTask.setUpdaterId(2); // 模擬不同人修改
+        newTask.setUpdaterId(2);  // 模擬不同人修改
 
         Result updateResult = scheduleController.updateTask(newTask);
         Assertions.assertEquals(1, updateResult.getCode(), "任務修改失敗");
@@ -77,9 +77,10 @@ public class TestScheduleController {
         taskB.setStartTime(LocalDateTime.now().plusHours(1));
         taskB.setEndTime(LocalDateTime.now().plusHours(6));
         taskB.setTag("電性");
-        taskB.setDescription("應該會衝突");
+        taskB.setDescription("應該會衝突吧");
         taskB.setGroup("114514");
         taskB.setUpdaterId(1);
+        taskB.setIsFinish(0);
 
         Result resultB = scheduleController.TasksCheckAndAdd(Collections.singletonList(taskB));
         Assertions.assertNotEquals(1, resultB.getCode(), "重疊任務竟然被新增成功！");
