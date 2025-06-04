@@ -445,6 +445,8 @@ const handleSaveTask = () => {
 
       // 5. Set updateTime, updaterId, and group (already handled by getEmptyTask for new, but ensure for edits too)
       taskToProcess.updateTime = new Date().toISOString().slice(0, 19).replace('T', ' ')
+      if(taskToProcess.startTime === null)
+        taskToProcess.startTime = new Date().toISOString().slice(0, 19).replace('T', ' ')
       taskToProcess.updaterId = userdata.id
       taskToProcess.group = userdata.group || ''
       // taskToProcess.isFinish remains as is for editing, or 0 for new (set by getEmptyTask)
