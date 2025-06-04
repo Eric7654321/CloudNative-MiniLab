@@ -10,11 +10,13 @@ public class TestTestController {
 
     @Autowired
     private TestController testController;
+
     @Test
     public void test() {
         String s = testController.testString();
         Assertions.assertEquals(s, "test");
     }
+
     @Test
     public void test2() {
         String s = testController.getTime();
