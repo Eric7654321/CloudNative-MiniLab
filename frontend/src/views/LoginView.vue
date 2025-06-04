@@ -126,11 +126,14 @@ const submit = async () => {
 
 <style scoped>
 .n-flex {
+  height: calc(100vh - 60px);
   width: 100vw;
+  overflow: hidden;
 }
 
 .login-container {
   max-width: 400px;
+  max-height: 300px;
   margin: 100px auto;
   padding: 30px;
   background-color: #f9f9f9;
