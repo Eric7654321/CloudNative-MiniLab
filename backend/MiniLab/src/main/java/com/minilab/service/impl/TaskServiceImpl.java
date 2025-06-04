@@ -151,7 +151,8 @@ public class TaskServiceImpl implements TaskService {
 
                 for (Task t : empTasks) {
                     if (isTimeOverlap(task, t)) {
-                        return Result.error("工人 " + empMapper.getEmpById(task.getEmp()).getUsername() + " 時間重疊，與任務編號：" + t.getId());
+                        return Result.error(
+                                "工人 " + empMapper.getEmpById(task.getEmp()).getUsername() + " 時間重疊，與任務編號：" + t.getId());
                     }
                 }
 
