@@ -32,8 +32,8 @@ public class TestScheduleController {
         newTask.setEmpName("測試用員工");
         newTask.setMachine("[\"999\"]");
         newTask.setMachineName("[\"測試機台\"]");
-        newTask.setStartTime(LocalDateTime.now().plusHours(1));
-        newTask.setEndTime(LocalDateTime.now().plusHours(2));
+        newTask.setStartTime(LocalDateTime.of(2099, 1, 1, 10, 0));
+        newTask.setEndTime(LocalDateTime.of(2099, 1, 1, 12, 0));
         newTask.setTag("電性");
         newTask.setDescription("這是一個單元測試任務");
         newTask.setGroup("114514");
