@@ -42,7 +42,7 @@
         />
         <p v-if="!machines.length" class="no-message">目前沒有機器資料。</p>
       </div>
-    </div>    
+    </div>
 
     <!-- Modal for EmployeeForm (Add/Edit) -->
     <div v-if="showEmployeeFormModal" class="modal-overlay" @click.self="closeEmployeeFormModal">
@@ -383,10 +383,7 @@ const handleAddMachineTag = async ({ machineId, tag }: MachineTagEventPayload) =
 
   try {
     console.log(machines, mach?.tags)
-    await axios.put(
-      '/api/machine/tag/update',
-      { machineId: machineId, tags: mach?.tags },
-    )
+    await axios.put('/api/machine/tag/update', { machineId: machineId, tags: mach?.tags })
     await get_machine_list()
     console.log('Machine updated:', mach)
   } catch (error) {
