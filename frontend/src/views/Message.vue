@@ -1,7 +1,7 @@
 <template>
   <div class="message-container">
     <n-space vertical style="height: calc(100vh - 60px); width: 100vw" :size="0">
-      <n-card :bordered="false" style="height: 60px;"> 群組：{{ userdata.group }} </n-card>
+      <n-card :bordered="false" style="height: 60px"> 群組：{{ userdata.group }} </n-card>
 
       <n-layout has-sider style="flex-grow: 1; height: calc(100vh - 120px)">
         <n-layout-sider
