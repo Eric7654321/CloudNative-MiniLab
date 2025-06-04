@@ -12,10 +12,7 @@
             <if test="machineName != null and machineName != ''">
                 machine_name = #{machineName},
             </if>
-            <if test="usable != null and usable != ''">
-                usable = #{usable},
-            </if>
-            <if test="usable != null and usable != ''">
+            <if test="usable != null">
                 usable = #{usable},
             </if>
             <if test="`group` != null and `group` != ''">

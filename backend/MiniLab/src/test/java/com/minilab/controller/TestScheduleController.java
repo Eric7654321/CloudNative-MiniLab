@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @SpringBootTest
 @Slf4j
@@ -27,7 +30,7 @@ public class TestScheduleController {
         Task newTask = new Task();
         newTask.setEmp(1);  // 預設測試資料中有 empId = 1
         newTask.setEmpName("測試用員工");
-        newTask.setMachine("[\"1\"]");
+        newTask.setMachine("[\"999\"]");
         newTask.setMachineName("[\"測試機台\"]");
         newTask.setStartTime(LocalDateTime.now().plusHours(1));
         newTask.setEndTime(LocalDateTime.now().plusHours(2));
@@ -61,5 +64,84 @@ public class TestScheduleController {
         Result deleteResult = scheduleController.deleteTask(newTask);
         Assertions.assertEquals(1, deleteResult.getCode(), "任務刪除失敗");
         log.info("刪除任務成功，測試結束");
+    }
+
+    @Test
+    public void testTaskFailedByOverlapping() {
+        log.info("測試新增任務時，若時間衝突應失敗");
+
+        // 建立第二個任務 B（與 A 完全重疊）
+        Task taskB = new Task();
+        taskB.setEmp(1);
+        taskB.setMachine("[\"1\",\"43\"]");
+        taskB.setStartTime(LocalDateTime.now().plusHours(1));
+        taskB.setEndTime(LocalDateTime.now().plusHours(6));
+        taskB.setTag("電性");
+        taskB.setDescription("應該會衝突");
+        taskB.setGroup("114514");
+        taskB.setUpdaterId(1);
+
+        Result resultB = scheduleController.TasksCheckAndAdd(Collections.singletonList(taskB));
+        Assertions.assertNotEquals(1, resultB.getCode(), "重疊任務竟然被新增成功！");
+        log.info("第二個任務新增失敗，錯誤訊息：" + resultB.getMsg());
+    }
+
+    @Test
+    public void testTaskFailedByTooWeak() {
+        log.info("測試新增任務時，若能力不符應失敗");
+
+        Task taskB = new Task();
+        taskB.setEmp(1);
+        taskB.setMachine("[\"1\",\"43\"]");
+        taskB.setStartTime(LocalDateTime.now().plusHours(100));
+        taskB.setEndTime(LocalDateTime.now().plusHours(150));
+        taskB.setTag("溫度");
+        taskB.setDescription("應該會衝突");
+        taskB.setGroup("114514");
+        taskB.setUpdaterId(1);
+
+        Result resultB = scheduleController.TasksCheckAndAdd(Collections.singletonList(taskB));
+        Assertions.assertNotEquals(1, resultB.getCode(), "重疊任務竟然被新增成功！");
+        log.info("第二個任務新增失敗，錯誤訊息：" + resultB.getMsg());
+    }
+
+    @Test
+    public void testTaskFailedEmpIsScheduled() {
+        log.info("測試新增任務時，若工人與已存在任務時間重疊應失敗");
+
+        Task task = new Task();
+        task.setEmp(1); // 與資料庫中那筆 emp 相同
+        task.setMachine("[\"999\"]"); // 換一台機器以避免機器衝突
+        task.setStartTime(LocalDateTime.of(2026, 1, 1, 10, 0)); // 落在已存在任務區間
+        task.setEndTime(LocalDateTime.of(2026, 1, 1, 12, 0));
+        task.setTag("電性");
+        task.setDescription("工人衝突測試");
+        task.setGroup("114514");
+        task.setUpdaterId(1);
+        task.setIsFinish(0);
+
+        Result result = scheduleController.TasksCheckAndAdd(Collections.singletonList(task));
+        Assertions.assertNotEquals(1, result.getCode(), "工人衝突的任務竟然被新增成功！");
+        log.info("任務新增失敗，錯誤訊息：" + result.getMsg());
+    }
+
+    @Test
+    public void testTaskFailedMachineIsScheduled() {
+        log.info("測試新增任務時，若機器與已存在任務時間重疊應失敗");
+
+        Task task = new Task();
+        task.setEmp(2); // 換一個員工，避免人員衝突
+        task.setMachine("[\"1\"]"); // 與資料庫中那筆相同
+        task.setStartTime(LocalDateTime.of(2026, 1, 1, 10, 0)); // 落在已存在任務區間
+        task.setEndTime(LocalDateTime.of(2026, 1, 1, 12, 0));
+        task.setTag("電性");
+        task.setDescription("機器衝突測試");
+        task.setGroup("114514");
+        task.setUpdaterId(2);
+        task.setIsFinish(0);
+
+        Result result = scheduleController.TasksCheckAndAdd(Collections.singletonList(task));
+        Assertions.assertNotEquals(1, result.getCode(), "機器衝突的任務竟然被新增成功！");
+        log.info("任務新增失敗，錯誤訊息：" + result.getMsg());
     }
 }
