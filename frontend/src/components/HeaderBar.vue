@@ -53,7 +53,7 @@ const options = ref<MenuOption[]>([
   },
   {
     label: '排程',
-    key: '/taskassign'
+    key: '/taskassign',
   },
   {
     label: '登出',
@@ -144,5 +144,4 @@ const emit = defineEmits()
 .header-menu-items > .n-button {
   margin-right: 20px;
 }
-
 </style>
