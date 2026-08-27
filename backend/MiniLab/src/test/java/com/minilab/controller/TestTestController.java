@@ -15,6 +15,7 @@ public class TestTestController {
     public void test() {
         String s = testController.testString();
         Assertions.assertEquals(s, "test");
+        System.out.println("yes");
     }
 
     @Test
