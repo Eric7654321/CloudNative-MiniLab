@@ -27,6 +27,9 @@
           <n-button ghost @click="handleShowAddModal" :icon="renderIcon(AddIcon)"
             >新增任務至緩衝區</n-button
           >
+          <n-button ghost type="info" @click="showAutoModal = true" :icon="renderIcon(AutoIcon)"
+            >自動排程</n-button
+          >
         </n-space>
       </n-layout-header>
       <n-layout-content style="padding-left: 24px; padding-right: 24px">
@@ -168,6 +171,101 @@
         </n-space>
       </template>
     </n-modal>
+
+    <!-- 自動排程：只填「什麼時候、要什麼技能、要幾台機器」，人與機台由後端配 -->
+    <n-modal
+      v-model:show="showAutoModal"
+      preset="card"
+      title="自動排程"
+      style="width: 640px"
+      :bordered="false"
+    >
+      <n-form label-placement="left" label-width="auto">
+        <n-form-item label="所需技能">
+          <n-checkbox-group v-model:value="autoDraft.tags">
+            <n-space item-style="display: flex;">
+              <n-checkbox
+                v-for="skill in skillTagOptions"
+                :key="skill.value"
+                :value="skill.value"
+                :label="skill.label"
+              />
+            </n-space>
+          </n-checkbox-group>
+        </n-form-item>
+        <n-form-item label="任務長度">
+          <n-input-number
+            v-model:value="autoDraft.durationMinutes"
+            :min="1"
+            :step="30"
+            style="width: 100%"
+          >
+            <template #suffix>分鐘</template>
+          </n-input-number>
+        </n-form-item>
+        <n-form-item label="最早開始">
+          <n-date-picker
+            v-model:formatted-value="autoDraft.earliestStart"
+            type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            clearable
+            placeholder="留空表示越快越好"
+            style="width: 100%"
+          />
+        </n-form-item>
+        <n-form-item label="期限">
+          <n-date-picker
+            v-model:formatted-value="autoDraft.deadline"
+            type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            clearable
+            placeholder="留空表示沒有期限"
+            style="width: 100%"
+          />
+        </n-form-item>
+        <n-form-item label="需要機台數">
+          <n-input-number v-model:value="autoDraft.machineCount" :min="1" style="width: 100%" />
+        </n-form-item>
+        <n-form-item label="任務描述">
+          <n-input
+            v-model:value="autoDraft.description"
+            type="textarea"
+            :autosize="{ minRows: 2, maxRows: 4 }"
+          />
+        </n-form-item>
+        <n-form-item label=" ">
+          <n-button @click="handleAddDemand" :icon="renderIcon(AddIcon)">加入需求清單</n-button>
+        </n-form-item>
+      </n-form>
+
+      <n-card
+        v-if="autoDemands.length > 0"
+        title="待排程需求"
+        size="small"
+        :bordered="false"
+        content-style="padding:0;"
+      >
+        <n-data-table
+          :columns="autoDemandColumns"
+          :data="autoDemands"
+          size="small"
+          :bordered="false"
+          :row-key="(row) => row.requestId"
+        />
+      </n-card>
+
+      <template #footer>
+        <n-space justify="end">
+          <n-button @click="showAutoModal = false">關閉</n-button>
+          <n-button
+            type="primary"
+            :disabled="autoDemands.length === 0"
+            @click="handleRunAutoSchedule"
+            >排程 ({{ autoDemands.length }} 筆)</n-button
+          >
+        </n-space>
+      </template>
+    </n-modal>
   </div>
 </template>
 
@@ -210,6 +308,7 @@ import {
   TrashOutline as DeleteIcon,
   AddOutline as AddIcon,
   SendOutline as SendIcon,
+  FlashOutline as AutoIcon,
 } from '@vicons/ionicons5'
 import axios from 'axios'
 import { useUserData } from '@/stores/UserData'
@@ -555,6 +654,140 @@ const handleConfirmBufferedTasks = async () => {
 }
 
 // ----- Main Table Columns & Data -----
+// ----- 自動排程 -----
+// 需求只描述「要什麼技能、做多久、幾台機器」；配給誰、用哪幾台、什麼時候做都由後端算，
+// 算完丟進同一個緩衝區，沿用既有的確認流程送出，不另開一條寫入路徑。
+interface AutoDemand {
+  requestId: string
+  tag: string
+  durationMinutes: number
+  earliestStart: string | null
+  deadline: string | null
+  machineCount: number
+  description: string
+}
+
+const showAutoModal = ref(false)
+const autoDemands = ref<AutoDemand[]>([])
+const emptyAutoDraft = () => ({
+  tags: [] as string[],
+  durationMinutes: 60,
+  earliestStart: null as string | null,
+  deadline: null as string | null,
+  machineCount: 1,
+  description: '',
+})
+const autoDraft = ref(emptyAutoDraft())
+let autoDemandCounter = 0
+
+const autoDemandColumns = computed<DataTableColumns<AutoDemand>>(() => [
+  { title: '技能', key: 'tag' },
+  { title: '長度', key: 'durationMinutes', render: (row) => `${row.durationMinutes} 分鐘` },
+  {
+    title: '最早開始',
+    key: 'earliestStart',
+    render: (row) => (row.earliestStart ? formatDateTime(row.earliestStart) : '越快越好'),
+  },
+  {
+    title: '期限',
+    key: 'deadline',
+    render: (row) => (row.deadline ? formatDateTime(row.deadline) : '無'),
+  },
+  { title: '機台數', key: 'machineCount' },
+  {
+    title: '操作',
+    key: 'actions',
+    render: (row) =>
+      h(
+        NButton,
+        {
+          size: 'tiny',
+          quaternary: true,
+          type: 'error',
+          onClick: () => {
+            autoDemands.value = autoDemands.value.filter((d) => d.requestId !== row.requestId)
+          },
+        },
+        { default: () => '移除' },
+      ),
+  },
+])
+
+const handleAddDemand = () => {
+  if (autoDraft.value.tags.length === 0) {
+    message.error('請至少勾選一項技能。')
+    return
+  }
+  if (!autoDraft.value.durationMinutes || autoDraft.value.durationMinutes < 1) {
+    message.error('任務長度必須大於零。')
+    return
+  }
+  if (
+    autoDraft.value.earliestStart &&
+    autoDraft.value.deadline &&
+    autoDraft.value.earliestStart >= autoDraft.value.deadline
+  ) {
+    message.error('期限必須晚於最早開始時間。')
+    return
+  }
+  autoDemands.value.push({
+    requestId: `d${++autoDemandCounter}`,
+    tag: autoDraft.value.tags.join(','),
+    durationMinutes: autoDraft.value.durationMinutes,
+    earliestStart: autoDraft.value.earliestStart,
+    deadline: autoDraft.value.deadline,
+    machineCount: autoDraft.value.machineCount,
+    description: autoDraft.value.description,
+  })
+  autoDraft.value = emptyAutoDraft()
+}
+
+const handleRunAutoSchedule = async () => {
+  const payload = autoDemands.value.map((d) => ({
+    requestId: d.requestId,
+    tag: d.tag,
+    durationMinutes: d.durationMinutes,
+    earliestStart: d.earliestStart ? d.earliestStart.replace(' ', 'T') : null,
+    deadline: d.deadline ? d.deadline.replace(' ', 'T') : null,
+    machineCount: d.machineCount,
+    description: d.description,
+    group: userdata.group || '',
+  }))
+
+  try {
+    const response = await axios.post('/api/schedule/auto/plan', payload)
+    if (response?.data?.code !== 1) {
+      message.error(response?.data?.msg || '自動排程失敗。')
+      return
+    }
+    const assigned: Task[] = response.data.data?.assigned || []
+    const rejected: { requestId: string; reason: string }[] = response.data.data?.rejected || []
+
+    assigned.forEach((task) => {
+      bufferedTasks.value.push({
+        ...task,
+        id: tempIdCounter++,
+        updaterId: parseInt(userdata.id || '999'),
+      })
+    })
+
+    // 排得進去的留在緩衝區等確認，排不進去的留在清單裡讓組長改條件再試一次。
+    const rejectedIds = new Set(rejected.map((r) => r.requestId))
+    autoDemands.value = autoDemands.value.filter((d) => rejectedIds.has(d.requestId))
+
+    if (assigned.length > 0) {
+      message.success(`已排入 ${assigned.length} 筆任務至緩衝區。`)
+    }
+    rejected.forEach((r) => message.warning(`${r.requestId}：${r.reason}`))
+    if (rejected.length === 0) {
+      showAutoModal.value = false
+    }
+  } catch (error) {
+    console.error('Auto schedule failed:', error)
+    message.error('自動排程失敗，請檢查網路或聯繫管理員。')
+  }
+}
+
 const data = ref<Task[]>([])
 
 const handleDelete = (taskToDelete: Task) => {
