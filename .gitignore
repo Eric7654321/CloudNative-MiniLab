@@ -1,1 +1,16 @@
 test.*
+
+# build output
+target/
+dist/
+node_modules/
+MiniLab-*.jar
+
+# local config and credentials — never commit these
+application-dev.yml
+*.pem
+.env
+
+# editor state (frontend/.vscode/extensions.json is shared and stays tracked)
+/.idea/
+/.vscode/
