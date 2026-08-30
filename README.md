@@ -33,7 +33,12 @@ flowchart LR
 後端每個請求先過 JWT `LoginCheckInterceptor`，再進 `Controller → Service → Mapper(MyBatis XML) → MySQL`。
 
 單體式：本場景日請求量約 1000，單體足以承載，模組邊界靠 interface 切開，要拆時再拆。
-自動排程演算法在前端計算，後端只做合法性檢查與寫入。
+自動排程在後端：`schedule/AutoScheduler` 是一個不依賴 Spring 與資料庫的純類別。輸入一批只寫了
+「要什麼技能、做多久、幾台機器、最早何時能開始、期限」的需求，輸出**誰做、用哪幾台、什麼時候做**。
+時段由它自己找：只需試最早可開始時間與每段既有佔用的結束點，因為任何可行的擺放都能往前推到
+撞上某個佔用的結尾為止，不必逐分鐘掃描。需求之間先排合格人選最少、期限最早的，
+同樣有空時挑目前累積工時最少的人；排不進去的附上原因退回。
+它只算不寫，組長在畫面上確認後才走 `/schedule/auto/ack` 檢查合法性並寫入。
 
 ## 技術棧
 
@@ -114,7 +119,7 @@ frontend/src/
 | Emp | `GET /emp/search/{groupId}`、`POST /emp/insert`、`PUT /emp/update`、`PUT /emp/tag/update`、`DELETE /emp/delete` |
 | Machine | `GET /machine/search/{groupId}`、`POST /machine/insert`、`PUT /machine/update`、`PUT /machine/tag/update`、`DELETE /machine/delete` |
 | Task | `GET /task/search/{groupId}`、`GET /task/check/weeks/{id}`、`GET /task/check/today/{id}`、`POST /task/msg/send`、`GET /task/msg/get/{groupId}` |
-| Schedule | `POST /schedule/auto/ack`（提交多筆任務、檢查合法性後寫入）、`PUT /schedule/task/update`、`DELETE /schedule/task/delete` |
+| Schedule | `POST /schedule/auto/plan`（一批需求 → 建議指派，不寫入）、`POST /schedule/auto/ack`（提交多筆任務、檢查合法性後寫入）、`PUT /schedule/task/update`、`DELETE /schedule/task/delete` |
 
 ## 本機執行
 
