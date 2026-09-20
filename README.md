@@ -1,10 +1,9 @@
 # MiniLab — 實驗室自動排程分配系統
 
-實驗室要把各種可靠度測試（電性 / 物性 / …）排給有對應能力的人員與機台。人工分配容易撞單，也容易把
-已經壞掉或請假的人力物力一起排下去。MiniLab 讓組長手動或自動排程，系統擋掉能力不符與時段衝突的組合，
-並提供行事曆與任務回報。
+MiniLab 將實驗室的可靠度測試需求分配給具備對應技能的人員與機台。組長可手動排程，也可依技能、
+資源可用時段與期限產生排程建議；系統檢查能力與時段衝突，並提供行事曆、任務追蹤及異常回報。
 
-NYCU「雲原生軟體開發與最佳實踐」期末專題，題目來自台積電 IT（GGIT）的產線情境。
+本專案為陽明交通大學「雲原生軟體開發與最佳實踐」期末專題，題目取自台積電 IT 提出的產線情境。
 
 - 開發文件：<https://hackmd.io/BB4n_xctTsus2xEmPvc1dQ?view>
 - API 文件：<https://hackmd.io/@Eric7654321/rkEZGMq-gg>
@@ -65,7 +64,7 @@ backend/MiniLab/src/main/java/com/minilab/
 frontend/                Vue + Dockerfile
 k8s/                     deploys / services / ingress
 .github/workflows/       ci.yaml（測試 + 格式化）、cd.yaml（build & push image）
-docker-compose.yaml      本機一鍵起前後端
+docker-compose.yaml      本機啟動前後端
 ```
 
 ## 前端
@@ -126,7 +125,7 @@ frontend/src/
 需求：Docker；單獨跑後端需 JDK 17 + Maven 3.9 與一個 MySQL。
 
 ```bash
-docker compose up --build                    # 一鍵起前後端
+docker compose up --build                    # 啟動前後端
 
 cd backend/MiniLab                            # 或單獨跑後端
 export DB_HOST=... DB_PORT=3306 DB_USER=... DB_PASS=...
